@@ -1,3 +1,5 @@
+console.log("編集できてる");
+
 let DATA = [];
 
 async function loadData() {
