@@ -1,3 +1,4 @@
 function generate() {
-  document.getElementById("output").innerHTML = "OK動作確認";
+  document.getElementById("output").innerHTML =
+    "ボタン動いてる";
 }
