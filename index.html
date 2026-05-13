@@ -1,19 +1,65 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KRONE Prep TEST</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KRONE Prep</title>
+
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-  <h1>TEST PAGE</h1>
+  <div class="container">
 
-  <button id="testBtn" type="button">TEST</button>
+    <h1>KRONE Prep</h1>
 
-  <div id="output"></div>
+    <!-- 学年 -->
+    <div class="panel">
+      <label>学年</label>
+      <select id="grade">
+        <option value="小4">小4</option>
+        <option value="小5">小5</option>
+        <option value="小6">小6</option>
+        <option value="中1">中1</option>
+        <option value="中2">中2</option>
+        <option value="中3">中3</option>
+      </select>
+    </div>
 
+    <!-- テーマ -->
+    <div class="panel">
+      <label>テーマ</label>
+      <input type="text" id="theme" placeholder="例：慣用句">
+    </div>
+
+    <!-- 範囲 -->
+    <div class="panel">
+      <label>範囲</label>
+      <input type="text" id="range" placeholder="例：1-30">
+    </div>
+
+    <!-- 問題数 -->
+    <div class="panel">
+      <label>問題数</label>
+      <input type="number" id="num" value="10" min="1" max="50">
+    </div>
+
+    <!-- ボタン -->
+    <div class="panel">
+      <button id="generateBtn" type="button">
+        テスト生成
+      </button>
+    </div>
+
+    <hr>
+
+    <!-- 出力 -->
+    <div id="output"></div>
+
+  </div>
+
+  <!-- JS読み込み -->
   <script src="./js/main.js"></script>
 
 </body>
