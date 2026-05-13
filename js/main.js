@@ -20,6 +20,7 @@ function generate() {
   const theme = document.getElementById("theme").value;
   const range = document.getElementById("range").value;
   const num = Number(document.getElementById("num").value);
+  const mode = document.getElementById("mode").value;
 
   let filtered = DATA.filter(d => {
     const matchGrade = d.grade.includes(grade);
@@ -37,27 +38,54 @@ function generate() {
   filtered = filtered.sort(() => Math.random() - 0.5).slice(0, num);
 
   CURRENT = filtered;
+  CURRENT.mode = mode;
 
   renderQuiz();
 }
 
-// 問題表示（入力式）
+// 表示
 function renderQuiz() {
+  const mode = CURRENT.mode;
+
   document.getElementById("output").innerHTML =
-    CURRENT.map((q, i) => `
-      <div style="margin-bottom:12px;">
-        <b>${i + 1}.</b> ${q.phrase}<br>
-        <input type="text" id="ans_${i}" placeholder="意味を書こう" style="width:80%;">
-        <button onclick="check(${i})">判定</button>
-        <div id="result_${i}"></div>
-      </div>
-    `).join("");
+    CURRENT.map((q, i) => {
+
+      // 意味を書く
+      if (mode === "meaning") {
+        return `
+          <div style="margin-bottom:12px;">
+            <b>${i + 1}.</b> ${q.phrase}<br>
+            <input type="text" id="ans_${i}" placeholder="意味を書く" style="width:80%;">
+            <button onclick="check(${i})">判定</button>
+            <div id="result_${i}"></div>
+          </div>
+        `;
+      }
+
+      // ことわざを書く
+      return `
+        <div style="margin-bottom:12px;">
+          <b>${i + 1}.</b> ${q.meaning}<br>
+          <input type="text" id="ans_${i}" placeholder="ことわざを書く" style="width:80%;">
+          <button onclick="check(${i})">判定</button>
+          <div id="result_${i}"></div>
+        </div>
+      `;
+    }).join("");
 }
 
 // 判定
 function check(i) {
+  const mode = CURRENT.mode;
   const userAnswer = document.getElementById(`ans_${i}`).value.trim();
-  const correct = CURRENT[i].meaning.trim();
+
+  let correct = "";
+
+  if (mode === "meaning") {
+    correct = CURRENT[i].meaning.trim();
+  } else {
+    correct = CURRENT[i].phrase.trim();
+  }
 
   const result = document.getElementById(`result_${i}`);
 
