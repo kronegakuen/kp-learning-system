@@ -1,13 +1,9 @@
 console.log("KRONE Prep JS loaded");
 
-// =======================
-// データ保持
-// =======================
 let DATA = [];
+let CURRENT = [];
 
-// =======================
-// Google Apps Script から取得
-// =======================
+// データ取得
 async function loadData() {
   try {
     const res = await fetch("https://script.google.com/macros/s/AKfycbyTF8pd6_KVnw-qS4tIJLFbIKaoARErmH2hlpLax3LIdoc2MSoAkbJMgz052aV-SAZzxw/exec");
@@ -18,22 +14,13 @@ async function loadData() {
   }
 }
 
-// =======================
 // テスト生成
-// =======================
 function generate() {
-  if (!DATA.length) {
-    document.getElementById("output").innerHTML =
-      "データ読み込み中です...";
-    return;
-  }
-
   const grade = document.getElementById("grade").value;
   const theme = document.getElementById("theme").value;
   const range = document.getElementById("range").value;
   const num = Number(document.getElementById("num").value);
 
-  // 範囲フィルタ（例: 1-30）
   let filtered = DATA.filter(d => {
     const matchGrade = d.grade.includes(grade);
     const matchTheme = theme === "" || d.theme.includes(theme);
@@ -47,25 +34,43 @@ function generate() {
     return matchGrade && matchTheme && matchRange;
   });
 
-  // シャッフル
-  filtered = filtered.sort(() => Math.random() - 0.5);
+  filtered = filtered.sort(() => Math.random() - 0.5).slice(0, num);
 
-  // 件数制限
-  filtered = filtered.slice(0, num);
+  CURRENT = filtered;
 
-  // 出力
+  renderQuiz();
+}
+
+// 問題表示（答え隠す）
+function renderQuiz() {
   document.getElementById("output").innerHTML =
-    filtered.map((q, i) => `
-      <div style="margin-bottom:8px;">
+    CURRENT.map((q, i) => `
+      <div style="margin-bottom:10px;">
+        <b>${i + 1}.</b> ${q.phrase}（　　　　）
+      </div>
+    `).join("") +
+    `<br><button id="showAnswer">解答を見る</button>`;
+}
+
+// 解答表示
+function showAnswer() {
+  document.getElementById("output").innerHTML =
+    CURRENT.map((q, i) => `
+      <div style="margin-bottom:10px;">
         <b>${i + 1}.</b> ${q.phrase}（${q.meaning}）
       </div>
     `).join("");
 }
 
-// =======================
 // 初期化
-// =======================
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("generateBtn").addEventListener("click", generate);
   loadData();
+
+  // イベント委譲（後から出るボタン対応）
+  document.addEventListener("click", (e) => {
+    if (e.target.id === "showAnswer") {
+      showAnswer();
+    }
+  });
 });
