@@ -83,7 +83,7 @@ function startTest() {
 
   if (!studentId) return alert("ログインしてね");
 
-  CURRENT = shuffle([...DATA]).slice(0, 20);
+  CURRENT = shuffle([...DATA]);
   index = 0;
 
   showQuestion();
