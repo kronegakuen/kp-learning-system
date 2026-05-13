@@ -1,52 +1,65 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KRONE Prep - Homework AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KRONE Prep 完成版</title>
 
-  <link rel="stylesheet" href="css/style.css">
+<style>
+body { font-family: sans-serif; padding: 20px; }
+.box { border: 1px solid #ddd; padding: 12px; margin-bottom: 12px; }
+input, button, select { padding: 6px; margin: 4px; }
+#timer { font-weight: bold; font-size: 18px; }
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<h1>KRONE Prep</h1>
 
-  <h1>KRONE Prep</h1>
-
-  <!-- 生徒 -->
-  <div class="panel">
-    <input id="studentId" placeholder="生徒ID">
-    <button id="loginBtn">ログイン</button>
-  </div>
-
-  <!-- 教科 -->
-  <div class="panel">
-    <select id="subject">
-      <option value="国語">国語</option>
-      <option value="英語">英語</option>
-    </select>
-  </div>
-
-  <!-- 教材 -->
-  <div class="panel">
-    <select id="material"></select>
-  </div>
-
-  <!-- 操作 -->
-  <div class="panel">
-    <button id="startBtn">テスト開始</button>
-    <button id="homeworkBtn">宿題生成</button>
-  </div>
-
-  <hr>
-
-  <div id="stats"></div>
-  <div id="output"></div>
-
+<!-- ================= ログイン ================= -->
+<div class="box">
+  <h3>👤 ログイン</h3>
+  <input id="studentId" placeholder="塾生ID">
+  <button onclick="login()">ログイン</button>
+  <div id="loginMsg"></div>
 </div>
 
-<script src="./js/main.js"></script>
+<!-- ================= モード ================= -->
+<div class="box">
+  <h3>📚 学習モード</h3>
+
+  <select id="material">
+    <option value="basic">基本</option>
+  </select>
+
+  <br>
+
+  <button onclick="startPassive()">受動（流し学習）</button>
+  <button onclick="startTest()">能動（テスト）</button>
+  <button onclick="exportPDF()">PDF出力</button>
+</div>
+
+<!-- ================= タイマー ================= -->
+<div id="timer"></div>
+
+<!-- ================= 出力 ================= -->
+<div class="box">
+  <div id="output"></div>
+</div>
+
+<!-- ================= 教師 ================= -->
+<div class="box">
+  <h3>👨‍🏫 生徒管理</h3>
+
+  <input id="newId" placeholder="ID">
+  <input id="newName" placeholder="名前">
+  <button onclick="addStudent()">追加</button>
+
+  <div id="studentList"></div>
+</div>
+
+<script src="./app.js"></script>
 
 </body>
 </html>

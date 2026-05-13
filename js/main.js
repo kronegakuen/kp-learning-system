@@ -1,169 +1,205 @@
-let DATA = [];
-let CURRENT = [];
-let WRONG = [];
+// =========================
+// 生徒マスター（退塾管理）
+// =========================
+let STUDENTS = {
+  "1001": { name: "田中", active: true },
+  "1002": { name: "佐藤", active: true },
+  "1003": { name: "鈴木", active: true }
+};
 
-let WEAK = {};
-let HOMEWORK = [];
+// =========================
+// 学習データ
+// =========================
+const DATA = [
+  { prompt: "apple", answer: "りんご" },
+  { prompt: "book", answer: "本" },
+  { prompt: "cat", answer: "猫" },
+  { prompt: "dog", answer: "犬" }
+];
 
+// =========================
+// 状態
+// =========================
 let studentId = null;
-
-// =========================
-// 初期化
-// =========================
-window.addEventListener("DOMContentLoaded", () => {
-
-  document.getElementById("loginBtn").addEventListener("click", login);
-
-  document.getElementById("startBtn").addEventListener("click", startTest);
-
-  document.getElementById("homeworkBtn").addEventListener("click", generateHomework);
-
-  loadData();
-});
+let CURRENT = [];
+let index = 0;
+let timer = null;
+let timeLeft = 0;
 
 // =========================
 // ログイン
 // =========================
 function login() {
 
-  studentId = document.getElementById("studentId").value;
+  const id = document.getElementById("studentId").value.trim();
+  const s = STUDENTS[id];
 
-  if (!studentId) return alert("IDを入力してね");
+  if (!s || !s.active) {
+    alert("このIDは無効です");
+    return;
+  }
 
-  const saved = localStorage.getItem(`weak_${studentId}`);
-  WEAK = saved ? JSON.parse(saved) : {};
+  studentId = id;
 
-  alert(`ログイン: ${studentId}`);
+  document.getElementById("loginMsg").innerText =
+    `ログイン中：${s.name}`;
 }
 
 // =========================
-// データ取得
+// 受動学習（流し）
 // =========================
-async function loadData() {
+function startPassive() {
 
-  const subject = document.getElementById("subject").value;
+  CURRENT = [...DATA];
+  index = 0;
 
-  const res = await fetch(`YOUR_APPS_SCRIPT_URL?sheet=${subject}`);
-  const raw = await res.json();
+  showPassive();
+}
 
-  DATA = raw.map(d => ({
-    prompt: d.prompt || d.en,
-    answer: d.answer || d.ja,
-    subject,
-    material: d.material
-  }));
+function showPassive() {
 
-  updateMaterials();
+  if (index >= CURRENT.length) {
+    document.getElementById("output").innerHTML = "終了";
+    return;
+  }
+
+  const q = CURRENT[index];
+
+  document.getElementById("output").innerHTML = `
+    <h2>${q.prompt}</h2>
+    <p>→ ${q.answer}</p>
+  `;
+
+  setTimeout(() => {
+    index++;
+    showPassive();
+  }, 2500);
 }
 
 // =========================
-// 教材
-// =========================
-function updateMaterials() {
-
-  const list = [...new Set(DATA.map(d => d.material))];
-
-  document.getElementById("material").innerHTML =
-    list.map(m => `<option value="${m}">${m}</option>`).join("");
-}
-
-// =========================
-// テスト
+// 能動テスト
 // =========================
 function startTest() {
 
-  const subject = document.getElementById("subject").value;
-  const material = document.getElementById("material").value;
+  if (!studentId) return alert("ログインしてね");
 
-  CURRENT = DATA.filter(d =>
-    d.subject === subject &&
-    d.material === material
-  );
+  CURRENT = shuffle([...DATA]).slice(0, 20);
+  index = 0;
 
-  WRONG = [];
+  showQuestion();
+}
 
-  render();
+function showQuestion() {
+
+  if (index >= CURRENT.length) {
+    document.getElementById("output").innerHTML = "終了";
+    return;
+  }
+
+  const q = CURRENT[index];
+
+  document.getElementById("output").innerHTML = `
+    <h2>${q.prompt}</h2>
+    <div id="answer"></div>
+  `;
+
+  startTimer(q);
 }
 
 // =========================
-// 🧠 宿題生成AI（核心）
+// タイマー（1〜10秒）
 // =========================
-function generateHomework() {
+function startTimer(q) {
 
-  const subject = document.getElementById("subject").value;
-  const material = document.getElementById("material").value;
+  clearInterval(timer);
 
-  const base = DATA.filter(d =>
-    d.subject === subject &&
-    d.material === material
-  );
+  timeLeft = 5;
 
-  // =========================
-  // スコアリングAI
-  // =========================
-  const scored = base.map(q => {
+  timer = setInterval(() => {
 
-    const w = WEAK[q.prompt]?.count || 0;
-    const last = WEAK[q.prompt]?.last || 0;
+    timeLeft--;
 
-    const recency = Date.now() - last;
+    document.getElementById("timer").innerText =
+      `残り：${timeLeft}秒`;
 
-    const score = (w * 5) + (recency / 100000);
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      reveal(q);
+    }
 
-    return { q, score };
+  }, 1000);
+}
+
+function reveal(q) {
+
+  document.getElementById("answer").innerText =
+    `正解：${q.answer}`;
+
+  setTimeout(() => {
+    index++;
+    showQuestion();
+  }, 1200);
+}
+
+// =========================
+// PDF出力
+// =========================
+function exportPDF() {
+
+  let html = "<h1>問題一覧</h1><hr>";
+
+  CURRENT.forEach((q, i) => {
+    html += `
+      <div>
+        ${i + 1}. ${q.prompt}<br>
+        答え：${q.answer}
+        <hr>
+      </div>
+    `;
   });
 
-  // 上位を宿題にする
-  HOMEWORK = scored
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10)
-    .map(s => s.q);
-
-  CURRENT = HOMEWORK;
-
-  render();
-
-  document.getElementById("stats").innerHTML =
-    "📚 宿題が生成されました（AI出題）";
+  const w = window.open("", "_blank");
+  w.document.write(`<body onload="window.print()">${html}</body>`);
+  w.document.close();
 }
 
 // =========================
-// 表示
+// 生徒追加
 // =========================
-function render() {
+function addStudent() {
 
-  document.getElementById("output").innerHTML =
-    CURRENT.map((q, i) => `
-      <div style="margin-bottom:12px;">
-        <b>${i + 1}.</b> ${q.prompt}<br>
-        <input id="ans_${i}">
-        <button onclick="check(${i})">判定</button>
-        <div id="result_${i}"></div>
+  const id = document.getElementById("newId").value;
+  const name = document.getElementById("newName").value;
+
+  STUDENTS[id] = { name, active: true };
+
+  renderStudents();
+}
+
+// =========================
+// 一覧
+// =========================
+function renderStudents() {
+
+  document.getElementById("studentList").innerHTML =
+    Object.entries(STUDENTS).map(([id, s]) => `
+      <div>
+        ${id} ${s.name}
+        ${s.active ? "🟢" : "🔴"}
       </div>
     `).join("");
 }
 
 // =========================
-// 判定
+// シャッフル
 // =========================
-function check(i) {
-
-  const q = CURRENT[i];
-  const user = document.getElementById(`ans_${i}`).value.trim();
-  const ok = user === q.answer.trim();
-
-  if (!WEAK[q.prompt]) {
-    WEAK[q.prompt] = { count: 0, last: 0 };
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-
-  if (!ok) {
-    WEAK[q.prompt].count++;
-  }
-
-  WEAK[q.prompt].last = Date.now();
-
-  localStorage.setItem(`weak_${studentId}`, JSON.stringify(WEAK));
-
-  document.getElementById(`result_${i}`).innerHTML =
-    ok ? "🟢 正解" : `🔴 正解: ${q.answer}`;
+  return arr;
 }
+
+// 初期表示
+renderStudents();
