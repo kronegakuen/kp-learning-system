@@ -2,6 +2,7 @@ console.log("KRONE Prep JS loaded");
 
 let DATA = [];
 let CURRENT = [];
+let SHOW_ANSWER = false;
 
 // データ取得
 async function loadData() {
@@ -37,40 +38,45 @@ function generate() {
   filtered = filtered.sort(() => Math.random() - 0.5).slice(0, num);
 
   CURRENT = filtered;
+  SHOW_ANSWER = false;
 
-  renderQuiz();
+  render();
 }
 
-// 問題表示（答え隠す）
-function renderQuiz() {
+// 描画
+function render() {
+  const html = CURRENT.map((q, i) => {
+    return SHOW_ANSWER
+      ? `<div style="margin-bottom:10px;">
+           <b>${i + 1}.</b> ${q.phrase}（${q.meaning}）
+         </div>`
+      : `<div style="margin-bottom:10px;">
+           <b>${i + 1}.</b> ${q.phrase}（　　　　）
+         </div>`;
+  }).join("");
+
+  const btnLabel = SHOW_ANSWER ? "問題に戻る" : "解答を見る";
+
   document.getElementById("output").innerHTML =
-    CURRENT.map((q, i) => `
-      <div style="margin-bottom:10px;">
-        <b>${i + 1}.</b> ${q.phrase}（　　　　）
-      </div>
-    `).join("") +
-    `<br><button id="showAnswer">解答を見る</button>`;
+    html +
+    `<br><button id="toggleBtn">${btnLabel}</button>`;
 }
 
-// 解答表示
-function showAnswer() {
-  document.getElementById("output").innerHTML =
-    CURRENT.map((q, i) => `
-      <div style="margin-bottom:10px;">
-        <b>${i + 1}.</b> ${q.phrase}（${q.meaning}）
-      </div>
-    `).join("");
+// トグル
+function toggleAnswer() {
+  SHOW_ANSWER = !SHOW_ANSWER;
+  render();
 }
 
 // 初期化
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("generateBtn").addEventListener("click", generate);
-  loadData();
 
-  // イベント委譲（後から出るボタン対応）
   document.addEventListener("click", (e) => {
-    if (e.target.id === "showAnswer") {
-      showAnswer();
+    if (e.target.id === "toggleBtn") {
+      toggleAnswer();
     }
   });
+
+  loadData();
 });
