@@ -1,3 +1,3 @@
 window.generate = function () {
-  alert("ボタン動いた！");
+  alert("動作確認");
 };
