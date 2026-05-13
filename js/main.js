@@ -1,3 +1,8 @@
-window.generate = function () {
-  alert("動作確認");
-};
+window.addEventListener("DOMContentLoaded", () => {
+
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    document.getElementById("output").innerHTML =
+      "ボタンは正常に動いています";
+  });
+
+});
