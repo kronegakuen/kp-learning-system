@@ -1,52 +1,7 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KRONE Prep</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
+<button id="testBtn" type="button">TEST</button>
 
-<body>
-  <div class="container">
-    <h1>KRONE Prep</h1>
-
-    <div class="panel">
-      <label>学年</label>
-      <select id="grade">
-        <option value="小４">小４</option>
-        <option value="小５">小５</option>
-        <option value="小６">小６</option>
-        <option value="中１">中１</option>
-        <option value="中２">中２</option>
-        <option value="中３">中３</option>
-        <option value="高校">高校</option>
-      </select>
-    </div>
-
-    <div class="panel">
-      <label>テーマ</label>
-      <input type="text" id="theme" placeholder="例：慣用句">
-    </div>
-
-    <div class="panel">
-      <label>範囲（例：1-30）</label>
-      <input type="text" id="range" placeholder="1-30">
-    </div>
-
-    <div class="panel">
-      <label>問題数</label>
-      <input type="number" id="num" value="10">
-    </div>
-
-        <button onclick="alert('test')">TEST</button>
-
-
-    <hr>
-
-    <div id="output"></div>
-  </div>
-
-  <script src="./js/main.js"></script>
-</body>
-</html>
+<script>
+document.getElementById("testBtn").addEventListener("click", () => {
+  alert("純粋JSテスト");
+});
+</script>
