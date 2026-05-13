@@ -3,71 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KRONE Prep</title>
+  <title>KRONE Prep - Homework AI</title>
 
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>KRONE Prep</h1>
+  <h1>KRONE Prep</h1>
 
-    <!-- 学年 -->
-    <div class="panel">
-      <label>学年</label>
-      <select id="grade">
-        <option value="小4">小4</option>
-        <option value="小5">小5</option>
-        <option value="小6">小6</option>
-        <option value="中1">中1</option>
-        <option value="中2">中2</option>
-        <option value="中3">中3</option>
-      </select>
-    </div>
-
-    <div class="panel">
-    <label>教科</label>
-    <select id="subject">
-        <option value="国語">国語</option>
-        <option value="英語">英語</option>
-    </select>
-    </div>
-
-    <div class="panel">
-    <label>教材</label>
-    <select id="material"></select>
-    </div>
-
-    <!-- 範囲 -->
-    <div class="panel">
-      <label>範囲</label>
-      <input type="text" id="range" placeholder="例：1-30">
-    </div>
-
-    <!-- 問題数 -->
-    <div class="panel">
-      <label>問題数</label>
-      <input type="number" id="num" value="10" min="1" max="50">
-    </div>
-
-    <!-- ボタン -->
-    <div class="panel">
-      <button id="generateBtn" type="button">
-        テスト生成
-      </button>
-    </div>
-
-    <hr>
-
-    <!-- 出力 -->
-    <div id="output"></div>
-
+  <!-- 生徒 -->
+  <div class="panel">
+    <input id="studentId" placeholder="生徒ID">
+    <button id="loginBtn">ログイン</button>
   </div>
 
-  <!-- JS読み込み -->
-  <script src="./js/main.js"></script>
+  <!-- 教科 -->
+  <div class="panel">
+    <select id="subject">
+      <option value="国語">国語</option>
+      <option value="英語">英語</option>
+    </select>
+  </div>
+
+  <!-- 教材 -->
+  <div class="panel">
+    <select id="material"></select>
+  </div>
+
+  <!-- 操作 -->
+  <div class="panel">
+    <button id="startBtn">テスト開始</button>
+    <button id="homeworkBtn">宿題生成</button>
+  </div>
+
+  <hr>
+
+  <div id="stats"></div>
+  <div id="output"></div>
+
+</div>
+
+<script src="./js/main.js"></script>
 
 </body>
 </html>
