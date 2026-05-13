@@ -2,7 +2,6 @@ console.log("KRONE Prep JS loaded");
 
 let DATA = [];
 let CURRENT = [];
-let SHOW_ANSWER = false;
 
 // データ取得
 async function loadData() {
@@ -38,45 +37,41 @@ function generate() {
   filtered = filtered.sort(() => Math.random() - 0.5).slice(0, num);
 
   CURRENT = filtered;
-  SHOW_ANSWER = false;
 
-  render();
+  renderQuiz();
 }
 
-// 描画
-function render() {
-  const html = CURRENT.map((q, i) => {
-    return SHOW_ANSWER
-      ? `<div style="margin-bottom:10px;">
-           <b>${i + 1}.</b> ${q.phrase}（${q.meaning}）
-         </div>`
-      : `<div style="margin-bottom:10px;">
-           <b>${i + 1}.</b> ${q.phrase}（　　　　）
-         </div>`;
-  }).join("");
-
-  const btnLabel = SHOW_ANSWER ? "問題に戻る" : "解答を見る";
-
+// 問題表示（入力式）
+function renderQuiz() {
   document.getElementById("output").innerHTML =
-    html +
-    `<br><button id="toggleBtn">${btnLabel}</button>`;
+    CURRENT.map((q, i) => `
+      <div style="margin-bottom:12px;">
+        <b>${i + 1}.</b> ${q.phrase}<br>
+        <input type="text" id="ans_${i}" placeholder="意味を書こう" style="width:80%;">
+        <button onclick="check(${i})">判定</button>
+        <div id="result_${i}"></div>
+      </div>
+    `).join("");
 }
 
-// トグル
-function toggleAnswer() {
-  SHOW_ANSWER = !SHOW_ANSWER;
-  render();
+// 判定
+function check(i) {
+  const userAnswer = document.getElementById(`ans_${i}`).value.trim();
+  const correct = CURRENT[i].meaning.trim();
+
+  const result = document.getElementById(`result_${i}`);
+
+  if (userAnswer === correct) {
+    result.innerHTML = "🟢 正解！";
+    result.style.color = "green";
+  } else {
+    result.innerHTML = `🔴 不正解（答え：${correct}）`;
+    result.style.color = "red";
+  }
 }
 
 // 初期化
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("generateBtn").addEventListener("click", generate);
-
-  document.addEventListener("click", (e) => {
-    if (e.target.id === "toggleBtn") {
-      toggleAnswer();
-    }
-  });
-
   loadData();
 });
