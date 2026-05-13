@@ -1,4 +1,4 @@
-console.log("編集できてる");
+console.log("JS読み込みOK");
 
 let DATA = [];
 
