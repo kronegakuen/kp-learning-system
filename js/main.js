@@ -1,7 +1,7 @@
 let DATA = [];
 
 async function loadData() {
-  const res = await fetch("https://script.google.com/macros/s/AKfycbxhpX2df3OgPvqcQpy2in3xZ7AEK0zhifNfmgOsnvicfdffZE3u5j3ZKzjPfdR4mL_wMg/exec");
+  const res = await fetch("https://script.google.com/macros/s/AKfycbyTF8pd6_KVnw-qS4tIJLFbIKaoARErmH2hlpLax3LIdoc2MSoAkbJMgz052aV-SAZzxw/exec");
   DATA = await res.json();
 }
 
