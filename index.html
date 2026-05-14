@@ -405,6 +405,30 @@ function buildQueue(countGroup){
   return n==='all' ? items : items.slice(0, parseInt(n));
 }
 
+// PDF用：国語は常に word=語句（上段）・meaning=意味（下段）で固定
+function buildQueueForPDF(countGroup){
+  const tb = TEXTBOOKS[curSheet];
+  const from = parseInt(document.getElementById('rng-from').value)||1;
+  const to   = parseInt(document.getElementById('rng-to').value)||tb.items.length;
+  const dir  = getVal('g-dir')||'normal';
+  let base = tb.items.filter(d=>d.no>=from && d.no<=to);
+  if(tb.genres && curGenres.length>0)
+    base = base.filter(d=>curGenres.includes(d.genre));
+  let items=[];
+  const isEigo = tb.subject === 'eigo';
+  if(isEigo){
+    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
+    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
+  } else {
+    // 国語：出題方向に関わらず語句が上段・意味が下段
+    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
+    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
+  }
+  shuffle(items);
+  const n = getVal(countGroup)||'30';
+  return n==='all' ? items : items.slice(0, parseInt(n));
+}
+
 // ============================================================
 // チェックモード
 // ============================================================
@@ -509,7 +533,7 @@ function makePDF(){
   if(!curSheet) return;
   const msg = document.getElementById('pdf-msg');
   msg.textContent = '新しいタブを開いています...';
-  const qs = buildQueue('g-pdf-count');
+  const qs = buildQueueForPDF('g-pdf-count');
   const tb = TEXTBOOKS[curSheet];
   const sheetLabel = tb.label;
   const ansWidth = tb.ansWidth;
