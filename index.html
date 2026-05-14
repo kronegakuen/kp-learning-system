@@ -589,6 +589,7 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
     // 国語：縦書きレイアウト（語彙チェック完全再現）
     // ==============================
     const mondaiMode = getVal('g-latex-mode')||'1';
+    const PER_PAGE = 20;
 
     function makeBlock(item, n, mode){
       const rand = Math.random() < 0.5;
@@ -607,28 +608,75 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 </div>`;
     }
 
-    const blocks = qs.map((item,i) => makeBlock(item, i+1, mondaiMode)).join('');
+    // 20問ずつページに分割
+    function makePages(items, mode){
+      let pages = '';
+      for(let p=0; p < items.length; p += PER_PAGE){
+        const chunk = items.slice(p, p + PER_PAGE);
+        const blocks = chunk.map((item,i) => makeBlock(item, p+i+1, mode)).join('');
+        const isFirst = p === 0;
+        pages += `<div class="mpage${p > 0 ? ' page-break' : ''}">
+  ${isFirst ? `<div class="pinfo">クラス：___________　名前：___________________　点数：______／${items.length}</div>` : '<div class="pinfo">&nbsp;</div>'}
+  <div class="mrow">
+    <div class="vtitle">
+      <div class="vtitle-main">${sheetLabel}</div>
+      <div class="vtitle-sub">${subtitle}</div>
+    </div>
+    ${blocks}
+  </div>
+</div>`;
+      }
+      return pages;
+    }
+
+    const pages = makePages(qs, mondaiMode);
 
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4 landscape;margin:8mm 8mm 8mm 8mm;}
-@media print{.no-print{display:none!important;}body{margin:0;}}
+@page{size:A4 landscape;margin:8mm;}
+@media print{.no-print{display:none!important;}body{margin:0;}.page-break{page-break-before:always;}}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;}
 .no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}
 .no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
+.mpage{width:100%;}
+.page-break{margin-top:8mm;}
 .pinfo{font-size:8.5pt;margin-bottom:2mm;}
 .mrow{
   display:flex;
-  flex-direction:row-reverse;
+  flex-direction:row;
   align-items:stretch;
-  width:100%;
-  border-right:0.5pt solid #85C1E9;
-  border-top:0.5pt solid #85C1E9;
-  border-bottom:0.5pt solid #85C1E9;
+  border:0.5pt solid #85C1E9;
   height:170mm;
+  width:fit-content;
+}
+.vtitle{
+  height:170mm;
+  width:16mm;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:2mm 1mm;
+  border-right:0.5pt solid #85C1E9;
+}
+.vtitle-main{
+  font-size:13pt;
+  font-weight:bold;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  line-height:1.4;
+}
+.vtitle-sub{
+  font-size:6.5pt;
+  color:#555;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  margin-top:2mm;
+  line-height:1.5;
 }
 .mblock{
   width:10.8mm;
@@ -653,17 +701,16 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   flex-shrink:0;
 }
 .mtop{
-  height:45mm;
-  min-height:45mm;
+  height:44mm;
+  min-height:44mm;
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  padding:1mm 1mm 0 1mm;
+  padding:1.5mm 1mm 0;
   flex-shrink:0;
   overflow:hidden;
 }
 .msep{
-  height:0;
   border-top:1pt dashed #E74C3C;
   width:100%;
   flex-shrink:0;
@@ -673,7 +720,7 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  padding:1mm 1mm 0 1mm;
+  padding:1.5mm 1mm 0;
   overflow:hidden;
 }
 .vword{
@@ -689,45 +736,12 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   writing-mode:vertical-rl;
   text-orientation:mixed;
 }
-.vtitle{
-  height:170mm;
-  width:16mm;
-  flex-shrink:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  padding:2mm;
-  border-left:0.5pt solid #85C1E9;
-}
-.vtitle-main{
-  font-size:14pt;
-  font-weight:bold;
-  writing-mode:vertical-rl;
-  text-orientation:mixed;
-  line-height:1.4;
-}
-.vtitle-sub{
-  font-size:7pt;
-  color:#555;
-  writing-mode:vertical-rl;
-  text-orientation:mixed;
-  margin-top:2mm;
-  line-height:1.5;
-}
 </style></head><body>
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
-<div class="pinfo">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
-<div class="mrow">
-  ${blocks}
-  <div class="vtitle">
-    <div class="vtitle-main">${sheetLabel}</div>
-    <div class="vtitle-sub">${subtitle}</div>
-  </div>
-</div>
+${pages}
 </body></html>`;
   }
 
