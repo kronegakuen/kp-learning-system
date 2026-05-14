@@ -587,7 +587,14 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
   } else {
     const mondaiMode = getVal('g-latex-mode')||'1';
     const PER_PAGE = 20;
-    const BLOCK_W = 13.2;
+    // A4横 297mm - margin 8mm*2 = 281mm
+    // タイトル16mm + 20問 * BLOCK_W = 281mm → BLOCK_W = (281-16)/20 = 13.25mm
+    const BLOCK_W = 13.25;
+    // ブロック高さ：A4縦 210mm - margin 8mm*2 - pinfo 7mm = 187mm
+    const BLOCK_H = 187;
+    // 上段（ことわざ）高さ：番号6mm込みで全体の約1/3
+    const TOP_H = 55;  // mm（番号6mm + ことわざエリア49mm）
+    const NO_H  = 6;   // mm
 
     function makeBlock(item, n, mode){
       const rand = Math.random() < 0.5;
@@ -611,10 +618,6 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
       for(let p=0; p < items.length; p += PER_PAGE){
         const chunk = items.slice(p, p + PER_PAGE);
         const blocks = chunk.map((item,i) => makeBlock(item, p+i+1, mode)).join('');
-        // row-reverseなのでDOM先頭→表示右端、DOM末尾→表示左端
-        // タイトル（DOM先頭）→ 表示右端 ✓
-        // 1番（DOM先頭側）→ タイトルの左 ✓
-        // 20番（DOM末尾）→ 表示左端 ✓
         pages += `<div class="mpage${p > 0 ? ' page-break' : ''}">
   ${p === 0 ? `<div class="pinfo">クラス：___________　名前：___________________　点数：______／${items.length}</div>` : '<div class="pinfo">&nbsp;</div>'}
   <div class="mrow">
@@ -642,16 +645,16 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
 .no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
 .mpage{width:100%;}
-.pinfo{font-size:8.5pt;margin-bottom:1.5mm;}
+.pinfo{font-size:8.5pt;margin-bottom:1mm;line-height:1.2;}
 .mrow{
   display:flex;
   flex-direction:row-reverse;
   width:100%;
-  height:170mm;
+  height:${BLOCK_H}mm;
   border:0.5pt solid #85C1E9;
 }
 .vtitle{
-  height:170mm;
+  height:${BLOCK_H}mm;
   width:16mm;
   flex-shrink:0;
   display:flex;
@@ -676,7 +679,7 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
 }
 .mblock{
   width:${BLOCK_W}mm;
-  height:170mm;
+  height:${BLOCK_H}mm;
   flex-shrink:0;
   border-left:0.5pt solid #85C1E9;
   display:flex;
@@ -688,8 +691,8 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   color:#fff;
   font-size:7pt;
   font-weight:bold;
-  height:6mm;
-  min-height:6mm;
+  height:${NO_H}mm;
+  min-height:${NO_H}mm;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -697,8 +700,8 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   flex-shrink:0;
 }
 .mtop{
-  height:44mm;
-  min-height:44mm;
+  height:${TOP_H - NO_H}mm;
+  min-height:${TOP_H - NO_H}mm;
   display:flex;
   align-items:flex-start;
   justify-content:center;
