@@ -6,23 +6,24 @@
 <title>問題トレーニング</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;}
+:root{--nv9:#060D1A;--nv8:#0C1B33;--nv7:#0F2240;--nv6:#1A3260;--nv5:#2A4A80;--gold:#BA7517;--gL:#EF9F27;--tb:#EAF1FA;--tm:#B0C4DE;--tmu:#7A9CC0;}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:var(--nv9);color:var(--tb);min-height:100vh;}
 .wrap{max-width:680px;margin:0 auto;padding:1.5rem 1rem;}
 .sec{display:none;}.sec.on{display:block;}
 .hd{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;}
-.hd h1{font-size:18px;font-weight:500;flex:1;}
-.badge{font-size:12px;padding:3px 10px;border-radius:8px;background:#e6f1fb;color:#0c447c;}
-.block{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
-.block-title{font-size:11px;font-weight:500;color:#888;letter-spacing:.06em;margin-bottom:.875rem;}
+.hd h1{font-size:18px;font-weight:500;flex:1;color:var(--tb);}
+.badge{font-size:12px;padding:3px 10px;border-radius:8px;background:var(--gold);color:#fff;}
+.block{background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.block-title{font-size:11px;font-weight:500;color:var(--tmu);letter-spacing:.06em;margin-bottom:.875rem;}
 .field{margin-bottom:.875rem;}
 .field:last-child{margin-bottom:0;}
-.field-label{font-size:13px;color:#555;margin-bottom:5px;display:block;}
-select{width:100%;padding:8px 10px;font-size:14px;border:1px solid #d0d0c8;border-radius:8px;background:#fff;color:#1a1a1a;appearance:auto;}
-input[type=number]{padding:7px 10px;font-size:14px;border:1px solid #d0d0c8;border-radius:8px;background:#fff;color:#1a1a1a;width:72px;text-align:center;}
+.field-label{font-size:13px;color:var(--tm);margin-bottom:5px;display:block;}
+select{width:100%;padding:8px 10px;font-size:14px;border:1px solid var(--nv5);border-radius:8px;background:var(--nv6);color:var(--tb);appearance:auto;}
+input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);border-radius:8px;background:var(--nv6);color:var(--tb);width:72px;text-align:center;}
 .chip-group{display:flex;flex-wrap:wrap;gap:7px;}
-.chip{font-size:13px;padding:5px 13px;border-radius:8px;border:1.5px solid #d0d0c8;background:#fff;color:#666;cursor:pointer;display:flex;align-items:center;gap:4px;transition:border-color .15s,color .15s;}
+.chip{font-size:13px;padding:5px 13px;border-radius:8px;border:1.5px solid var(--nv5);background:var(--nv6);color:var(--tmu);cursor:pointer;display:flex;align-items:center;gap:4px;transition:border-color .15s,color .15s;}
 .chip:hover{border-color:#999;}
-.chip.on{border:2.5px solid #185FA5;color:#185FA5;font-weight:500;}
+.chip.on{border:2.5px solid var(--gold);color:var(--gL);font-weight:500;background:var(--nv8);}
 .chip .ck{font-size:13px;display:none;}
 .chip.on .ck{display:inline;}
 .range-row{display:flex;align-items:center;gap:8px;}
@@ -34,12 +35,12 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid #d0d0c8;bord
 .sval{font-size:13px;font-weight:500;color:#1a1a1a;min-width:34px;}
 .btn-action{width:100%;padding:11px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:.875rem;}
 .btn-action:disabled{opacity:.4;cursor:not-allowed;}
-.btn-train{background:#185FA5;color:#fff;}
-.btn-pdf-a{background:#f5f5f0;color:#1a1a1a;border:1.5px solid #d0d0c8!important;}
+.btn-train{background:var(--gold);color:#fff;}
+.btn-pdf-a{background:transparent;color:var(--tm);border:1.5px solid var(--nv5)!important;}
 .btn-back{background:#f5f5f0;color:#1a1a1a;border:1.5px solid #d0d0c8!important;max-width:200px;margin:0 auto;}
 .end-btn{font-size:13px;padding:5px 14px;border-radius:8px;border:1.5px solid #d0d0c8;background:transparent;color:#666;cursor:pointer;}
 .prog-bar{height:4px;background:#e5e5e0;border-radius:2px;margin-bottom:1rem;}
-.prog-fill{height:100%;background:#378ADD;border-radius:2px;transition:width .3s;}
+.prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .3s;}
 .ctr{font-size:13px;color:#666;text-align:center;margin-bottom:1rem;}
 .card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:2rem 1.5rem;text-align:center;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:1rem;}
 .card-type{font-size:12px;color:#aaa;margin-bottom:.5rem;}
