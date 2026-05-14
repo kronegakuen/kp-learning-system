@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
-<link rel="stylesheet" href="css/style.css">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>問題トレーニング</title>
@@ -590,7 +587,7 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
   } else {
     const mondaiMode = getVal('g-latex-mode')||'1';
     const PER_PAGE = 20;
-    const BLOCK_W = 13.25;
+    const BLOCK_W = 11.8;
     // A4横210mm - margin 10mm*2 = 190mm → ブロック高さ
     const BLOCK_H = 190;
     const TOP_H = 55;
@@ -636,7 +633,7 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4 landscape;margin:10mm;}
+@page{size:A4 landscape;margin:14mm 12mm;}
 @media print{.no-print{display:none!important;}body{margin:0;}.page-break{page-break-before:always;}}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;}
@@ -703,7 +700,7 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  padding:1.5mm 1mm 0;
+  padding:3mm 1.2mm 0;
   flex-shrink:0;
   overflow:hidden;
 }
@@ -716,18 +713,20 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  padding:1.5mm 1mm 0;
+  padding:3mm 1.2mm 0;
   overflow:hidden;
 }
 .vword{
   font-size:10pt;
   font-weight:bold;
-  line-height:1.7;
+  line-height:2.05;
+  letter-spacing:0.02em;
   writing-mode:vertical-rl;
 }
 .vmean{
-  font-size:7.5pt;
-  line-height:1.65;
+  font-size:8.2pt;
+  line-height:1.9;
+  letter-spacing:0.03em;
   writing-mode:vertical-rl;
 }
 </style></head><body>
