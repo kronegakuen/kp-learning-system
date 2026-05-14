@@ -587,14 +587,11 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
   } else {
     const mondaiMode = getVal('g-latex-mode')||'1';
     const PER_PAGE = 20;
-    // A4横 297mm - margin 8mm*2 = 281mm
-    // タイトル16mm + 20問 * BLOCK_W = 281mm → BLOCK_W = (281-16)/20 = 13.25mm
     const BLOCK_W = 13.25;
-    // ブロック高さ：A4縦 210mm - margin 8mm*2 - pinfo 7mm = 187mm
-    const BLOCK_H = 187;
-    // 上段（ことわざ）高さ：番号6mm込みで全体の約1/3
-    const TOP_H = 55;  // mm（番号6mm + ことわざエリア49mm）
-    const NO_H  = 6;   // mm
+    // A4横210mm - margin 10mm*2 = 190mm → ブロック高さ
+    const BLOCK_H = 190;
+    const TOP_H = 55;
+    const NO_H  = 6;
 
     function makeBlock(item, n, mode){
       const rand = Math.random() < 0.5;
@@ -619,7 +616,6 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
         const chunk = items.slice(p, p + PER_PAGE);
         const blocks = chunk.map((item,i) => makeBlock(item, p+i+1, mode)).join('');
         pages += `<div class="mpage${p > 0 ? ' page-break' : ''}">
-  ${p === 0 ? `<div class="pinfo">クラス：___________　名前：___________________　点数：______／${items.length}</div>` : '<div class="pinfo">&nbsp;</div>'}
   <div class="mrow">
     <div class="vtitle">
       <div class="vtitle-main">${sheetLabel}</div>
@@ -637,15 +633,14 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4 landscape;margin:8mm;}
+@page{size:A4 landscape;margin:10mm;}
 @media print{.no-print{display:none!important;}body{margin:0;}.page-break{page-break-before:always;}}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;}
-.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}
+.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:4mm;}
 .no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
 .mpage{width:100%;}
-.pinfo{font-size:8.5pt;margin-bottom:1mm;line-height:1.2;}
 .mrow{
   display:flex;
   flex-direction:row-reverse;
