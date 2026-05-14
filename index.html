@@ -420,9 +420,9 @@ function buildQueueForPDF(countGroup){
     if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
     if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
   } else {
-    // 国語：出題方向に関わらず語句が上段・意味が下段
-    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
-    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
+    // 国語：語句=上段・意味=下段固定。dirを保持して問題ページの空欄を制御
+    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'normal'}));
+    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'reverse'}));
   }
   shuffle(items);
   const n = getVal(countGroup)||'30';
@@ -616,13 +616,18 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
     const TOP_H = 55;
     const NO_H  = 6;
 
-    // isAnswer=false → 問題（上段空欄）
-    // isAnswer=true  → 解答（上段・下段とも表示）
+    // isAnswer=false → 問題ページ
+    // isAnswer=true  → 解答ページ（両方表示）
     function makeBlock(item, n, isAnswer){
-      // 問題：上段（語句）空欄・下段（意味）表示
-      // 解答：上段（語句）表示・下段（意味）表示
-      const topContent = isAnswer ? `<span class="vword">${item.q}</span>` : '';
-      const botContent = `<span class="vmean">${item.a}</span>`;
+      // dir='normal'（言葉→意味）：上段（語句）表示・下段（意味）空欄
+      // dir='reverse'（意味→言葉）：上段（語句）空欄・下段（意味）表示
+      // 解答ページ：常に両方表示
+      let showTop, showBot;
+      if(isAnswer){ showTop=true; showBot=true; }
+      else if(item.dir==='reverse'){ showTop=false; showBot=true; }
+      else { showTop=true; showBot=false; } // normal or undefined
+      const topContent = showTop ? `<span class="vword">${item.q}</span>` : '';
+      const botContent = showBot ? `<span class="vmean">${item.a}</span>` : '';
       return `<div class="mblock">
   <div class="mno">${n}</div>
   <div class="mtop">${topContent}</div>
