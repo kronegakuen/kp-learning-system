@@ -792,6 +792,40 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;margin:0;color:#000;backgro
     const kstyle='@page{size:A4 landscape;margin:10mm 7mm;}@media print{.no-print{display:none!important;}body{margin:0;}.kpage-break{page-break-before:always;}}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;color:#000;}.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}.no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}.pbtn{background:#185FA5;color:#fff;}.kmain{display:flex;flex-direction:row;height:170mm;width:100%;}.ktitle{width:14mm;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm 1mm;border:0.5pt solid #85C1E9;border-left:none;}.ktitle-main{font-size:12pt;font-weight:bold;writing-mode:vertical-rl;line-height:1.4;}.ktitle-sub{font-size:6pt;color:#555;writing-mode:vertical-rl;margin-top:2mm;}.ksection{flex:1;display:flex;flex-direction:column;border:0.5pt solid #85C1E9;}.kmrow{display:flex;flex-direction:row-reverse;flex:1;overflow:hidden;}.ksep-h{border-top:1.5pt solid #378ADD;width:100%;flex-shrink:0;}.kmblock{flex:1;border-left:0.5pt solid #85C1E9;display:flex;flex-direction:column;overflow:hidden;}.kmblock:last-child{border-left:none;}.kmno{background:#2E86C1;color:#fff;font-size:7pt;font-weight:bold;height:6mm;min-height:6mm;display:flex;align-items:center;justify-content:center;writing-mode:horizontal-tb;flex-shrink:0;}.kmtop{height:65mm;min-height:65mm;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;flex-shrink:0;overflow:hidden;}.kmsep{border-top:1pt dashed #E74C3C;flex-shrink:0;}.kmbot{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;overflow:hidden;}.kvword{font-size:20pt;font-weight:bold;line-height:1.6;writing-mode:vertical-rl;}.kvmean{font-size:13pt;line-height:1.6;writing-mode:vertical-rl;}';
     html='<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>'+sheetLabelK+'</title><style>'+kstyle+'</style></head><body><div class="no-print"><button class="pbtn" onclick="window.print()">印刷 / PDF保存</button><button onclick="window.close()">閉じる</button></div>'+kanjiQPages+kanjiAPages+'</body></html>';
 
+  } else if(tb.subject === 'kanji'){
+    const kanjiMode = getVal('g-kanji-mode')||'yomi';
+    const PER_HALF = 10, PER_PAGE = 20;
+    const sheetLabelK = tb.label;
+    const fromK = document.getElementById('rng-from').value;
+    const toK = document.getElementById('rng-to').value;
+    const subtitleK = sheetLabelK + ' No.' + fromK + '~' + toK + ' ' + qs.length + 'mon';
+    function makeKanjiBlock(item, n, mode) {
+      const rand = Math.random() < 0.5;
+      let sk, sy;
+      if(mode==='answer'){sk=true;sy=true;}
+      else if(mode==='yomi'){sk=true;sy=false;}
+      else if(mode==='kaki'){sk=false;sy=true;}
+      else{sk=rand;sy=!rand;}
+      const kc = sk ? '<span class="kvword">' + item.word + '</span>' : '';
+      const yc = sy ? '<span class="kvmean">' + item.meaning + '</span>' : '';
+      return '<div class="kmblock"><div class="kmno">' + n + '</div><div class="kmtop">' + kc + '</div><div class="kmsep"></div><div class="kmbot">' + yc + '</div></div>';
+    }
+    function makeKanjiPages(items, mode, isSuffix) {
+      let pages = '';
+      for(let p = 0; p < items.length; p += PER_PAGE) {
+        const chunk = items.slice(p, p + PER_PAGE);
+        const tB = chunk.slice(0, PER_HALF).map((item,i) => makeKanjiBlock(item, p+i+1, mode)).join('');
+        const bB = chunk.slice(PER_HALF).map((item,i) => makeKanjiBlock(item, p+PER_HALF+i+1, mode)).join('');
+        pages += '<div class="kpage' + (p>0||isSuffix?' kpage-break':'') + '"><div class="kmain"><div class="ksection"><div class="kmrow">' + tB + '</div><div class="ksep-h"></div><div class="kmrow">' + bB + '</div></div><div class="ktitle"><div class="ktitle-main">' + sheetLabelK + '</div><div class="ktitle-sub">' + subtitleK + '</div></div></div></div>';
+      }
+      return pages;
+    }
+    const kQP = makeKanjiPages(qs, kanjiMode, false);
+    const kAP = makeKanjiPages(qs, 'answer', true);
+    const kst = '@page{size:A4 landscape;margin:10mm 7mm;}@media print{.no-print{display:none!important;}body{margin:0;}.kpage-break{page-break-before:always;}}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;color:#000;}.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}.no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}.pbtn{background:#185FA5;color:#fff;}.kmain{display:flex;flex-direction:row;height:170mm;width:100%;}.ktitle{width:14mm;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm 1mm;border:0.5pt solid #85C1E9;border-left:none;}.ktitle-main{font-size:12pt;font-weight:bold;writing-mode:vertical-rl;line-height:1.4;}.ktitle-sub{font-size:6pt;color:#555;writing-mode:vertical-rl;margin-top:2mm;}.ksection{flex:1;display:flex;flex-direction:column;border:0.5pt solid #85C1E9;}.kmrow{display:flex;flex-direction:row-reverse;flex:1;overflow:hidden;}.ksep-h{border-top:1.5pt solid #378ADD;width:100%;flex-shrink:0;}.kmblock{flex:1;border-left:0.5pt solid #85C1E9;display:flex;flex-direction:column;overflow:hidden;}.kmblock:last-child{border-left:none;}.kmno{background:#2E86C1;color:#fff;font-size:7pt;height:6mm;min-height:6mm;display:flex;align-items:center;justify-content:center;writing-mode:horizontal-tb;flex-shrink:0;}.kmtop{height:65mm;min-height:65mm;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;flex-shrink:0;overflow:hidden;}.kmsep{border-top:1pt dashed #E74C3C;flex-shrink:0;}.kmbot{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;overflow:hidden;}.kvword{font-size:20pt;font-weight:bold;line-height:1.6;writing-mode:vertical-rl;}.kvmean{font-size:13pt;line-height:1.6;writing-mode:vertical-rl;}';
+    html = '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>' + sheetLabelK + '</title><style>' + kst + '</style></head><body><div class="no-print"><button class="pbtn" onclick="window.print()">\u5370\u5237 / PDF\u4fdd\u5b58</button><button onclick="window.close()">\u9589\u3058\u308b</button></div>' + kQP + kAP + '</body></html>';
+
+
   // 共通：タブを開く
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
