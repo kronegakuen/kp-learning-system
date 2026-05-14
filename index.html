@@ -74,7 +74,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div class="block-title">共通設定</div>
     <div class="field">
       <span class="field-label">テキスト</span>
-      <select id="sel-sheet" onchange="pickSheet()">
+      <select id="sel-sheet" onchange="pickSheet().then(function(){var k=TEXTBOOKS[document.getElementById('sel-sheet').value];if(k){var isK=k.subject==='kanji';document.querySelector('[data-v=normal]').innerHTML='<span class=ck>✓</span>'+(isK?'書き練習（読み→漢字）':'言葉→意味');document.querySelector('[data-v=reverse]').innerHTML='<span class=ck>✓</span>'+(isK?'読み練習（漢字→読み）':'意味→言葉');}})">
         <option value="">── 読み込み中... ──</option>
       </select>
       <div class="error-msg" id="load-error" style="display:none"></div>
