@@ -346,15 +346,6 @@ async function pickSheet(){
     document.getElementById('rng-hint').textContent = '（全'+items.length+'問）';
     document.getElementById('btn-start').disabled=false;
     document.getElementById('btn-pdf').disabled=false;
-  // 漢字テキストのとき出題方向ラベルを変更
-  const isKanjiSheet = data.subject === 'kanji';
-  const dirBtns = document.querySelectorAll('#g-dir .chip');
-  const normalLabels = ['言葉→意味','意味→言葉','両方向'];
-  const kanjiLabels  = ['書き練習（読み→漢字）','読み練習（漢字→読み）','両方'];
-  dirBtns.forEach((btn, i) => {
-    const ck = '<span class="ck">✓</span>';
-    btn.innerHTML = ck + (isKanjiSheet ? kanjiLabels[i] : normalLabels[i]);
-  });
 
   } catch(e){
     document.getElementById('rng-hint').textContent='読み込みに失敗しました';
