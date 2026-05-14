@@ -13,7 +13,7 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:#f5f5f0;color:#1
 .hd h1{font-size:18px;font-weight:500;flex:1;}
 .badge{font-size:12px;padding:3px 10px;border-radius:8px;background:#e6f1fb;color:#0c447c;}
 .block{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
-.block-title{font-size:11px;font-weight:500;color:#888;letter-spacing:.06em;margin-bottom:.875rem;text-transform:none;}
+.block-title{font-size:11px;font-weight:500;color:#888;letter-spacing:.06em;margin-bottom:.875rem;}
 .field{margin-bottom:.875rem;}
 .field:last-child{margin-bottom:0;}
 .field-label{font-size:13px;color:#555;margin-bottom:5px;display:block;}
@@ -58,6 +58,8 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid #d0d0c8;bord
 .end-box .big{font-size:22px;font-weight:500;margin-bottom:.5rem;}
 .end-box .sub{font-size:14px;color:#666;margin-bottom:1.5rem;}
 #pdf-msg{font-size:12px;color:#888;text-align:center;margin-top:6px;min-height:16px;}
+.loading{text-align:center;padding:2rem;color:#888;font-size:14px;}
+.error-msg{color:#A32D2D;font-size:13px;margin-top:6px;text-align:center;}
 </style>
 </head>
 <body>
@@ -72,11 +74,9 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid #d0d0c8;bord
     <div class="field">
       <span class="field-label">テキスト</span>
       <select id="sel-sheet" onchange="pickSheet()">
-        <option value="">── テキストを選ぶ ──</option>
-        <option value="goi">語彙トレーニング</option>
-        <option value="waku">小1わくわくパワードリル</option>
-        <option value="yume">ユメタン赤</option>
+        <option value="">── 読み込み中... ──</option>
       </select>
+      <div class="error-msg" id="load-error" style="display:none"></div>
     </div>
     <div class="field" id="field-genre" style="display:none">
       <span class="field-label">ジャンル</span>
@@ -199,82 +199,163 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid #d0d0c8;bord
   </div>
 </div>
 
-</div><!-- /wrap -->
-
+</div>
 <script>
 // ============================================================
-// データ（ここを実際のデータに差し替える）
+// 設定（ここだけ変更すればOK）
 // ============================================================
-const SAMPLES = {
-  goi: {
-    label: '語彙トレーニング',
-    subject: 'kokugo',
-    genres: ['ことわざ','慣用句','四字熟語'],
-    ansWidth: 'wide',
-    items: [
-      {no:1, word:'ぬれ手にあわ', meaning:'苦労せず大きな利益を得ること', genre:'ことわざ'},
-      {no:2, word:'石の上にも三年', meaning:'辛抱すれば必ず報われること', genre:'ことわざ'},
-      {no:3, word:'猿も木から落ちる', meaning:'名人でも失敗することがあること', genre:'ことわざ'},
-      {no:4, word:'急がば回れ', meaning:'急ぐときほど安全な方法を選ぶべきこと', genre:'ことわざ'},
-      {no:5, word:'棚からぼたもち', meaning:'思いがけない幸運が来ること', genre:'ことわざ'},
-      {no:6, word:'二兎を追う者は一兎をも得ず', meaning:'欲張ると両方とも失うこと', genre:'ことわざ'},
-      {no:7, word:'知らぬが仏', meaning:'知らないでいるほうが気楽なこと', genre:'ことわざ'},
-      {no:8, word:'転ばぬ先の杖', meaning:'失敗しないよう前もって備えること', genre:'ことわざ'},
-      {no:9, word:'七転八倒', meaning:'激しい苦しみで転げ回ること', genre:'慣用句'},
-      {no:10, word:'一石二鳥', meaning:'一つの行動で二つの利益を得ること', genre:'四字熟語'},
-      {no:11, word:'油を売る', meaning:'仕事をさぼってむだ話をすること', genre:'慣用句'},
-      {no:12, word:'馬の耳に念仏', meaning:'いくら言っても効き目がないこと', genre:'ことわざ'},
-      {no:13, word:'一期一会', meaning:'一生に一度の出会いを大切にすること', genre:'四字熟語'},
-      {no:14, word:'温故知新', meaning:'昔のことを調べ新しい知識を得ること', genre:'四字熟語'},
-      {no:15, word:'七転び八起き', meaning:'何度失敗しても諦めず立ち上がること', genre:'ことわざ'},
-    ]
-  },
-  waku: {
-    label: '小1わくわくパワードリル',
-    subject: 'kokugo',
-    genres: null,
-    ansWidth: 'narrow',
-    items: [
-      {no:1,word:'犬',meaning:'いぬ',genre:'読み'},{no:2,word:'猫',meaning:'ねこ',genre:'読み'},
-      {no:3,word:'山',meaning:'やま',genre:'読み'},{no:4,word:'川',meaning:'かわ',genre:'読み'},
-      {no:5,word:'花',meaning:'はな',genre:'読み'},{no:6,word:'空',meaning:'そら',genre:'読み'},
-      {no:7,word:'雨',meaning:'あめ',genre:'読み'},{no:8,word:'木',meaning:'き',genre:'読み'},
-      {no:9,word:'火',meaning:'ひ',genre:'読み'},{no:10,word:'水',meaning:'みず',genre:'読み'},
-      {no:11,word:'土',meaning:'つち',genre:'読み'},{no:12,word:'金',meaning:'きん',genre:'読み'},
-      {no:13,word:'日',meaning:'にち・ひ',genre:'読み'},{no:14,word:'月',meaning:'つき',genre:'読み'},
-      {no:15,word:'石',meaning:'いし',genre:'読み'},
-    ]
-  },
-  yume: {
-    label: 'ユメタン赤',
-    subject: 'eigo',
-    genres: null,
-    ansWidth: 'medium',
-    items: [
-      {no:1,word:'achieve',meaning:'達成する・成し遂げる',genre:'英→日'},
-      {no:2,word:'challenge',meaning:'挑戦・難題',genre:'英→日'},
-      {no:3,word:'evidence',meaning:'証拠・根拠',genre:'英→日'},
-      {no:4,word:'generous',meaning:'寛大な・気前のよい',genre:'英→日'},
-      {no:5,word:'opportunity',meaning:'機会・チャンス',genre:'英→日'},
-      {no:6,word:'remarkable',meaning:'注目すべき・驚くべき',genre:'英→日'},
-      {no:7,word:'struggle',meaning:'苦闘する・もがく',genre:'英→日'},
-      {no:8,word:'tradition',meaning:'伝統・慣習',genre:'英→日'},
-      {no:9,word:'volunteer',meaning:'ボランティア・自発的に行う',genre:'英→日'},
-      {no:10,word:'wisdom',meaning:'知恵・賢さ',genre:'英→日'},
-      {no:11,word:'absolute',meaning:'絶対的な・完全な',genre:'英→日'},
-      {no:12,word:'brilliant',meaning:'輝かしい・才能のある',genre:'英→日'},
-      {no:13,word:'circumstance',meaning:'状況・事情',genre:'英→日'},
-      {no:14,word:'desperate',meaning:'必死の・絶望的な',genre:'英→日'},
-      {no:15,word:'enormous',meaning:'巨大な・莫大な',genre:'英→日'},
-    ]
-  }
-};
+const SHEET_ID = '1eKa9ATYPEp8DV-10L96PkOuHfQsTXlIuxSS8KGZ9PaY';
+const MANAGE_SHEET = '管理';
 
 // ============================================================
-// アプリ状態
+// データ
 // ============================================================
-let curSheet=null, curGenres=[], queue=[], idx=0;
-let paused=false, rafId=null, phaseStart=0, phase='q';
+let TEXTBOOKS = {};   // { key: {label, sheetName, subject, ansWidth, genres, items} }
+let curSheet = null, curGenres = [], queue = [], idx = 0;
+let paused = false, rafId = null, phaseStart = 0, phase = 'q';
+
+// ============================================================
+// CSV取得・パース
+// ============================================================
+function csvUrl(sheetName){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+function parseCSV(text){
+  const rows = [];
+  const lines = text.split('\n');
+  for(const line of lines){
+    if(!line.trim()) continue;
+    const cols = [];
+    let inQ = false, cur = '';
+    for(let i=0;i<line.length;i++){
+      const c = line[i];
+      if(c==='"'){ inQ=!inQ; continue; }
+      if(c===','&&!inQ){ cols.push(cur.trim()); cur=''; continue; }
+      cur+=c;
+    }
+    cols.push(cur.trim());
+    rows.push(cols);
+  }
+  return rows;
+}
+
+// ============================================================
+// 起動時：管理シートを読んでテキスト一覧を生成
+// ============================================================
+async function loadManageSheet(){
+  try{
+    const res = await fetch(csvUrl(MANAGE_SHEET));
+    if(!res.ok) throw new Error('管理シートの読み込みに失敗しました');
+    const text = await res.text();
+    const rows = parseCSV(text);
+    // 1行目はヘッダー（テキスト名, シート名, 科目, 答え欄）
+    const sel = document.getElementById('sel-sheet');
+    sel.innerHTML = '<option value="">── テキストを選ぶ ──</option>';
+    TEXTBOOKS = {};
+    for(let i=1;i<rows.length;i++){
+      const [label, sheetName, subject, ansWidth] = rows[i];
+      if(!label||!sheetName) continue;
+      const key = 'tb_'+i;
+      TEXTBOOKS[key] = {
+        label: label.trim(),
+        sheetName: sheetName.trim(),
+        subject: (subject||'kokugo').trim(),
+        ansWidth: (ansWidth||'medium').trim(),
+        genres: null,
+        items: null
+      };
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = label.trim();
+      sel.appendChild(opt);
+    }
+  } catch(e){
+    document.getElementById('load-error').style.display='';
+    document.getElementById('load-error').textContent = 'テキスト一覧の読み込みに失敗しました。スプレッドシートの共有設定を確認してください。';
+    const sel = document.getElementById('sel-sheet');
+    sel.innerHTML = '<option value="">── 読み込み失敗 ──</option>';
+  }
+}
+
+// ============================================================
+// テキスト選択時：該当シートを読み込む
+// ============================================================
+async function pickSheet(){
+  const sel = document.getElementById('sel-sheet');
+  curSheet = sel.value || null;
+  const gf = document.getElementById('field-genre');
+  const gg = document.getElementById('g-genre');
+  gg.innerHTML=''; curGenres=[];
+  document.getElementById('btn-start').disabled=true;
+  document.getElementById('btn-pdf').disabled=true;
+  document.getElementById('rng-hint').textContent='';
+  gf.style.display='none';
+
+  if(!curSheet) return;
+
+  const tb = TEXTBOOKS[curSheet];
+  document.getElementById('rng-hint').textContent='読み込み中...';
+
+  try{
+    const res = await fetch(csvUrl(tb.sheetName));
+    if(!res.ok) throw new Error('シートの読み込みに失敗');
+    const text = await res.text();
+    const rows = parseCSV(text);
+
+    // 2行目以降がデータ（1行目はヘッダー）
+    const isEigo = tb.subject === 'eigo';
+    const items = [];
+    const genreSet = new Set();
+
+    for(let i=1;i<rows.length;i++){
+      const r = rows[i];
+      if(!r[0]) continue;
+      const no = parseInt(r[0])||i;
+      if(isEigo){
+        // A:番号 B:学年 C:テキスト D:英単語 E:意味
+        items.push({ no, word: (r[3]||'').trim(), meaning: (r[4]||'').trim(), genre: '英→日' });
+      } else {
+        // A:番号 B:学年 C:テキスト D:種別 E:言葉 F:意味
+        const genre = (r[3]||'').trim();
+        items.push({ no, word: (r[4]||'').trim(), meaning: (r[5]||'').trim(), genre });
+        if(genre) genreSet.add(genre);
+      }
+    }
+
+    tb.items = items;
+
+    // ジャンル（国語のみ・2種類以上あれば表示）
+    if(!isEigo && genreSet.size > 1){
+      tb.genres = [...genreSet];
+      gf.style.display='';
+      tb.genres.forEach(g=>{
+        const b = document.createElement('button');
+        b.className='chip on'; b.dataset.v=g;
+        b.innerHTML='<span class="ck">✓</span>'+g;
+        b.onclick=()=>toggleGenre(b,g);
+        gg.appendChild(b);
+        curGenres.push(g);
+      });
+    } else {
+      tb.genres = null;
+    }
+
+    document.getElementById('rng-to').value = items.length;
+    document.getElementById('rng-hint').textContent = '（全'+items.length+'問）';
+    document.getElementById('btn-start').disabled=false;
+    document.getElementById('btn-pdf').disabled=false;
+
+  } catch(e){
+    document.getElementById('rng-hint').textContent='読み込みに失敗しました';
+  }
+}
+
+function toggleGenre(el, g){
+  el.classList.toggle('on');
+  if(el.classList.contains('on')) curGenres.push(g);
+  else curGenres = curGenres.filter(x=>x!==g);
+}
 
 // ============================================================
 // UI共通
@@ -289,53 +370,14 @@ function pickChip(gid, el){
   document.querySelectorAll('#'+gid+' .chip').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
 }
-
-function pickSheet(){
-  const sel = document.getElementById('sel-sheet');
-  curSheet = sel.value || null;
-  const gf = document.getElementById('field-genre');
-  const gg = document.getElementById('g-genre');
-  gg.innerHTML=''; curGenres=[];
-  if(!curSheet){
-    gf.style.display='none';
-    document.getElementById('btn-start').disabled=true;
-    document.getElementById('btn-pdf').disabled=true;
-    document.getElementById('rng-hint').textContent='';
-    return;
-  }
-  const data = SAMPLES[curSheet];
-  if(data.genres){
-    gf.style.display='';
-    data.genres.forEach(g=>{
-      const b=document.createElement('button');
-      b.className='chip on'; b.dataset.v=g;
-      b.innerHTML='<span class="ck">✓</span>'+g;
-      b.onclick=()=>toggleGenre(b,g);
-      gg.appendChild(b); curGenres.push(g);
-    });
-  } else { gf.style.display='none'; }
-  document.getElementById('rng-to').value = data.items.length;
-  document.getElementById('rng-hint').textContent = '（全'+data.items.length+'問）';
-  document.getElementById('btn-start').disabled=false;
-  document.getElementById('btn-pdf').disabled=false;
-}
-
-function toggleGenre(el, g){
-  el.classList.toggle('on');
-  if(el.classList.contains('on')) curGenres.push(g);
-  else curGenres = curGenres.filter(x=>x!==g);
-}
-
 function pickMode(el){
   pickChip('g-mode', el);
   document.getElementById('field-timer').style.display = el.dataset.v==='passive' ? '' : 'none';
 }
-
 function getVal(gid){
   const a = document.querySelector('#'+gid+' .chip.on');
   return a ? a.dataset.v : null;
 }
-
 function shuffle(a){
   for(let i=a.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
@@ -345,15 +387,15 @@ function shuffle(a){
 }
 
 // ============================================================
-// キュー構築（トレーニング・PDF共通）
+// キュー構築
 // ============================================================
 function buildQueue(countGroup){
-  const data = SAMPLES[curSheet];
+  const tb = TEXTBOOKS[curSheet];
   const from = parseInt(document.getElementById('rng-from').value)||1;
-  const to   = parseInt(document.getElementById('rng-to').value)||data.items.length;
+  const to   = parseInt(document.getElementById('rng-to').value)||tb.items.length;
   const dir  = getVal('g-dir')||'normal';
-  let base = data.items.filter(d=>d.no>=from && d.no<=to);
-  if(data.genres && curGenres.length>0)
+  let base = tb.items.filter(d=>d.no>=from && d.no<=to);
+  if(tb.genres && curGenres.length>0)
     base = base.filter(d=>curGenres.includes(d.genre));
   let items=[];
   if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
@@ -364,7 +406,7 @@ function buildQueue(countGroup){
 }
 
 // ============================================================
-// 能動トレーニング
+// チェックモード
 // ============================================================
 function startTraining(){
   if(!curSheet) return;
@@ -373,7 +415,6 @@ function startTraining(){
   if(mode==='active'){ showSec('sec-active'); renderActive(); }
   else { showSec('sec-passive'); startPassive(); }
 }
-
 function renderActive(){
   if(idx>=queue.length){
     showSec('sec-end');
@@ -390,13 +431,11 @@ function renderActive(){
   document.getElementById('btn-reveal').style.display='';
   document.getElementById('judge-row').style.display='none';
 }
-
 function revealAnswer(){
   document.getElementById('a-ans').classList.add('show');
   document.getElementById('btn-reveal').style.display='none';
   document.getElementById('judge-row').style.display='flex';
 }
-
 function judge(){ idx++; renderActive(); }
 
 // ============================================================
@@ -411,7 +450,6 @@ function startPassive(){
   cancelAnimationFrame(rafId);
   rafId=requestAnimationFrame(tickPassive);
 }
-
 function renderPassiveCard(){
   if(idx>=queue.length){
     stopPassive(); showSec('sec-end');
@@ -427,7 +465,6 @@ function renderPassiveCard(){
   document.getElementById('p-timer').style.background='#378ADD';
   document.getElementById('p-timer').style.width='100%';
 }
-
 function tickPassive(now){
   if(paused){ rafId=requestAnimationFrame(tickPassive); return; }
   const dur = phase==='q' ? getQms() : getAms();
@@ -445,16 +482,13 @@ function tickPassive(now){
   }
   rafId=requestAnimationFrame(tickPassive);
 }
-
 function skipPassive(){
   cancelAnimationFrame(rafId);
   idx++; phase='q'; phaseStart=performance.now();
   renderPassiveCard();
   rafId=requestAnimationFrame(tickPassive);
 }
-
 function stopPassive(){ cancelAnimationFrame(rafId); rafId=null; }
-
 function togglePause(){
   paused=!paused;
   const btn=document.getElementById('btn-pause');
@@ -475,72 +509,47 @@ function makePDF(){
   if(!curSheet) return;
   const msg = document.getElementById('pdf-msg');
   msg.textContent = '新しいタブを開いています...';
-
   const qs = buildQueue('g-pdf-count');
-  const data = SAMPLES[curSheet];
-  const sheetLabel = data.label;
-  const isEigo = data.subject === 'eigo';
-  const ansWidth = data.ansWidth; // 'wide' | 'medium' | 'narrow'
+  const tb = TEXTBOOKS[curSheet];
+  const sheetLabel = tb.label;
+  const ansWidth = tb.ansWidth;
   const dir = getVal('g-dir')||'normal';
   const dirLabel = {normal:'言葉→意味', reverse:'意味→言葉', both:'両方向'}[dir]||'';
   const from = document.getElementById('rng-from').value;
   const to   = document.getElementById('rng-to').value;
   const subtitle = sheetLabel+'　No.'+from+'〜'+to+'　'+dirLabel+'　'+qs.length+'問';
-
-  // 列数：15問以下は1列、16問以上は2列
   const cols = qs.length <= 15 ? 1 : 2;
-
-  // 答え欄の高さ（科目別）
   const ansH = ansWidth==='wide' ? '12mm' : ansWidth==='narrow' ? '7mm' : '9mm';
 
-  // 問題セルHTML生成
   function qCell(item, n){
-    return `<td class="qcell">
-      <div class="qtype">[${item.type}]</div>
-      <div class="qtxt">Q${n}．${item.q}</div>
-      <div class="ans-box" style="height:${ansH}"></div>
-    </td>`;
+    return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="ans-box" style="height:${ansH}"></div></td>`;
   }
   function aCell(item, n){
-    return `<td class="qcell">
-      <div class="qtype">[${item.type}]</div>
-      <div class="qtxt">Q${n}．${item.q}</div>
-      <div class="atxt">→ ${item.a}</div>
-    </td>`;
+    return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="atxt">→ ${item.a}</div></td>`;
   }
 
   let qRows='', aRows='';
   if(cols===1){
-    qs.forEach((item,i)=>{
-      qRows += `<tr>${qCell(item,i+1)}</tr>`;
-      aRows += `<tr>${aCell(item,i+1)}</tr>`;
-    });
+    qs.forEach((item,i)=>{ qRows+=`<tr>${qCell(item,i+1)}</tr>`; aRows+=`<tr>${aCell(item,i+1)}</tr>`; });
   } else {
     for(let i=0;i<qs.length;i+=2){
-      const left  = qs[i];
-      const right = qs[i+1];
-      qRows += `<tr>${qCell(left,i+1)}${right ? qCell(right,i+2) : '<td class="qcell empty"></td>'}</tr>`;
-      aRows += `<tr>${aCell(left,i+1)}${right ? aCell(right,i+2) : '<td class="qcell empty"></td>'}</tr>`;
+      const l=qs[i], r=qs[i+1];
+      qRows+=`<tr>${qCell(l,i+1)}${r?qCell(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
+      aRows+=`<tr>${aCell(l,i+1)}${r?aCell(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
     }
   }
+  const colStyle = cols===1 ? 'table{width:100%;}.qcell{width:100%;}' : 'table{width:100%;}.qcell{width:50%;}';
 
-  const colStyle = cols===1
-    ? 'table{width:100%;} .qcell{width:100%;}'
-    : 'table{width:100%;} .qcell{width:50%;}';
-
-  const html = `<!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8">
-<title>${sheetLabel}テスト</title>
+  const html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4;margin:15mm 15mm 15mm 15mm;}
-@media print{.no-print{display:none!important;} body{margin:0;}}
+@page{size:A4;margin:15mm;}
+@media print{.no-print{display:none!important;}body{margin:0;}}
 body{font-family:'Hiragino Sans','Meiryo',sans-serif;font-size:10pt;margin:0;color:#000;}
 .page{width:180mm;margin:0 auto;}
 h1{font-size:13pt;font-weight:bold;text-align:center;margin:0 0 2mm;border-bottom:0.5pt solid #000;padding-bottom:2mm;}
 .sub{font-size:8pt;color:#555;text-align:center;margin-bottom:3mm;}
 .info{font-size:9pt;margin-bottom:4mm;line-height:2;}
-table{border-collapse:collapse;table-layout:fixed;}
-${colStyle}
+table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 .qcell{vertical-align:top;padding:2mm 2.5mm 2.5mm;border:0.3pt solid #bbb;}
 .qcell.empty{border:0.3pt solid #bbb;background:#fafafa;}
 .qtype{font-size:7pt;color:#888;margin-bottom:0.5mm;}
@@ -569,17 +578,22 @@ ${colStyle}
 </div>
 </body></html>`;
 
-  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const w    = window.open(url, '_blank');
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,'_blank');
   if(w){
-    msg.textContent = 'タブが開いたら「印刷する / PDFで保存」を押してください。';
-    setTimeout(()=>URL.revokeObjectURL(url), 120000);
+    msg.textContent='タブが開いたら「印刷する / PDFで保存」を押してください。';
+    setTimeout(()=>URL.revokeObjectURL(url),120000);
   } else {
-    msg.textContent = 'ポップアップがブロックされました。ブラウザの設定で許可してください。';
+    msg.textContent='ポップアップがブロックされました。ブラウザの設定で許可してください。';
   }
-  setTimeout(()=>{ msg.textContent=''; }, 8000);
+  setTimeout(()=>{ msg.textContent=''; },8000);
 }
+
+// ============================================================
+// 起動
+// ============================================================
+loadManageSheet();
 </script>
 </body>
 </html>
