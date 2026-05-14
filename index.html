@@ -586,10 +586,13 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 
   } else {
     // ==============================
-    // 国語：縦書きレイアウト（語彙チェック完全再現）
+    // 国語：縦書きレイアウト（右から左・タイトル右端）
     // ==============================
     const mondaiMode = getVal('g-latex-mode')||'1';
     const PER_PAGE = 20;
+    // A4横 297mm - マージン16mm = 281mm
+    // タイトル16mm + 問題20問 = 281mm → 1問あたり (281-16)/20 = 13.25mm
+    const BLOCK_W = 13.2;
 
     function makeBlock(item, n, mode){
       const rand = Math.random() < 0.5;
@@ -608,21 +611,22 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 </div>`;
     }
 
-    // 20問ずつページに分割
     function makePages(items, mode){
       let pages = '';
       for(let p=0; p < items.length; p += PER_PAGE){
         const chunk = items.slice(p, p + PER_PAGE);
+        // row-reverseで右から左に並ぶ → タイトルを最後に置けば左端 → 逆に先頭に置いて右端にする
+        // row-reverseはDOMの最後の要素が左端になる
+        // タイトルを右端にするには blocks の後ろに vtitle を置く
         const blocks = chunk.map((item,i) => makeBlock(item, p+i+1, mode)).join('');
-        const isFirst = p === 0;
         pages += `<div class="mpage${p > 0 ? ' page-break' : ''}">
-  ${isFirst ? `<div class="pinfo">クラス：___________　名前：___________________　点数：______／${items.length}</div>` : '<div class="pinfo">&nbsp;</div>'}
+  ${p === 0 ? `<div class="pinfo">クラス：___________　名前：___________________　点数：______／${items.length}</div>` : '<div class="pinfo">&nbsp;</div>'}
   <div class="mrow">
+    ${blocks}
     <div class="vtitle">
       <div class="vtitle-main">${sheetLabel}</div>
       <div class="vtitle-sub">${subtitle}</div>
     </div>
-    ${blocks}
   </div>
 </div>`;
       }
@@ -642,15 +646,16 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
 .no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
 .mpage{width:100%;}
-.page-break{margin-top:8mm;}
-.pinfo{font-size:8.5pt;margin-bottom:2mm;}
+.pinfo{font-size:8.5pt;margin-bottom:1.5mm;}
 .mrow{
   display:flex;
-  flex-direction:row;
+  flex-direction:row-reverse;
   align-items:stretch;
-  border:0.5pt solid #85C1E9;
+  width:100%;
   height:170mm;
-  width:fit-content;
+  border-top:0.5pt solid #85C1E9;
+  border-bottom:0.5pt solid #85C1E9;
+  border-left:0.5pt solid #85C1E9;
 }
 .vtitle{
   height:170mm;
@@ -671,7 +676,7 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   line-height:1.4;
 }
 .vtitle-sub{
-  font-size:6.5pt;
+  font-size:6pt;
   color:#555;
   writing-mode:vertical-rl;
   text-orientation:mixed;
@@ -679,10 +684,10 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   line-height:1.5;
 }
 .mblock{
-  width:10.8mm;
+  width:${BLOCK_W}mm;
   height:170mm;
   flex-shrink:0;
-  border-left:0.5pt solid #85C1E9;
+  border-right:0.5pt solid #85C1E9;
   display:flex;
   flex-direction:column;
   overflow:hidden;
