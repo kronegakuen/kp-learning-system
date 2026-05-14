@@ -513,34 +513,39 @@ function makePDF(){
   const tb = TEXTBOOKS[curSheet];
   const sheetLabel = tb.label;
   const ansWidth = tb.ansWidth;
+  const isEigo = tb.subject === 'eigo';
   const dir = getVal('g-dir')||'normal';
   const dirLabel = {normal:'言葉→意味', reverse:'意味→言葉', both:'両方向'}[dir]||'';
   const from = document.getElementById('rng-from').value;
   const to   = document.getElementById('rng-to').value;
   const subtitle = sheetLabel+'　No.'+from+'〜'+to+'　'+dirLabel+'　'+qs.length+'問';
-  const cols = qs.length <= 15 ? 1 : 2;
-  const ansH = ansWidth==='wide' ? '12mm' : ansWidth==='narrow' ? '7mm' : '9mm';
 
-  function qCell(item, n){
-    return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="ans-box" style="height:${ansH}"></div></td>`;
-  }
-  function aCell(item, n){
-    return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="atxt">→ ${item.a}</div></td>`;
-  }
+  let html = '';
 
-  let qRows='', aRows='';
-  if(cols===1){
-    qs.forEach((item,i)=>{ qRows+=`<tr>${qCell(item,i+1)}</tr>`; aRows+=`<tr>${aCell(item,i+1)}</tr>`; });
-  } else {
-    for(let i=0;i<qs.length;i+=2){
-      const l=qs[i], r=qs[i+1];
-      qRows+=`<tr>${qCell(l,i+1)}${r?qCell(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
-      aRows+=`<tr>${aCell(l,i+1)}${r?aCell(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
+  if(isEigo){
+    // ==============================
+    // 英語：横書きレイアウト
+    // ==============================
+    const cols = qs.length <= 15 ? 1 : 2;
+    const ansH = ansWidth==='wide' ? '12mm' : ansWidth==='narrow' ? '7mm' : '9mm';
+    function qCellH(item,n){
+      return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="ans-box" style="height:${ansH}"></div></td>`;
     }
-  }
-  const colStyle = cols===1 ? 'table{width:100%;}.qcell{width:100%;}' : 'table{width:100%;}.qcell{width:50%;}';
-
-  const html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${sheetLabel}テスト</title>
+    function aCellH(item,n){
+      return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="atxt">→ ${item.a}</div></td>`;
+    }
+    let qRows='', aRows='';
+    if(cols===1){
+      qs.forEach((item,i)=>{ qRows+=`<tr>${qCellH(item,i+1)}</tr>`; aRows+=`<tr>${aCellH(item,i+1)}</tr>`; });
+    } else {
+      for(let i=0;i<qs.length;i+=2){
+        const l=qs[i],r=qs[i+1];
+        qRows+=`<tr>${qCellH(l,i+1)}${r?qCellH(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
+        aRows+=`<tr>${aCellH(l,i+1)}${r?aCellH(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
+      }
+    }
+    const colStyle = cols===1?'table{width:100%;}.qcell{width:100%;}':'table{width:100%;}.qcell{width:50%;}';
+    html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${sheetLabel}テスト</title>
 <style>
 @page{size:A4;margin:15mm;}
 @media print{.no-print{display:none!important;}body{margin:0;}}
@@ -578,6 +583,117 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 </div>
 </body></html>`;
 
+  } else {
+    // ==============================
+    // 国語：縦書きレイアウト
+    // ==============================
+    // 縦書きは列方向が右→左なので、問題を列ごとに並べる
+    // 1列あたりの行数（縦に並ぶ問題数）
+    const rowsPerCol = qs.length <= 15 ? qs.length : Math.ceil(qs.length / 4);
+    const ansH = ansWidth==='wide' ? '28mm' : ansWidth==='narrow' ? '15mm' : '20mm';
+
+    // 問題を列ごとに分割（縦書きは右から左へ列が並ぶ）
+    function splitCols(items, perCol){
+      const cols = [];
+      for(let i=0;i<items.length;i+=perCol){
+        cols.push(items.slice(i, i+perCol));
+      }
+      return cols;
+    }
+
+    function makeVertTable(items, isAnswer){
+      const perCol = rowsPerCol;
+      const colGroups = splitCols(items, perCol);
+      // 縦書きテーブル：各列がtd、各行がtr
+      // 右から左に列を並べるためdirection:rtlを使用
+      let rows = '';
+      for(let r=0;r<perCol;r++){
+        rows += '<tr>';
+        for(let c=0;c<colGroups.length;c++){
+          const item = colGroups[c][r];
+          const n = c * perCol + r + 1;
+          if(!item){ rows += '<td class="vcell empty"></td>'; continue; }
+          if(isAnswer){
+            rows += `<td class="vcell">
+              <div class="vno">${n}</div>
+              <div class="vq">${item.q}</div>
+              <div class="va">→${item.a}</div>
+            </td>`;
+          } else {
+            rows += `<td class="vcell">
+              <div class="vno">${n}</div>
+              <div class="vq">${item.q}</div>
+              <div class="vans" style="width:${ansH}"></div>
+            </td>`;
+          }
+        }
+        rows += '</tr>';
+      }
+      return `<table class="vtable"><tbody>${rows}</tbody></table>`;
+    }
+
+    const qTable = makeVertTable(qs, false);
+    const aTable = makeVertTable(qs, true);
+
+    html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${sheetLabel}テスト</title>
+<style>
+@page{size:A4;margin:12mm 15mm;}
+@media print{.no-print{display:none!important;}body{margin:0;}}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;font-size:10pt;margin:0;color:#000;}
+.page{margin:0 auto;}
+.page-header{text-align:center;margin-bottom:3mm;}
+h1{font-size:13pt;font-weight:bold;display:inline;border-bottom:0.5pt solid #000;padding-bottom:1mm;}
+.sub{font-size:8pt;color:#555;margin-top:1mm;}
+.info{font-size:9pt;margin:3mm 0;writing-mode:horizontal-tb;}
+.vtable{border-collapse:collapse;table-layout:fixed;width:100%;direction:rtl;}
+.vcell{
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  vertical-align:top;
+  border:0.3pt solid #bbb;
+  padding:2mm 1.5mm;
+  width:auto;
+}
+.vcell.empty{background:#fafafa;border:0.3pt solid #bbb;}
+.vno{font-size:7pt;color:#888;margin-bottom:1mm;writing-mode:vertical-rl;}
+.vq{font-size:11pt;font-weight:bold;line-height:1.8;margin-bottom:2mm;writing-mode:vertical-rl;}
+.va{font-size:10pt;color:#1a4f8a;font-weight:bold;writing-mode:vertical-rl;border-top:0.3pt solid #ccc;padding-top:1mm;margin-top:1mm;}
+.vans{
+  border-left:0.5pt solid #999;
+  display:inline-block;
+  height:100%;
+  min-height:20mm;
+  margin-left:1mm;
+  writing-mode:vertical-rl;
+}
+.page-break{page-break-before:always;padding-top:5mm;}
+.no-print{text-align:center;padding:10px;background:#eef3f8;border-bottom:1px solid #ccd;}
+.no-print button{padding:7px 20px;font-size:11pt;cursor:pointer;margin:0 5px;border-radius:6px;border:1px solid #aaa;}
+.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
+</style></head><body>
+<div class="no-print">
+  <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
+  <button onclick="window.close()">閉じる</button>
+</div>
+<div class="page">
+  <div class="page-header">
+    <h1>${sheetLabel}　問題</h1>
+    <div class="sub">${subtitle}</div>
+  </div>
+  <div class="info">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
+  ${qTable}
+</div>
+<div class="page page-break">
+  <div class="page-header">
+    <h1>${sheetLabel}　解答</h1>
+    <div class="sub">${subtitle}</div>
+  </div>
+  ${aTable}
+</div>
+</body></html>`;
+  }
+
+  // 共通：タブを開く
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const w=window.open(url,'_blank');
