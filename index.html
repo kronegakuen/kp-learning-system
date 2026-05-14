@@ -793,7 +793,6 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;margin:0;color:#000;backgro
     html='<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>'+sheetLabelK+'</title><style>'+kstyle+'</style></head><body><div class="no-print"><button class="pbtn" onclick="window.print()">印刷 / PDF保存</button><button onclick="window.close()">閉じる</button></div>'+kanjiQPages+kanjiAPages+'</body></html>';
 
   // 共通：タブを開く
-// 共通：タブを開く
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const w=window.open(url,'_blank');
