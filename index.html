@@ -3,63 +3,583 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KRONE Prep 完成版</title>
-
+<title>問題トレーニング</title>
 <style>
-body { font-family: sans-serif; padding: 20px; }
-.box { border: 1px solid #ddd; padding: 12px; margin-bottom: 12px; }
-input, button, select { padding: 6px; margin: 4px; }
-#timer { font-weight: bold; font-size: 18px; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;}
+.wrap{max-width:680px;margin:0 auto;padding:1.5rem 1rem;}
+.sec{display:none;}.sec.on{display:block;}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;}
+.hd h1{font-size:18px;font-weight:500;flex:1;}
+.badge{font-size:12px;padding:3px 10px;border-radius:8px;background:#e6f1fb;color:#0c447c;}
+.block{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.block-title{font-size:11px;font-weight:500;color:#888;letter-spacing:.06em;margin-bottom:.875rem;text-transform:none;}
+.field{margin-bottom:.875rem;}
+.field:last-child{margin-bottom:0;}
+.field-label{font-size:13px;color:#555;margin-bottom:5px;display:block;}
+select{width:100%;padding:8px 10px;font-size:14px;border:1px solid #d0d0c8;border-radius:8px;background:#fff;color:#1a1a1a;appearance:auto;}
+input[type=number]{padding:7px 10px;font-size:14px;border:1px solid #d0d0c8;border-radius:8px;background:#fff;color:#1a1a1a;width:72px;text-align:center;}
+.chip-group{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{font-size:13px;padding:5px 13px;border-radius:8px;border:1.5px solid #d0d0c8;background:#fff;color:#666;cursor:pointer;display:flex;align-items:center;gap:4px;transition:border-color .15s,color .15s;}
+.chip:hover{border-color:#999;}
+.chip.on{border:2.5px solid #185FA5;color:#185FA5;font-weight:500;}
+.chip .ck{font-size:13px;display:none;}
+.chip.on .ck{display:inline;}
+.range-row{display:flex;align-items:center;gap:8px;}
+.range-row span{font-size:13px;color:#666;}
+.slider-wrap{display:flex;flex-direction:column;gap:8px;}
+.slider-row{display:flex;align-items:center;gap:8px;}
+.slider-row label{font-size:13px;color:#666;width:48px;}
+.slider-row input[type=range]{flex:1;}
+.sval{font-size:13px;font-weight:500;color:#1a1a1a;min-width:34px;}
+.btn-action{width:100%;padding:11px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:.875rem;}
+.btn-action:disabled{opacity:.4;cursor:not-allowed;}
+.btn-train{background:#185FA5;color:#fff;}
+.btn-pdf-a{background:#f5f5f0;color:#1a1a1a;border:1.5px solid #d0d0c8!important;}
+.btn-back{background:#f5f5f0;color:#1a1a1a;border:1.5px solid #d0d0c8!important;max-width:200px;margin:0 auto;}
+.end-btn{font-size:13px;padding:5px 14px;border-radius:8px;border:1.5px solid #d0d0c8;background:transparent;color:#666;cursor:pointer;}
+.prog-bar{height:4px;background:#e5e5e0;border-radius:2px;margin-bottom:1rem;}
+.prog-fill{height:100%;background:#378ADD;border-radius:2px;transition:width .3s;}
+.ctr{font-size:13px;color:#666;text-align:center;margin-bottom:1rem;}
+.card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:2rem 1.5rem;text-align:center;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:1rem;}
+.card-type{font-size:12px;color:#aaa;margin-bottom:.5rem;}
+.card-q{font-size:26px;font-weight:500;line-height:1.4;}
+.card-a{font-size:19px;color:#185FA5;font-weight:500;margin-top:1rem;padding-top:1rem;border-top:1px solid #e5e5e0;width:100%;opacity:0;transition:opacity .4s;}
+.card-a.show{opacity:1;}
+.btn-row{display:flex;gap:10px;margin-bottom:.75rem;}
+.btn-row button{flex:1;padding:9px;font-size:14px;border-radius:8px;cursor:pointer;border:1.5px solid #d0d0c8;background:#f5f5f0;color:#1a1a1a;}
+.btn-blue{background:#fff!important;border-color:#378ADD!important;color:#185FA5!important;font-weight:500;}
+.btn-ok{color:#0F6E56!important;border-color:#5DCAA5!important;}
+.btn-ng{color:#A32D2D!important;border-color:#F09595!important;}
+.timer-bar{height:4px;background:#e5e5e0;border-radius:2px;margin-bottom:1rem;overflow:hidden;}
+.timer-fill{height:100%;border-radius:2px;}
+.p-ctrl{display:flex;gap:10px;justify-content:center;}
+.end-box{text-align:center;padding:2rem;}
+.end-box .big{font-size:22px;font-weight:500;margin-bottom:.5rem;}
+.end-box .sub{font-size:14px;color:#666;margin-bottom:1.5rem;}
+#pdf-msg{font-size:12px;color:#888;text-align:center;margin-top:6px;min-height:16px;}
 </style>
 </head>
-
 <body>
+<div class="wrap">
 
-<h1>KRONE Prep</h1>
+<!-- 設定画面 -->
+<div class="sec on" id="sec-setup">
+  <div class="hd"><h1>問題トレーニング</h1><span class="badge">β版</span></div>
 
-<!-- ================= ログイン ================= -->
-<div class="box">
-  <h3>👤 ログイン</h3>
-  <input id="studentId" placeholder="塾生ID">
-  <button onclick="login()">ログイン</button>
-  <div id="loginMsg"></div>
+  <div class="block">
+    <div class="block-title">共通設定</div>
+    <div class="field">
+      <span class="field-label">テキスト</span>
+      <select id="sel-sheet" onchange="pickSheet()">
+        <option value="">── テキストを選ぶ ──</option>
+        <option value="goi">語彙トレーニング</option>
+        <option value="waku">小1わくわくパワードリル</option>
+        <option value="yume">ユメタン赤</option>
+      </select>
+    </div>
+    <div class="field" id="field-genre" style="display:none">
+      <span class="field-label">ジャンル</span>
+      <div class="chip-group" id="g-genre"></div>
+    </div>
+    <div class="field">
+      <span class="field-label">問題番号の範囲</span>
+      <div class="range-row">
+        <input type="number" id="rng-from" value="1" min="1">
+        <span>〜</span>
+        <input type="number" id="rng-to" value="30" min="1">
+        <span id="rng-hint" style="font-size:12px;color:#aaa"></span>
+      </div>
+    </div>
+    <div class="field">
+      <span class="field-label">出題方向</span>
+      <div class="chip-group" id="g-dir">
+        <button class="chip on" data-v="normal" onclick="pickChip('g-dir',this)"><span class="ck">✓</span>言葉→意味</button>
+        <button class="chip" data-v="reverse" onclick="pickChip('g-dir',this)"><span class="ck">✓</span>意味→言葉</button>
+        <button class="chip" data-v="both" onclick="pickChip('g-dir',this)"><span class="ck">✓</span>両方向</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">トレーニング設定</div>
+    <div class="field">
+      <span class="field-label">出題数</span>
+      <div class="chip-group" id="g-count">
+        <button class="chip" data-v="5" onclick="pickChip('g-count',this)"><span class="ck">✓</span>5問</button>
+        <button class="chip on" data-v="10" onclick="pickChip('g-count',this)"><span class="ck">✓</span>10問</button>
+        <button class="chip" data-v="20" onclick="pickChip('g-count',this)"><span class="ck">✓</span>20問</button>
+        <button class="chip" data-v="all" onclick="pickChip('g-count',this)"><span class="ck">✓</span>全問</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="field-label">モード</span>
+      <div class="chip-group" id="g-mode">
+        <button class="chip on" data-v="active" onclick="pickMode(this)"><span class="ck">✓</span>能動（答え確認）</button>
+        <button class="chip" data-v="passive" onclick="pickMode(this)"><span class="ck">✓</span>受動（自動再生）</button>
+      </div>
+    </div>
+    <div id="field-timer" style="display:none;margin-top:.75rem">
+      <span class="field-label">受動モードの表示時間</span>
+      <div class="slider-wrap">
+        <div class="slider-row">
+          <label>問題</label>
+          <input type="range" min="1" max="10" step="1" value="3" id="sl-q" oninput="document.getElementById('sv-q').textContent=this.value+'秒'">
+          <span class="sval" id="sv-q">3秒</span>
+        </div>
+        <div class="slider-row">
+          <label>答え</label>
+          <input type="range" min="1" max="10" step="1" value="4" id="sl-a" oninput="document.getElementById('sv-a').textContent=this.value+'秒'">
+          <span class="sval" id="sv-a">4秒</span>
+        </div>
+      </div>
+    </div>
+    <button class="btn-action btn-train" id="btn-start" onclick="startTraining()" disabled>
+      ▶ トレーニング開始
+    </button>
+  </div>
+
+  <div class="block">
+    <div class="block-title">PDF設定</div>
+    <div class="field">
+      <span class="field-label">出題数</span>
+      <div class="chip-group" id="g-pdf-count">
+        <button class="chip" data-v="20" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>20問</button>
+        <button class="chip" data-v="25" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>25問</button>
+        <button class="chip on" data-v="30" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>30問</button>
+        <button class="chip" data-v="all" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>全問</button>
+      </div>
+    </div>
+    <button class="btn-action btn-pdf-a" id="btn-pdf" onclick="makePDF()" disabled>
+      📄 PDFを作る
+    </button>
+    <div id="pdf-msg"></div>
+  </div>
 </div>
 
-<!-- ================= モード ================= -->
-<div class="box">
-  <h3>📚 学習モード</h3>
-
-  <select id="material">
-    <option value="basic">基本</option>
-  </select>
-
-  <br>
-
-  <button onclick="startPassive()">受動（流し学習）</button>
-  <button onclick="startTest()">能動（テスト）</button>
-  <button onclick="exportPDF()">PDF出力</button>
+<!-- 能動トレーニング -->
+<div class="sec" id="sec-active">
+  <div class="hd"><h1 id="a-title">トレーニング</h1><button class="end-btn" onclick="goSetup()">終了</button></div>
+  <div class="prog-bar"><div class="prog-fill" id="a-prog" style="width:0%"></div></div>
+  <div class="ctr" id="a-ctr"></div>
+  <div class="card">
+    <div class="card-type" id="a-type"></div>
+    <div class="card-q" id="a-q"></div>
+    <div class="card-a" id="a-ans"></div>
+  </div>
+  <div class="btn-row"><button class="btn-blue" id="btn-reveal" onclick="revealAnswer()">答えを見る</button></div>
+  <div class="btn-row" id="judge-row" style="display:none">
+    <button class="btn-ng" onclick="judge()">✕ もう一度</button>
+    <button class="btn-ok" onclick="judge()">○ 正解</button>
+  </div>
 </div>
 
-<!-- ================= タイマー ================= -->
-<div id="timer"></div>
-
-<!-- ================= 出力 ================= -->
-<div class="box">
-  <div id="output"></div>
+<!-- 受動トレーニング -->
+<div class="sec" id="sec-passive">
+  <div class="hd"><h1>受動トレーニング</h1><button class="end-btn" onclick="goSetup()">終了</button></div>
+  <div class="timer-bar"><div class="timer-fill" id="p-timer" style="background:#378ADD;width:100%"></div></div>
+  <div class="ctr" id="p-ctr"></div>
+  <div class="card">
+    <div class="card-type" id="p-type"></div>
+    <div class="card-q" id="p-q"></div>
+    <div class="card-a" id="p-ans"></div>
+  </div>
+  <div class="p-ctrl">
+    <button class="chip" id="btn-pause" onclick="togglePause()">⏸ 一時停止</button>
+    <button class="chip" onclick="skipPassive()">→ 次へ</button>
+  </div>
 </div>
 
-<!-- ================= 教師 ================= -->
-<div class="box">
-  <h3>👨‍🏫 生徒管理</h3>
-
-  <input id="newId" placeholder="ID">
-  <input id="newName" placeholder="名前">
-  <button onclick="addStudent()">追加</button>
-
-  <div id="studentList"></div>
+<!-- 完了画面 -->
+<div class="sec" id="sec-end">
+  <div class="end-box">
+    <div class="big">お疲れさまでした！</div>
+    <div class="sub" id="end-msg"></div>
+    <button class="btn-action btn-back" onclick="goSetup()">← 設定に戻る</button>
+  </div>
 </div>
 
-<script src="./app.js"></script>
+</div><!-- /wrap -->
 
+<script>
+// ============================================================
+// データ（ここを実際のデータに差し替える）
+// ============================================================
+const SAMPLES = {
+  goi: {
+    label: '語彙トレーニング',
+    subject: 'kokugo',
+    genres: ['ことわざ','慣用句','四字熟語'],
+    ansWidth: 'wide',
+    items: [
+      {no:1, word:'ぬれ手にあわ', meaning:'苦労せず大きな利益を得ること', genre:'ことわざ'},
+      {no:2, word:'石の上にも三年', meaning:'辛抱すれば必ず報われること', genre:'ことわざ'},
+      {no:3, word:'猿も木から落ちる', meaning:'名人でも失敗することがあること', genre:'ことわざ'},
+      {no:4, word:'急がば回れ', meaning:'急ぐときほど安全な方法を選ぶべきこと', genre:'ことわざ'},
+      {no:5, word:'棚からぼたもち', meaning:'思いがけない幸運が来ること', genre:'ことわざ'},
+      {no:6, word:'二兎を追う者は一兎をも得ず', meaning:'欲張ると両方とも失うこと', genre:'ことわざ'},
+      {no:7, word:'知らぬが仏', meaning:'知らないでいるほうが気楽なこと', genre:'ことわざ'},
+      {no:8, word:'転ばぬ先の杖', meaning:'失敗しないよう前もって備えること', genre:'ことわざ'},
+      {no:9, word:'七転八倒', meaning:'激しい苦しみで転げ回ること', genre:'慣用句'},
+      {no:10, word:'一石二鳥', meaning:'一つの行動で二つの利益を得ること', genre:'四字熟語'},
+      {no:11, word:'油を売る', meaning:'仕事をさぼってむだ話をすること', genre:'慣用句'},
+      {no:12, word:'馬の耳に念仏', meaning:'いくら言っても効き目がないこと', genre:'ことわざ'},
+      {no:13, word:'一期一会', meaning:'一生に一度の出会いを大切にすること', genre:'四字熟語'},
+      {no:14, word:'温故知新', meaning:'昔のことを調べ新しい知識を得ること', genre:'四字熟語'},
+      {no:15, word:'七転び八起き', meaning:'何度失敗しても諦めず立ち上がること', genre:'ことわざ'},
+    ]
+  },
+  waku: {
+    label: '小1わくわくパワードリル',
+    subject: 'kokugo',
+    genres: null,
+    ansWidth: 'narrow',
+    items: [
+      {no:1,word:'犬',meaning:'いぬ',genre:'読み'},{no:2,word:'猫',meaning:'ねこ',genre:'読み'},
+      {no:3,word:'山',meaning:'やま',genre:'読み'},{no:4,word:'川',meaning:'かわ',genre:'読み'},
+      {no:5,word:'花',meaning:'はな',genre:'読み'},{no:6,word:'空',meaning:'そら',genre:'読み'},
+      {no:7,word:'雨',meaning:'あめ',genre:'読み'},{no:8,word:'木',meaning:'き',genre:'読み'},
+      {no:9,word:'火',meaning:'ひ',genre:'読み'},{no:10,word:'水',meaning:'みず',genre:'読み'},
+      {no:11,word:'土',meaning:'つち',genre:'読み'},{no:12,word:'金',meaning:'きん',genre:'読み'},
+      {no:13,word:'日',meaning:'にち・ひ',genre:'読み'},{no:14,word:'月',meaning:'つき',genre:'読み'},
+      {no:15,word:'石',meaning:'いし',genre:'読み'},
+    ]
+  },
+  yume: {
+    label: 'ユメタン赤',
+    subject: 'eigo',
+    genres: null,
+    ansWidth: 'medium',
+    items: [
+      {no:1,word:'achieve',meaning:'達成する・成し遂げる',genre:'英→日'},
+      {no:2,word:'challenge',meaning:'挑戦・難題',genre:'英→日'},
+      {no:3,word:'evidence',meaning:'証拠・根拠',genre:'英→日'},
+      {no:4,word:'generous',meaning:'寛大な・気前のよい',genre:'英→日'},
+      {no:5,word:'opportunity',meaning:'機会・チャンス',genre:'英→日'},
+      {no:6,word:'remarkable',meaning:'注目すべき・驚くべき',genre:'英→日'},
+      {no:7,word:'struggle',meaning:'苦闘する・もがく',genre:'英→日'},
+      {no:8,word:'tradition',meaning:'伝統・慣習',genre:'英→日'},
+      {no:9,word:'volunteer',meaning:'ボランティア・自発的に行う',genre:'英→日'},
+      {no:10,word:'wisdom',meaning:'知恵・賢さ',genre:'英→日'},
+      {no:11,word:'absolute',meaning:'絶対的な・完全な',genre:'英→日'},
+      {no:12,word:'brilliant',meaning:'輝かしい・才能のある',genre:'英→日'},
+      {no:13,word:'circumstance',meaning:'状況・事情',genre:'英→日'},
+      {no:14,word:'desperate',meaning:'必死の・絶望的な',genre:'英→日'},
+      {no:15,word:'enormous',meaning:'巨大な・莫大な',genre:'英→日'},
+    ]
+  }
+};
+
+// ============================================================
+// アプリ状態
+// ============================================================
+let curSheet=null, curGenres=[], queue=[], idx=0;
+let paused=false, rafId=null, phaseStart=0, phase='q';
+
+// ============================================================
+// UI共通
+// ============================================================
+function showSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function goSetup(){ stopPassive(); showSec('sec-setup'); }
+
+function pickChip(gid, el){
+  document.querySelectorAll('#'+gid+' .chip').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function pickSheet(){
+  const sel = document.getElementById('sel-sheet');
+  curSheet = sel.value || null;
+  const gf = document.getElementById('field-genre');
+  const gg = document.getElementById('g-genre');
+  gg.innerHTML=''; curGenres=[];
+  if(!curSheet){
+    gf.style.display='none';
+    document.getElementById('btn-start').disabled=true;
+    document.getElementById('btn-pdf').disabled=true;
+    document.getElementById('rng-hint').textContent='';
+    return;
+  }
+  const data = SAMPLES[curSheet];
+  if(data.genres){
+    gf.style.display='';
+    data.genres.forEach(g=>{
+      const b=document.createElement('button');
+      b.className='chip on'; b.dataset.v=g;
+      b.innerHTML='<span class="ck">✓</span>'+g;
+      b.onclick=()=>toggleGenre(b,g);
+      gg.appendChild(b); curGenres.push(g);
+    });
+  } else { gf.style.display='none'; }
+  document.getElementById('rng-to').value = data.items.length;
+  document.getElementById('rng-hint').textContent = '（全'+data.items.length+'問）';
+  document.getElementById('btn-start').disabled=false;
+  document.getElementById('btn-pdf').disabled=false;
+}
+
+function toggleGenre(el, g){
+  el.classList.toggle('on');
+  if(el.classList.contains('on')) curGenres.push(g);
+  else curGenres = curGenres.filter(x=>x!==g);
+}
+
+function pickMode(el){
+  pickChip('g-mode', el);
+  document.getElementById('field-timer').style.display = el.dataset.v==='passive' ? '' : 'none';
+}
+
+function getVal(gid){
+  const a = document.querySelector('#'+gid+' .chip.on');
+  return a ? a.dataset.v : null;
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+// ============================================================
+// キュー構築（トレーニング・PDF共通）
+// ============================================================
+function buildQueue(countGroup){
+  const data = SAMPLES[curSheet];
+  const from = parseInt(document.getElementById('rng-from').value)||1;
+  const to   = parseInt(document.getElementById('rng-to').value)||data.items.length;
+  const dir  = getVal('g-dir')||'normal';
+  let base = data.items.filter(d=>d.no>=from && d.no<=to);
+  if(data.genres && curGenres.length>0)
+    base = base.filter(d=>curGenres.includes(d.genre));
+  let items=[];
+  if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
+  if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
+  shuffle(items);
+  const n = getVal(countGroup)||'10';
+  return n==='all' ? items : items.slice(0, parseInt(n));
+}
+
+// ============================================================
+// 能動トレーニング
+// ============================================================
+function startTraining(){
+  if(!curSheet) return;
+  queue=buildQueue('g-count'); idx=0;
+  const mode = getVal('g-mode')||'active';
+  if(mode==='active'){ showSec('sec-active'); renderActive(); }
+  else { showSec('sec-passive'); startPassive(); }
+}
+
+function renderActive(){
+  if(idx>=queue.length){
+    showSec('sec-end');
+    document.getElementById('end-msg').textContent=queue.length+'問 完了';
+    return;
+  }
+  const item=queue[idx], tot=queue.length;
+  document.getElementById('a-prog').style.width=(idx/tot*100)+'%';
+  document.getElementById('a-ctr').textContent=(idx+1)+' / '+tot;
+  document.getElementById('a-type').textContent=item.type;
+  document.getElementById('a-q').textContent=item.q;
+  document.getElementById('a-ans').textContent=item.a;
+  document.getElementById('a-ans').classList.remove('show');
+  document.getElementById('btn-reveal').style.display='';
+  document.getElementById('judge-row').style.display='none';
+}
+
+function revealAnswer(){
+  document.getElementById('a-ans').classList.add('show');
+  document.getElementById('btn-reveal').style.display='none';
+  document.getElementById('judge-row').style.display='flex';
+}
+
+function judge(){ idx++; renderActive(); }
+
+// ============================================================
+// 受動トレーニング
+// ============================================================
+function getQms(){ return parseInt(document.getElementById('sl-q').value)*1000; }
+function getAms(){ return parseInt(document.getElementById('sl-a').value)*1000; }
+
+function startPassive(){
+  paused=false; phase='q'; phaseStart=performance.now();
+  renderPassiveCard();
+  cancelAnimationFrame(rafId);
+  rafId=requestAnimationFrame(tickPassive);
+}
+
+function renderPassiveCard(){
+  if(idx>=queue.length){
+    stopPassive(); showSec('sec-end');
+    document.getElementById('end-msg').textContent=queue.length+'問 完了（受動モード）';
+    return;
+  }
+  const item=queue[idx];
+  document.getElementById('p-type').textContent=item.type;
+  document.getElementById('p-q').textContent=item.q;
+  document.getElementById('p-ans').textContent=item.a;
+  document.getElementById('p-ans').classList.remove('show');
+  document.getElementById('p-ctr').textContent=(idx+1)+' / '+queue.length;
+  document.getElementById('p-timer').style.background='#378ADD';
+  document.getElementById('p-timer').style.width='100%';
+}
+
+function tickPassive(now){
+  if(paused){ rafId=requestAnimationFrame(tickPassive); return; }
+  const dur = phase==='q' ? getQms() : getAms();
+  const pct = Math.max(0, 1-(now-phaseStart)/dur);
+  document.getElementById('p-timer').style.width=(pct*100)+'%';
+  if(now-phaseStart>=dur){
+    if(phase==='q'){
+      phase='a'; phaseStart=now;
+      document.getElementById('p-ans').classList.add('show');
+      document.getElementById('p-timer').style.background='#1D9E75';
+      document.getElementById('p-timer').style.width='100%';
+    } else {
+      idx++; phase='q'; phaseStart=now; renderPassiveCard();
+    }
+  }
+  rafId=requestAnimationFrame(tickPassive);
+}
+
+function skipPassive(){
+  cancelAnimationFrame(rafId);
+  idx++; phase='q'; phaseStart=performance.now();
+  renderPassiveCard();
+  rafId=requestAnimationFrame(tickPassive);
+}
+
+function stopPassive(){ cancelAnimationFrame(rafId); rafId=null; }
+
+function togglePause(){
+  paused=!paused;
+  const btn=document.getElementById('btn-pause');
+  if(paused){
+    btn.classList.add('on');
+    btn.textContent='▶ 再開';
+  } else {
+    btn.classList.remove('on');
+    btn.textContent='⏸ 一時停止';
+    phaseStart=performance.now()-(phase==='q'?getQms():getAms())*(1-parseFloat(document.getElementById('p-timer').style.width)/100);
+  }
+}
+
+// ============================================================
+// PDF生成
+// ============================================================
+function makePDF(){
+  if(!curSheet) return;
+  const msg = document.getElementById('pdf-msg');
+  msg.textContent = '新しいタブを開いています...';
+
+  const qs = buildQueue('g-pdf-count');
+  const data = SAMPLES[curSheet];
+  const sheetLabel = data.label;
+  const isEigo = data.subject === 'eigo';
+  const ansWidth = data.ansWidth; // 'wide' | 'medium' | 'narrow'
+  const dir = getVal('g-dir')||'normal';
+  const dirLabel = {normal:'言葉→意味', reverse:'意味→言葉', both:'両方向'}[dir]||'';
+  const from = document.getElementById('rng-from').value;
+  const to   = document.getElementById('rng-to').value;
+  const subtitle = sheetLabel+'　No.'+from+'〜'+to+'　'+dirLabel+'　'+qs.length+'問';
+
+  // 列数：15問以下は1列、16問以上は2列
+  const cols = qs.length <= 15 ? 1 : 2;
+
+  // 答え欄の高さ（科目別）
+  const ansH = ansWidth==='wide' ? '12mm' : ansWidth==='narrow' ? '7mm' : '9mm';
+
+  // 問題セルHTML生成
+  function qCell(item, n){
+    return `<td class="qcell">
+      <div class="qtype">[${item.type}]</div>
+      <div class="qtxt">Q${n}．${item.q}</div>
+      <div class="ans-box" style="height:${ansH}"></div>
+    </td>`;
+  }
+  function aCell(item, n){
+    return `<td class="qcell">
+      <div class="qtype">[${item.type}]</div>
+      <div class="qtxt">Q${n}．${item.q}</div>
+      <div class="atxt">→ ${item.a}</div>
+    </td>`;
+  }
+
+  let qRows='', aRows='';
+  if(cols===1){
+    qs.forEach((item,i)=>{
+      qRows += `<tr>${qCell(item,i+1)}</tr>`;
+      aRows += `<tr>${aCell(item,i+1)}</tr>`;
+    });
+  } else {
+    for(let i=0;i<qs.length;i+=2){
+      const left  = qs[i];
+      const right = qs[i+1];
+      qRows += `<tr>${qCell(left,i+1)}${right ? qCell(right,i+2) : '<td class="qcell empty"></td>'}</tr>`;
+      aRows += `<tr>${aCell(left,i+1)}${right ? aCell(right,i+2) : '<td class="qcell empty"></td>'}</tr>`;
+    }
+  }
+
+  const colStyle = cols===1
+    ? 'table{width:100%;} .qcell{width:100%;}'
+    : 'table{width:100%;} .qcell{width:50%;}';
+
+  const html = `<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<title>${sheetLabel}テスト</title>
+<style>
+@page{size:A4;margin:15mm 15mm 15mm 15mm;}
+@media print{.no-print{display:none!important;} body{margin:0;}}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;font-size:10pt;margin:0;color:#000;}
+.page{width:180mm;margin:0 auto;}
+h1{font-size:13pt;font-weight:bold;text-align:center;margin:0 0 2mm;border-bottom:0.5pt solid #000;padding-bottom:2mm;}
+.sub{font-size:8pt;color:#555;text-align:center;margin-bottom:3mm;}
+.info{font-size:9pt;margin-bottom:4mm;line-height:2;}
+table{border-collapse:collapse;table-layout:fixed;}
+${colStyle}
+.qcell{vertical-align:top;padding:2mm 2.5mm 2.5mm;border:0.3pt solid #bbb;}
+.qcell.empty{border:0.3pt solid #bbb;background:#fafafa;}
+.qtype{font-size:7pt;color:#888;margin-bottom:0.5mm;}
+.qtxt{font-size:10.5pt;font-weight:bold;line-height:1.45;margin-bottom:1.5mm;}
+.ans-box{border-bottom:0.5pt solid #999;margin-top:1mm;}
+.atxt{font-size:10pt;color:#1a4f8a;font-weight:bold;line-height:1.4;margin-top:1mm;padding-top:1mm;border-top:0.3pt solid #ccc;}
+.page-break{page-break-before:always;padding-top:5mm;}
+.no-print{text-align:center;padding:10px;background:#eef3f8;border-bottom:1px solid #ccd;}
+.no-print button{padding:7px 20px;font-size:11pt;cursor:pointer;margin:0 5px;border-radius:6px;border:1px solid #aaa;}
+.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
+</style></head><body>
+<div class="no-print">
+  <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
+  <button onclick="window.close()">閉じる</button>
+</div>
+<div class="page">
+  <h1>${sheetLabel}　問題</h1>
+  <div class="sub">${subtitle}</div>
+  <div class="info">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
+  <table>${qRows}</table>
+</div>
+<div class="page page-break">
+  <h1>${sheetLabel}　解答</h1>
+  <div class="sub">${subtitle}</div>
+  <table>${aRows}</table>
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const w    = window.open(url, '_blank');
+  if(w){
+    msg.textContent = 'タブが開いたら「印刷する / PDFで保存」を押してください。';
+    setTimeout(()=>URL.revokeObjectURL(url), 120000);
+  } else {
+    msg.textContent = 'ポップアップがブロックされました。ブラウザの設定で許可してください。';
+  }
+  setTimeout(()=>{ msg.textContent=''; }, 8000);
+}
+</script>
 </body>
 </html>
