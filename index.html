@@ -346,6 +346,13 @@ async function pickSheet(){
     document.getElementById('rng-hint').textContent = '（全'+items.length+'問）';
     document.getElementById('btn-start').disabled=false;
     document.getElementById('btn-pdf').disabled=false;
+    try{
+      var isK=data.subject==='kanji';
+      var n=document.querySelector('[data-v="normal"]');
+      var r=document.querySelector('[data-v="reverse"]');
+      if(n)n.lastChild.textContent=isK?'書き練習（読み→漢字）':'言葉→意味';
+      if(r)r.lastChild.textContent=isK?'読み練習（漢字→読み）':'意味→言葉';
+    }catch(ex){console.log('label err',ex);}
 
   } catch(e){
     document.getElementById('rng-hint').textContent='読み込みに失敗しました';
