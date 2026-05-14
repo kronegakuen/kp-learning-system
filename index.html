@@ -549,63 +549,70 @@ function makePDF(){
 
   if(isEigo){
     // ==============================
-    // 英語：横書きレイアウト
+    // 英語：横書きレイアウト（2列・40問/ページ）
     // ==============================
-    const cols = qs.length <= 15 ? 1 : 2;
-    const ansH = ansWidth==='wide' ? '12mm' : ansWidth==='narrow' ? '7mm' : '9mm';
-    function qCellH(item,n){
-      return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="ans-box" style="height:${ansH}"></div></td>`;
+    const E_PER_PAGE = 40;
+    const ansH = '9mm';
+
+    function qCellH(item, n){
+      return `<td class="qcell"><div class="qno">Q${n}</div><div class="qtxt">${item.q}</div><div class="ans-box" style="height:${ansH}"></div></td>`;
     }
-    function aCellH(item,n){
-      return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="atxt">→ ${item.a}</div></td>`;
+    function aCellH(item, n){
+      return `<td class="qcell"><div class="qno">Q${n}</div><div class="qtxt">${item.q}</div><div class="atxt">→ ${item.a}</div></td>`;
     }
-    let qRows='', aRows='';
-    if(cols===1){
-      qs.forEach((item,i)=>{ qRows+=`<tr>${qCellH(item,i+1)}</tr>`; aRows+=`<tr>${aCellH(item,i+1)}</tr>`; });
-    } else {
-      for(let i=0;i<qs.length;i+=2){
-        const l=qs[i],r=qs[i+1];
-        qRows+=`<tr>${qCellH(l,i+1)}${r?qCellH(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
-        aRows+=`<tr>${aCellH(l,i+1)}${r?aCellH(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
+
+    function makeEigoPage(chunk, offset, isAnswer, labelSuffix){
+      let rows = '';
+      for(let i=0; i<chunk.length; i+=2){
+        const l=chunk[i], r=chunk[i+1];
+        const lCell = isAnswer ? aCellH(l,offset+i+1) : qCellH(l,offset+i+1);
+        const rCell = r ? (isAnswer ? aCellH(r,offset+i+2) : qCellH(r,offset+i+2)) : '<td class="qcell empty"></td>';
+        rows += `<tr>${lCell}${rCell}</tr>`;
       }
+      return `<div class="epage">
+  <h1>${sheetLabel}　${labelSuffix}</h1>
+  <div class="sub">${subtitle}</div>
+  <table><tbody>${rows}</tbody></table>
+</div>`;
     }
-    const colStyle = cols===1?'table{width:100%;}.qcell{width:100%;}':'table{width:100%;}.qcell{width:50%;}';
+
+    let pages = '';
+    // 問題ページ
+    for(let p=0; p<qs.length; p+=E_PER_PAGE){
+      const chunk = qs.slice(p, p+E_PER_PAGE);
+      pages += `<div class="eblock${p>0?' page-break':''}">${makeEigoPage(chunk, p, false, '問題')}</div>`;
+    }
+    // 解答ページ
+    for(let p=0; p<qs.length; p+=E_PER_PAGE){
+      const chunk = qs.slice(p, p+E_PER_PAGE);
+      pages += `<div class="eblock page-break">${makeEigoPage(chunk, p, true, '解答')}</div>`;
+    }
+
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4;margin:15mm;}
-@media print{.no-print{display:none!important;}body{margin:0;}}
-body{font-family:'Hiragino Sans','Meiryo',sans-serif;font-size:10pt;margin:0;color:#000;}
-.page{width:180mm;margin:0 auto;}
-h1{font-size:13pt;font-weight:bold;text-align:center;margin:0 0 2mm;border-bottom:0.5pt solid #000;padding-bottom:2mm;}
-.sub{font-size:8pt;color:#555;text-align:center;margin-bottom:3mm;}
-.info{font-size:9pt;margin-bottom:4mm;line-height:2;}
-table{border-collapse:collapse;table-layout:fixed;}${colStyle}
-.qcell{vertical-align:top;padding:2mm 2.5mm 2.5mm;border:0.3pt solid #bbb;}
-.qcell.empty{border:0.3pt solid #bbb;background:#fafafa;}
-.qtype{font-size:7pt;color:#888;margin-bottom:0.5mm;}
-.qtxt{font-size:10.5pt;font-weight:bold;line-height:1.45;margin-bottom:1.5mm;}
-.ans-box{border-bottom:0.5pt solid #999;margin-top:1mm;}
-.atxt{font-size:10pt;color:#1a4f8a;font-weight:bold;line-height:1.4;margin-top:1mm;padding-top:1mm;border-top:0.3pt solid #ccc;}
-.page-break{page-break-before:always;padding-top:5mm;}
-.no-print{text-align:center;padding:10px;background:#eef3f8;border-bottom:1px solid #ccd;}
-.no-print button{padding:7px 20px;font-size:11pt;cursor:pointer;margin:0 5px;border-radius:6px;border:1px solid #aaa;}
+@page{size:A4;margin:10mm 12mm;}
+@media print{.no-print{display:none!important;}body{margin:0;}.page-break{page-break-before:always;}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;font-size:9pt;color:#000;}
+.no-print{text-align:center;padding:8px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}
+.no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
+.epage{}
+h1{font-size:12pt;font-weight:bold;text-align:center;margin:0 0 1.5mm;border-bottom:0.5pt solid #000;padding-bottom:1.5mm;}
+.sub{font-size:7.5pt;color:#555;text-align:center;margin-bottom:2.5mm;}
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+.qcell{width:50%;vertical-align:top;padding:1.5mm 2mm;border:0.3pt solid #bbb;}
+.qcell.empty{background:#fafafa;}
+.qno{font-size:7pt;color:#888;margin-bottom:0.5mm;}
+.qtxt{font-size:10pt;font-weight:bold;line-height:1.4;margin-bottom:1mm;}
+.ans-box{border-bottom:0.5pt solid #999;}
+.atxt{font-size:9.5pt;color:#1a4f8a;font-weight:bold;line-height:1.4;padding-top:0.5mm;border-top:0.3pt solid #ccc;}
 </style></head><body>
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
-<div class="page">
-  <h1>${sheetLabel}　問題</h1>
-  <div class="sub">${subtitle}</div>
-  <div class="info">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
-  <table>${qRows}</table>
-</div>
-<div class="page page-break">
-  <h1>${sheetLabel}　解答</h1>
-  <div class="sub">${subtitle}</div>
-  <table>${aRows}</table>
-</div>
+${pages}
 </body></html>`;
 
 
