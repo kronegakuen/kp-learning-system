@@ -636,12 +636,16 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 @page{size:A4 landscape;margin:14mm 12mm;}
 @media print{.no-print{display:none!important;}body{margin:0;}.page-break{page-break-before:always;}}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;padding-top:12mm;padding-bottom:12mm;
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
 padding-left:6mm;padding-right:6mm;}
 .no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:4mm;}
 .no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
-.mpage{width:100%;}
+.mpage{
+  width:100%;
+  margin-top:6mm;
+  margin-bottom:6mm;
+}
 .mrow{
   display:flex;
   flex-direction:row-reverse;
