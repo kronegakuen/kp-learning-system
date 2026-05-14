@@ -147,7 +147,6 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid #d0d0c8;bord
         <button class="chip" data-v="20" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>20問</button>
         <button class="chip" data-v="25" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>25問</button>
         <button class="chip on" data-v="30" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>30問</button>
-        <button class="chip" data-v="40" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>40問</button>
         <button class="chip" data-v="all" onclick="pickChip('g-pdf-count',this)"><span class="ck">✓</span>全問</button>
       </div>
     </div>
@@ -306,7 +305,6 @@ async function pickSheet(){
 
     // 2行目以降がデータ（1行目はヘッダー）
     const isEigo = tb.subject === 'eigo';
-    const isKanji = tb.subject === 'kanji';
     const items = [];
     const genreSet = new Set();
 
@@ -317,11 +315,6 @@ async function pickSheet(){
       if(isEigo){
         // A:番号 B:学年 C:テキスト D:英単語 E:意味
         items.push({ no, word: (r[3]||'').trim(), meaning: (r[4]||'').trim(), genre: '英→日' });
-      } else if(isKanji){
-        // A:番号 B:学年 C:テキスト D:ジャンル E:漢字 F:読み
-        const genre = (r[3]||'').trim();
-        items.push({ no, word: (r[4]||'').trim(), meaning: (r[5]||'').trim(), genre });
-        if(genre) genreSet.add(genre);
       } else {
         // A:番号 B:学年 C:テキスト D:種別 E:言葉 F:意味
         const genre = (r[3]||'').trim();
@@ -409,33 +402,6 @@ function buildQueue(countGroup){
   if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
   shuffle(items);
   const n = getVal(countGroup)||'10';
-  return n==='all' ? items : items.slice(0, parseInt(n));
-}
-
-// PDF用：国語は常に word=語句（上段）・meaning=意味（下段）で固定
-function buildQueueForPDF(countGroup){
-  const tb = TEXTBOOKS[curSheet];
-  const from = parseInt(document.getElementById('rng-from').value)||1;
-  const to   = parseInt(document.getElementById('rng-to').value)||tb.items.length;
-  const dir  = getVal('g-dir')||'normal';
-  let base = tb.items.filter(d=>d.no>=from && d.no<=to);
-  if(tb.genres && curGenres.length>0)
-    base = base.filter(d=>curGenres.includes(d.genre));
-  let items=[];
-  const isEigo = tb.subject === 'eigo';
-  if(isEigo){
-    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
-    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
-  } else if(tb.subject === 'kanji'){
-    // 漢字：word=漢字・meaning=読み、常に両方持つ
-    base.forEach(d=>items.push({kanji:d.word, yomi:d.meaning, type:d.genre, subject:'kanji'}));
-  } else {
-    // 国語：語句=上段・意味=下段固定。dirを保持して問題ページの空欄を制御
-    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'normal'}));
-    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'reverse'}));
-  }
-  shuffle(items);
-  const n = getVal(countGroup)||'30';
   return n==='all' ? items : items.slice(0, parseInt(n));
 }
 
@@ -543,7 +509,7 @@ function makePDF(){
   if(!curSheet) return;
   const msg = document.getElementById('pdf-msg');
   msg.textContent = '新しいタブを開いています...';
-  const qs = buildQueueForPDF('g-pdf-count');
+  const qs = buildQueue('g-pdf-count');
   const tb = TEXTBOOKS[curSheet];
   const sheetLabel = tb.label;
   const ansWidth = tb.ansWidth;
@@ -558,258 +524,235 @@ function makePDF(){
 
   if(isEigo){
     // ==============================
-    // 英語：横書きレイアウト（2列・40問/ページ）
+    // 英語：横書きレイアウト
     // ==============================
-    const E_PER_PAGE = 40;
-    const ansH = '9mm';
-
-    // 左列(1〜20)・右列(21〜40)を横並びにして1ページ40問
-    const HALF = 20;
-
-    function makeEigoCell(item, n, isAnswer){
-      const ans = isAnswer
-        ? `<span class="atxt">${item.a}</span>`
-        : `<span class="ans-line"></span>`;
-      return `<div class="erow">
-  <span class="ncell">Q${n}</span>
-  <span class="wcell">${item.q}</span>
-  <span class="acell">${ans}</span>
-</div>`;
+    const cols = qs.length <= 15 ? 1 : 2;
+    const ansH = ansWidth==='wide' ? '12mm' : ansWidth==='narrow' ? '7mm' : '9mm';
+    function qCellH(item,n){
+      return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="ans-box" style="height:${ansH}"></div></td>`;
     }
-
-    function makeEigoPage(chunk, offset, isAnswer, labelSuffix){
-      const left  = chunk.slice(0, HALF);
-      const right = chunk.slice(HALF);
-      let rows = '';
-      for(let i=0; i<HALF; i++){
-        const l = left[i];
-        const r = right[i];
-        const lCell = l ? makeEigoCell(l, offset+i+1, isAnswer) : '<div class="erow empty"></div>';
-        const rCell = r ? makeEigoCell(r, offset+HALF+i+1, isAnswer) : '<div class="erow empty"></div>';
-        rows += `<div class="eline">${lCell}<div class="col-sep"></div>${rCell}</div>`;
+    function aCellH(item,n){
+      return `<td class="qcell"><div class="qtype">[${item.type}]</div><div class="qtxt">Q${n}．${item.q}</div><div class="atxt">→ ${item.a}</div></td>`;
+    }
+    let qRows='', aRows='';
+    if(cols===1){
+      qs.forEach((item,i)=>{ qRows+=`<tr>${qCellH(item,i+1)}</tr>`; aRows+=`<tr>${aCellH(item,i+1)}</tr>`; });
+    } else {
+      for(let i=0;i<qs.length;i+=2){
+        const l=qs[i],r=qs[i+1];
+        qRows+=`<tr>${qCellH(l,i+1)}${r?qCellH(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
+        aRows+=`<tr>${aCellH(l,i+1)}${r?aCellH(r,i+2):'<td class="qcell empty"></td>'}</tr>`;
       }
-      return `<div class="epage">
-  <h1>${sheetLabel}　${labelSuffix}</h1>
-  <div class="sub">${subtitle}</div>
-  <div class="etable">${rows}</div>
-</div>`;
     }
-
-    let pages = '';
-    // 問題ページ
-    for(let p=0; p<qs.length; p+=E_PER_PAGE){
-      const chunk = qs.slice(p, p+E_PER_PAGE);
-      pages += `<div class="eblock${p>0?' page-break':''}">${makeEigoPage(chunk, p, false, '問題')}</div>`;
-    }
-    // 解答ページ
-    for(let p=0; p<qs.length; p+=E_PER_PAGE){
-      const chunk = qs.slice(p, p+E_PER_PAGE);
-      pages += `<div class="eblock page-break">${makeEigoPage(chunk, p, true, '解答')}</div>`;
-    }
-
+    const colStyle = cols===1?'table{width:100%;}.qcell{width:100%;}':'table{width:100%;}.qcell{width:50%;}';
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4;margin:7mm;}
-@media print{.no-print{display:none!important;}body{margin:0;padding:0;}.page-break{page-break-before:always;}.epage{margin-top:0;padding-top:0;}}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;padding:0;}
-.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:2mm;}
-.no-print button{padding:4px 14px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
+@page{size:A4;margin:15mm;}
+@media print{.no-print{display:none!important;}body{margin:0;}}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;font-size:10pt;margin:0;color:#000;}
+.page{width:180mm;margin:0 auto;}
+h1{font-size:13pt;font-weight:bold;text-align:center;margin:0 0 2mm;border-bottom:0.5pt solid #000;padding-bottom:2mm;}
+.sub{font-size:8pt;color:#555;text-align:center;margin-bottom:3mm;}
+.info{font-size:9pt;margin-bottom:4mm;line-height:2;}
+table{border-collapse:collapse;table-layout:fixed;}${colStyle}
+.qcell{vertical-align:top;padding:2mm 2.5mm 2.5mm;border:0.3pt solid #bbb;}
+.qcell.empty{border:0.3pt solid #bbb;background:#fafafa;}
+.qtype{font-size:7pt;color:#888;margin-bottom:0.5mm;}
+.qtxt{font-size:10.5pt;font-weight:bold;line-height:1.45;margin-bottom:1.5mm;}
+.ans-box{border-bottom:0.5pt solid #999;margin-top:1mm;}
+.atxt{font-size:10pt;color:#1a4f8a;font-weight:bold;line-height:1.4;margin-top:1mm;padding-top:1mm;border-top:0.3pt solid #ccc;}
+.page-break{page-break-before:always;padding-top:5mm;}
+.no-print{text-align:center;padding:10px;background:#eef3f8;border-bottom:1px solid #ccd;}
+.no-print button{padding:7px 20px;font-size:11pt;cursor:pointer;margin:0 5px;border-radius:6px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
-h1{font-size:11pt;font-weight:bold;text-align:center;margin:0 0 0.5mm;border-bottom:0.5pt solid #000;padding-bottom:0.5mm;}
-.sub{font-size:7pt;color:#555;text-align:center;margin-bottom:0.5mm;}
-.etable{width:100%;}
-.eline{display:flex;align-items:center;height:13.7mm;border-bottom:0.3pt solid #e8e8e8;}
-.col-sep{width:4mm;flex-shrink:0;border-left:0.5pt solid #bbb;height:100%;}
-.erow{display:flex;align-items:center;flex:1;height:100%;overflow:hidden;}
-.erow.empty{flex:1;}
-.ncell{font-size:7pt;color:#888;width:9mm;flex-shrink:0;white-space:nowrap;padding-left:1mm;}
-.wcell{font-size:10pt;font-weight:bold;width:36mm;flex-shrink:0;padding:0 2mm;white-space:nowrap;overflow:hidden;}
-.acell{flex:1;display:flex;align-items:center;padding:0 1mm;}
-.ans-line{flex:1;border-bottom:0.5pt solid #999;height:3.5mm;}
-.atxt{font-size:9pt;color:#1a4f8a;font-weight:bold;}
 </style></head><body>
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
-${pages}
+<div class="page">
+  <h1>${sheetLabel}　問題</h1>
+  <div class="sub">${subtitle}</div>
+  <div class="info">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
+  <table>${qRows}</table>
+</div>
+<div class="page page-break">
+  <h1>${sheetLabel}　解答</h1>
+  <div class="sub">${subtitle}</div>
+  <table>${aRows}</table>
+</div>
 </body></html>`;
 
 
   } else {
-    const PER_PAGE = 20;
-    const BLOCK_W = 11.8;
-    // A4横210mm - margin 10mm*2 = 190mm → ブロック高さ
-    const BLOCK_H = 190;
-    const TOP_H = 55;
-    const NO_H  = 6;
+    // ==============================
+    // 国語：縦書きレイアウト（語彙チェック方式）
+    // ==============================
+    // 各問を固定高さの縦長ブロックとして右から左に並べる
+    const mondaiMode = getVal('g-latex-mode')||'1';
+    // ansWidthで上段（ことわざ）エリアと下段（意味）エリアの高さを決める
+    // 全体高さ170mm固定、上段:下段 = 約45:110mm（語彙チェックと同比率）
+    const BLOCK_H = 170; // mm
+    const TOP_H   = 45;  // mm（上段：ことわざ）
+    const BOT_H   = 110; // mm（下段：意味）
+    const SEP_Y   = TOP_H; // 境界線の位置
 
-    // isAnswer=false → 問題ページ
-    // isAnswer=true  → 解答ページ（両方表示）
-    function makeBlock(item, n, isAnswer){
-      // dir='normal'（言葉→意味）：上段（語句）表示・下段（意味）空欄
-      // dir='reverse'（意味→言葉）：上段（語句）空欄・下段（意味）表示
-      // 解答ページ：常に両方表示
+    function makeBlock(item, n, mode){
+      // mode: '1'=上段空欄 '2'=下段空欄 '3'=ランダム '0'=両方表示（解答）
+      const rand = Math.random() < 0.5;
       let showTop, showBot;
-      if(isAnswer){ showTop=true; showBot=true; }
-      else if(item.dir==='reverse'){ showTop=false; showBot=true; }
-      else { showTop=true; showBot=false; } // normal or undefined
-      const topContent = showTop ? `<span class="vword">${item.q}</span>` : '';
-      const botContent = showBot ? `<span class="vmean">${item.a}</span>` : '';
+      if(mode==='0'){ showTop=true; showBot=true; }
+      else if(mode==='1'){ showTop=false; showBot=true; }
+      else if(mode==='2'){ showTop=true; showBot=false; }
+      else { showTop=rand; showBot=!rand; }
+
+      const topContent = showTop
+        ? `<div class="vword">${item.q}</div>`
+        : `<div class="vblank"></div>`;
+      const botContent = showBot
+        ? `<div class="vmean">${item.a}</div>`
+        : `<div class="vblank"></div>`;
+
       return `<div class="mblock">
   <div class="mno">${n}</div>
-  <div class="mtop">${topContent}</div>
   <div class="msep"></div>
+  <div class="mtop">${topContent}</div>
   <div class="mbot">${botContent}</div>
 </div>`;
     }
 
-    function makeRow(chunk, offset, isAnswer, labelSuffix){
-      const blocks = chunk.map((item,i) => makeBlock(item, offset+i+1, isAnswer)).join('');
-      return `<div class="mrow">
-    <div class="vtitle">
-      <div class="vtitle-main">${sheetLabel}</div>
-      <div class="vtitle-sub">${subtitle}${labelSuffix}</div>
-    </div>
-    ${blocks}
-  </div>`;
-    }
-
-    function makePages(items){
-      let pages = '';
-      // 問題ページ
-      for(let p=0; p < items.length; p += PER_PAGE){
-        const chunk = items.slice(p, p + PER_PAGE);
-        pages += `<div class="mpage${p > 0 ? ' page-break' : ''}">
-  ${makeRow(chunk, p, false, '　問題')}
-</div>`;
-      }
-      // 解答ページ
-      for(let p=0; p < items.length; p += PER_PAGE){
-        const chunk = items.slice(p, p + PER_PAGE);
-        pages += `<div class="mpage page-break">
-  ${makeRow(chunk, p, true, '　解答')}
-</div>`;
-      }
-      return pages;
-    }
-
-    const pages = makePages(qs);
+    let blocks = qs.map((item,i) => makeBlock(item, i+1, mondaiMode)).join('');
 
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4 landscape;margin:14mm 12mm;}
-@media print{.no-print{display:none!important;}body{margin:0;}.page-break{page-break-before:always;}}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
-padding-left:6mm;padding-right:6mm;}
-.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:4mm;}
-.no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
+@page{size:A4 landscape;margin:8mm 10mm;}
+@media print{.no-print{display:none!important;}body{margin:0;}}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;margin:0;color:#000;background:#fff;}
+.no-print{text-align:center;padding:8px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:4mm;}
+.no-print button{padding:6px 18px;font-size:10pt;cursor:pointer;margin:0 4px;border-radius:6px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
-.mpage{
-  width:100%;
-  display:flex;
-  justify-content:flex-end;
-  padding-top:6mm;
-  padding-bottom:0mm;
-}
+.page{display:flex;flex-direction:column;}
+.phead{display:flex;align-items:baseline;justify-content:center;gap:8mm;margin-bottom:2mm;}
+.ptitle{font-size:13pt;font-weight:bold;border-bottom:0.5pt solid #000;padding-bottom:1mm;}
+.psub{font-size:8pt;color:#555;}
+.pinfo{font-size:9pt;margin-bottom:3mm;writing-mode:horizontal-tb;}
 .mrow{
   display:flex;
   flex-direction:row-reverse;
-  width:fit-content;
+  align-items:flex-start;
+  gap:0;
   height:${BLOCK_H}mm;
-  border-top:0.5pt solid #85C1E9;
-  border-bottom:0.5pt solid #85C1E9;
 }
-.vtitle{
-  height:${BLOCK_H}mm;
-  width:16mm;
+.mblock{
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  border:0.4pt solid #aaa;
+  border-right:none;
   flex-shrink:0;
+  width:13mm;
+  height:${BLOCK_H}mm;
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  padding:2mm 1mm;
-  border-left:0.5pt solid #85C1E9;
-  border-right:0.5pt solid #85C1E9;
+  overflow:hidden;
 }
-.vtitle-main{
-  font-size:13pt;
-  font-weight:bold;
-  writing-mode:vertical-rl;
-  line-height:1.4;
-}
-.vtitle-sub{
-  font-size:6pt;
-  color:#555;
-  writing-mode:vertical-rl;
-  margin-top:2mm;
-  line-height:1.5;
-}
-.mblock{
-  width:${BLOCK_W}mm;
-  height:${BLOCK_H}mm;
-  flex-shrink:0;
-  border-left:0.5pt solid #85C1E9;
-  display:flex;
-  flex-direction:column;
+.mblock:last-child{
+  border-right:0.4pt solid #aaa;
 }
 .mno{
   background:#2E86C1;
   color:#fff;
   font-size:7pt;
   font-weight:bold;
-  height:${NO_H}mm;
-  min-height:${NO_H}mm;
+  width:100%;
+  height:6mm;
   display:flex;
   align-items:center;
   justify-content:center;
   writing-mode:horizontal-tb;
   flex-shrink:0;
 }
+.msep{
+  width:100%;
+  border-bottom:1pt dashed #E74C3C;
+  flex-shrink:0;
+  margin-top:${TOP_H - 6}mm;
+  position:absolute;
+  top:${TOP_H}mm;
+  left:0;
+}
 .mtop{
-  height:${TOP_H - NO_H}mm;
-  min-height:${TOP_H - NO_H}mm;
+  width:100%;
+  height:${TOP_H - 6}mm;
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  padding:3mm 1.2mm 0;
+  padding:1mm 1mm 0;
   flex-shrink:0;
-  overflow:hidden;
-}
-.msep{
-  border-top:1pt dashed #E74C3C;
-  flex-shrink:0;
+  margin-top:0;
 }
 .mbot{
-  flex:1;
+  width:100%;
+  height:${BOT_H}mm;
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  padding:3mm 1.2mm 0;
-  overflow:hidden;
+  padding:1mm 1mm 0;
+  flex-shrink:0;
+  margin-top:${TOP_H - 6}mm;
+  position:absolute;
+  top:${TOP_H}mm;
+  left:0;
 }
 .vword{
   font-size:10pt;
   font-weight:bold;
-  line-height:2.05;
-  letter-spacing:0.02em;
+  line-height:1.6;
   writing-mode:vertical-rl;
 }
 .vmean{
-  font-size:8.2pt;
-  line-height:1.9;
-  letter-spacing:0.03em;
+  font-size:8pt;
+  line-height:1.6;
   writing-mode:vertical-rl;
+}
+.vblank{
+  width:80%;
+  height:100%;
+  writing-mode:vertical-rl;
+}
+.vtitle-block{
+  writing-mode:vertical-rl;
+  border:none;
+  flex-shrink:0;
+  width:14mm;
+  height:${BLOCK_H}mm;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:3mm;
+}
+.vtitle-text{
+  font-size:14pt;
+  font-weight:bold;
+  writing-mode:vertical-rl;
+  line-height:1.4;
 }
 </style></head><body>
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
-${pages}
+<div class="page">
+  <div class="pinfo">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
+  <div class="mrow">
+    ${blocks}
+    <div class="vtitle-block">
+      <div class="vtitle-text">${sheetLabel}<br><span style="font-size:8pt;font-weight:normal">${subtitle}</span></div>
+    </div>
+  </div>
+</div>
 </body></html>`;
   }
 
