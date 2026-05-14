@@ -586,37 +586,29 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 
   } else {
     // ==============================
-    // 国語：縦書きレイアウト（語彙チェック方式）
+    // 国語：縦書きレイアウト（語彙チェック完全再現）
     // ==============================
-    // 各問を固定高さの縦長ブロックとして右から左に並べる
     const mondaiMode = getVal('g-latex-mode')||'1';
-    // ansWidthで上段（ことわざ）エリアと下段（意味）エリアの高さを決める
-    // 全体高さ170mm固定、上段:下段 = 約45:110mm（語彙チェックと同比率）
-    const BLOCK_H = 170; // mm
-    const TOP_H   = 45;  // mm（上段：ことわざ）
-    const BOT_H   = 110; // mm（下段：意味）
-    const SEP_Y   = TOP_H; // 境界線の位置
 
     function makeBlock(item, n, mode){
-      // mode: '1'=上段空欄 '2'=下段空欄 '3'=ランダム '0'=両方表示（解答）
       const rand = Math.random() < 0.5;
       let showTop, showBot;
-      if(mode==='0'){ showTop=true; showBot=true; }
-      else if(mode==='1'){ showTop=false; showBot=true; }
-      else if(mode==='2'){ showTop=true; showBot=false; }
+      if(mode==='0'){ showTop=true;  showBot=true;  }
+      else if(mode==='1'){ showTop=false; showBot=true;  }
+      else if(mode==='2'){ showTop=true;  showBot=false; }
       else { showTop=rand; showBot=!rand; }
 
       const topContent = showTop
         ? `<div class="vword">${item.q}</div>`
-        : `<div class="vblank"></div>`;
+        : '';
       const botContent = showBot
         ? `<div class="vmean">${item.a}</div>`
-        : `<div class="vblank"></div>`;
+        : '';
 
       return `<div class="mblock">
   <div class="mno">${n}</div>
-  <div class="msep"></div>
   <div class="mtop">${topContent}</div>
+  <div class="msep"></div>
   <div class="mbot">${botContent}</div>
 </div>`;
     }
@@ -628,129 +620,115 @@ table{border-collapse:collapse;table-layout:fixed;}${colStyle}
 <style>
 @page{size:A4 landscape;margin:8mm 10mm;}
 @media print{.no-print{display:none!important;}body{margin:0;}}
+*{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Hiragino Sans','Meiryo',sans-serif;margin:0;color:#000;background:#fff;}
 .no-print{text-align:center;padding:8px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:4mm;}
 .no-print button{padding:6px 18px;font-size:10pt;cursor:pointer;margin:0 4px;border-radius:6px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
-.page{display:flex;flex-direction:column;}
-.phead{display:flex;align-items:baseline;justify-content:center;gap:8mm;margin-bottom:2mm;}
-.ptitle{font-size:13pt;font-weight:bold;border-bottom:0.5pt solid #000;padding-bottom:1mm;}
-.psub{font-size:8pt;color:#555;}
-.pinfo{font-size:9pt;margin-bottom:3mm;writing-mode:horizontal-tb;}
+.pinfo{font-size:9pt;margin-bottom:3mm;}
 .mrow{
   display:flex;
   flex-direction:row-reverse;
-  align-items:flex-start;
-  gap:0;
-  height:${BLOCK_H}mm;
+  align-items:stretch;
+  border-right:0.4pt solid #85C1E9;
 }
 .mblock{
   writing-mode:vertical-rl;
   text-orientation:mixed;
-  border:0.4pt solid #aaa;
-  border-right:none;
-  flex-shrink:0;
-  width:13mm;
-  height:${BLOCK_H}mm;
+  border-left:0.4pt solid #85C1E9;
+  border-top:0.4pt solid #85C1E9;
+  border-bottom:0.4pt solid #85C1E9;
+  width:10.8mm;
+  height:170mm;
   position:relative;
   display:flex;
   flex-direction:column;
-  align-items:center;
+  flex-shrink:0;
   overflow:hidden;
-}
-.mblock:last-child{
-  border-right:0.4pt solid #aaa;
 }
 .mno{
   background:#2E86C1;
   color:#fff;
-  font-size:7pt;
+  font-size:7.5pt;
   font-weight:bold;
   width:100%;
-  height:6mm;
+  min-height:6mm;
+  max-height:6mm;
   display:flex;
   align-items:center;
   justify-content:center;
   writing-mode:horizontal-tb;
   flex-shrink:0;
 }
-.msep{
-  width:100%;
-  border-bottom:1pt dashed #E74C3C;
-  flex-shrink:0;
-  margin-top:${TOP_H - 6}mm;
-  position:absolute;
-  top:${TOP_H}mm;
-  left:0;
-}
 .mtop{
   width:100%;
-  height:${TOP_H - 6}mm;
+  height:45mm;
   display:flex;
   align-items:flex-start;
   justify-content:center;
   padding:1mm 1mm 0;
   flex-shrink:0;
-  margin-top:0;
+  overflow:hidden;
+}
+.msep{
+  width:100%;
+  border-top:1pt dashed #E74C3C;
+  flex-shrink:0;
 }
 .mbot{
   width:100%;
-  height:${BOT_H}mm;
+  flex:1;
   display:flex;
   align-items:flex-start;
   justify-content:center;
   padding:1mm 1mm 0;
-  flex-shrink:0;
-  margin-top:${TOP_H - 6}mm;
-  position:absolute;
-  top:${TOP_H}mm;
-  left:0;
+  overflow:hidden;
 }
 .vword{
   font-size:10pt;
   font-weight:bold;
-  line-height:1.6;
+  line-height:1.7;
   writing-mode:vertical-rl;
 }
 .vmean{
   font-size:8pt;
-  line-height:1.6;
+  line-height:1.7;
   writing-mode:vertical-rl;
 }
-.vblank{
-  width:80%;
-  height:100%;
+.vtitle{
   writing-mode:vertical-rl;
-}
-.vtitle-block{
-  writing-mode:vertical-rl;
-  border:none;
-  flex-shrink:0;
-  width:14mm;
-  height:${BLOCK_H}mm;
+  width:15mm;
+  height:170mm;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
-  margin-left:3mm;
+  flex-shrink:0;
+  margin-right:3mm;
 }
-.vtitle-text{
-  font-size:14pt;
+.vtitle-main{
+  font-size:15pt;
   font-weight:bold;
+  line-height:1.5;
   writing-mode:vertical-rl;
-  line-height:1.4;
+}
+.vtitle-sub{
+  font-size:7.5pt;
+  color:#555;
+  writing-mode:vertical-rl;
+  margin-top:2mm;
 }
 </style></head><body>
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
-<div class="page">
-  <div class="pinfo">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
-  <div class="mrow">
-    ${blocks}
-    <div class="vtitle-block">
-      <div class="vtitle-text">${sheetLabel}<br><span style="font-size:8pt;font-weight:normal">${subtitle}</span></div>
-    </div>
+<div class="pinfo">クラス：___________　名前：___________________　点数：______／${qs.length}</div>
+<div class="mrow">
+  ${blocks}
+  <div class="vtitle">
+    <div class="vtitle-main">${sheetLabel}</div>
+    <div class="vtitle-sub">${subtitle}</div>
   </div>
 </div>
 </body></html>`;
