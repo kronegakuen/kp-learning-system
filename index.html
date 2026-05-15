@@ -485,10 +485,8 @@ function renderActive(){
   document.getElementById('a-type').textContent=item.type;
   document.getElementById('a-q').textContent=item.q;
   document.getElementById('a-ans').textContent=item.a;
-  const aAns=document.getElementById('a-ans');
-  aAns.style.transition='none';aAns.style.opacity='0';aAns.classList.remove('show');
-  setTimeout(()=>aAns.style.transition='',50);
-  const pronEl=document.getElementById('a-pron');if(pronEl){pronEl.style.transition='none';pronEl.textContent='';pronEl.style.opacity='0';setTimeout(()=>pronEl.style.transition='',50);}
+  document.getElementById('a-ans').classList.remove('show');
+  const pronEl=document.getElementById('a-pron');if(pronEl){pronEl.textContent='';pronEl.style.opacity='0';}
   const aPron = document.getElementById('a-pron'); if(aPron) aPron.style.opacity='0';
   document.getElementById('btn-reveal').style.display='';
   document.getElementById('judge-row').style.display='none';
