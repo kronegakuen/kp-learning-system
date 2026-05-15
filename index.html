@@ -486,7 +486,7 @@ function renderActive(){
   document.getElementById('a-q').textContent=item.q;
   document.getElementById('a-ans').textContent=item.a;
   document.getElementById('a-ans').classList.remove('show');
-  const pronEl=document.getElementById('a-pron');if(pronEl){pronEl.textContent=item.pronunciation||'';pronEl.style.opacity='0';pronEl.style.display='';}
+  const pronEl=document.getElementById('a-pron');if(pronEl){pronEl.textContent='';pronEl.style.opacity='0';pronEl.style.display='';}
   const aPron = document.getElementById('a-pron'); if(aPron) aPron.style.opacity='0';
   document.getElementById('btn-reveal').style.display='';
   document.getElementById('judge-row').style.display='none';
