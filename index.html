@@ -592,14 +592,21 @@ function makePDF(){
     // 左列(1〜20)・右列(21〜40)を横並びにして1ページ40問
     const HALF = 20;
 
-    function makeEigoCell(item, n, isAnswer){
-      const ans = isAnswer
-        ? `<span class="atxt">${item.a}</span>`
-        : `<span class="ans-line"></span>`;
+    function makeEigoCell(item, n, isAnswer, mode){
+      // ej: 英語表示・日本語空欄  je: 日本語表示・英語空欄  random: ランダム  answer: 両方
+      const rand = Math.random() < 0.5;
+      let showQ, showA;
+      if(isAnswer){ showQ=true; showA=true; }
+      else if(mode==='ej'){ showQ=true; showA=false; }
+      else if(mode==='je'){ showQ=false; showA=true; }
+      else if(mode==='random'){ showQ=rand; showA=!rand; }
+      else { showQ=true; showA=false; }
+      const qContent = showQ ? item.q : '<span class="ans-line"></span>';
+      const aContent = showA ? `<span class="atxt">${item.a}</span>` : '<span class="ans-line"></span>';
       return `<div class="erow">
   <span class="ncell">Q${n}</span>
-  <span class="wcell">${item.q}</span>
-  <span class="acell">${ans}</span>
+  <span class="wcell">${qContent}</span>
+  <span class="acell">${aContent}</span>
 </div>`;
     }
 
