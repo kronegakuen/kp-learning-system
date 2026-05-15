@@ -650,7 +650,7 @@ ${pages}
       else{sk=rand;sy=!rand;}
       const kc=sk?'<span class="kvword">'+item.word+'</span>':'';
       const yc=sy?'<span class="kvmean">'+item.meaning+'</span>':'';
-      return '<div class="kmblock"><div class="kmno">'+n+'</div><div class="kmtop">'+kc+'</div><div class="kmsep"></div><div class="kmbot">'+yc+'</div></div>';
+      return '<div class="kmblock"><div class="kmno">'+n+'</div><div class="kmtop">'+yc+'</div><div class="kmsep"></div><div class="kmbot">'+kc+'</div></div>';
     }
     function makeKanjiPages(items,mode,isSuffix){
       let pages='';
