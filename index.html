@@ -610,6 +610,7 @@ function makePDF(){
 </div>`;
     }
 
+    const eigoMode = getVal('g-eigo-mode')||'ej';
     function makeEigoPage(chunk, offset, isAnswer, labelSuffix){
       const left  = chunk.slice(0, HALF);
       const right = chunk.slice(HALF);
@@ -617,8 +618,8 @@ function makePDF(){
       for(let i=0; i<HALF; i++){
         const l = left[i];
         const r = right[i];
-        const lCell = l ? makeEigoCell(l, offset+i+1, isAnswer) : '<div class="erow empty"></div>';
-        const rCell = r ? makeEigoCell(r, offset+HALF+i+1, isAnswer) : '<div class="erow empty"></div>';
+        const lCell = l ? makeEigoCell(l, offset+i+1, isAnswer, eigoMode) : '<div class="erow empty"></div>';
+        const rCell = r ? makeEigoCell(r, offset+HALF+i+1, isAnswer, eigoMode) : '<div class="erow empty"></div>';
         rows += `<div class="eline">${lCell}<div class="col-sep"></div>${rCell}</div>`;
       }
       return `<div class="epage">
