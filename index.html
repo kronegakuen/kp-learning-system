@@ -172,6 +172,15 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
         <button class="chip" data-v="answer" onclick="pickChip('g-kanji-mode',this)"><span class="ck">✓</span>解答</button>
       </div>
     </div>
+    <div class="field" id="field-eigo-mode" style="display:none">
+      <span class="field-label">問題モード（英語）</span>
+      <div class="chip-group" id="g-eigo-mode">
+        <button class="chip on" data-v="ej" onclick="pickChip('g-eigo-mode',this)"><span class="ck">✓</span>英語→日本語</button>
+        <button class="chip" data-v="je" onclick="pickChip('g-eigo-mode',this)"><span class="ck">✓</span>日本語→英語</button>
+        <button class="chip" data-v="random" onclick="pickChip('g-eigo-mode',this)"><span class="ck">✓</span>ランダム</button>
+        <button class="chip" data-v="answer" onclick="pickChip('g-eigo-mode',this)"><span class="ck">✓</span>解答</button>
+      </div>
+    </div>
     <button class="btn-action btn-pdf-a" id="btn-pdf" onclick="makePDF()" disabled>
       📄 PDFを作る
     </button>
@@ -369,6 +378,7 @@ async function pickSheet(){
     document.getElementById('btn-pdf').disabled=false;
     document.getElementById('field-kanji-mode').style.display = tb.subject === 'kanji' ? '' : 'none';
     document.getElementById('field-latex-mode').style.display = tb.subject === 'kokugo' ? '' : 'none';
+    document.getElementById('field-eigo-mode').style.display = tb.subject === 'eigo' ? '' : 'none';
 
   } catch(e){
     document.getElementById('rng-hint').textContent='読み込みに失敗しました';
