@@ -691,7 +691,7 @@ ${pages}
     const PER_PAGE = 20;
     const BLOCK_W = 11.8;
     // A4横210mm - margin 10mm*2 = 190mm → ブロック高さ
-    const BLOCK_H = 190;
+    const BLOCK_H = 188;
     const TOP_H = 55;
     const NO_H  = 6;
 
@@ -750,11 +750,10 @@ ${pages}
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <title>${sheetLabel}テスト</title>
 <style>
-@page{size:A4 landscape;margin:14mm 12mm;}
+@page{size:A4 landscape;margin:10mm;}
 @media print{.no-print{display:none!important;}body{margin:0;}.page-break{page-break-before:always;}}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
-padding-left:6mm;padding-right:6mm;}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;}
 .no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:4mm;}
 .no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;margin:0 4px;border-radius:5px;border:1px solid #aaa;}
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
@@ -762,8 +761,7 @@ padding-left:6mm;padding-right:6mm;}
   width:100%;
   display:flex;
   justify-content:flex-end;
-  padding-top:6mm;
-  padding-bottom:0mm;
+  padding-top:0;
 }
 .mrow{
   display:flex;
