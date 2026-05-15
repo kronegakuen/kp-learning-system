@@ -716,14 +716,19 @@ ${pages}
 
     // isAnswer=false → 問題ページ
     // isAnswer=true  → 解答ページ（両方表示）
+    const latexMode = getVal('g-latex-mode')||'1';
     function makeBlock(item, n, isAnswer){
-      // dir='normal'（言葉→意味）：上段（語句）表示・下段（意味）空欄
-      // dir='reverse'（意味→言葉）：上段（語句）空欄・下段（意味）表示
+      // latexMode: 1=上段空欄 2=下段空欄 3=ランダム 0=両方表示
       // 解答ページ：常に両方表示
+      const rand = Math.random() < 0.5;
       let showTop, showBot;
       if(isAnswer){ showTop=true; showBot=true; }
+      else if(latexMode==='0'){ showTop=true; showBot=true; }
+      else if(latexMode==='1'){ showTop=false; showBot=true; }
+      else if(latexMode==='2'){ showTop=true; showBot=false; }
+      else if(latexMode==='3'){ showTop=rand; showBot=!rand; }
       else if(item.dir==='reverse'){ showTop=false; showBot=true; }
-      else { showTop=true; showBot=false; } // normal or undefined
+      else { showTop=true; showBot=false; }
       const topContent = showTop ? `<span class="vword">${item.q}</span>` : '';
       const botContent = showBot ? `<span class="vmean">${item.a}</span>` : '';
       return `<div class="mblock">
