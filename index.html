@@ -341,7 +341,7 @@ async function pickSheet(){
       const no = parseInt(r[0])||i;
       if(isEigo){
         // A:番号 B:学年 C:テキスト D:英単語 E:意味
-        items.push({ no, word: (r[3]||'').trim(), meaning: (r[4]||'').trim(), genre: '英→日' });
+        items.push({ no, word: (r[3]||'').trim(), meaning: (r[4]||'').trim(), pronunciation: (r[5]||'').trim(), genre: '英→日' });
       } else {
         // A:番号 B:学年 C:テキスト D:種別 E:言葉 F:意味
         const genre = (r[3]||'').trim();
@@ -428,8 +428,8 @@ function buildQueue(countGroup){
   if(tb.genres && curGenres.length>0)
     base = base.filter(d=>curGenres.includes(d.genre));
   let items=[];
-  if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
-  if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
+  if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, pronunciation:d.pronunciation||'', type:d.genre}));
+  if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, pronunciation:d.pronunciation||'', type:d.genre+'（逆）'}));
   shuffle(items);
   const n = getVal(countGroup)||'10';
   return n==='all' ? items : items.slice(0, parseInt(n));
