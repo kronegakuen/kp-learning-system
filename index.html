@@ -601,8 +601,8 @@ function makePDF(){
       else if(mode==='je'){ showQ=false; showA=true; }
       else if(mode==='random'){ showQ=rand; showA=!rand; }
       else { showQ=true; showA=false; }
-      const qContent = showQ ? item.q : '<span class="ans-line"></span>';
-      const aContent = showA ? `<span class="atxt">${item.a}</span>` : '<span class="ans-line"></span>';
+      const qContent = showQ ? `<span class="wbold">${item.q}</span>` : `<span class="ans-line-w"></span>`;
+      const aContent = showA ? `<span class="atxt">${item.a}</span>` : `<span class="ans-line"></span>`;
       return `<div class="erow">
   <span class="ncell">Q${n}</span>
   <span class="wcell">${qContent}</span>
@@ -660,7 +660,7 @@ h1{font-size:11pt;font-weight:bold;text-align:center;margin:5mm 0 0.5mm;border-b
 .wcell{font-size:10pt;font-weight:bold;width:36mm;flex-shrink:0;padding:0 2mm;white-space:nowrap;overflow:hidden;}
 .acell{flex:1;display:flex;align-items:center;padding:0 1mm;}
 .ans-line{flex:1;border-bottom:0.5pt solid #999;height:3.5mm;}
-.atxt{font-size:9pt;color:#1a4f8a;font-weight:bold;}
+.atxt{font-size:9pt;color:#1a4f8a;font-weight:bold;}.wbold{font-size:10pt;font-weight:bold;}.ans-line-w{display:block;width:90%;border-bottom:0.5pt solid #999;height:3.5mm;}
 </style></head><body>
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
