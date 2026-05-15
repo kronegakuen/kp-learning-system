@@ -468,6 +468,7 @@ function buildQueueForPDF(countGroup){
 function startTraining(){
   if(!curSheet) return;
   queue=buildQueue('g-count'); idx=0;
+  const initPron=document.getElementById('a-pron');if(initPron){initPron.textContent='';initPron.style.opacity='0';}
   const mode = getVal('g-mode')||'active';
   if(mode==='active'){ showSec('sec-active'); renderActive(); }
   else { showSec('sec-passive'); startPassive(); }
