@@ -158,7 +158,6 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
         <button class="chip on" data-v="1" onclick="pickChip('g-latex-mode',this)"><span class="ck">✓</span>上段空欄（ことわざ）</button>
         <button class="chip" data-v="2" onclick="pickChip('g-latex-mode',this)"><span class="ck">✓</span>下段空欄（意味）</button>
         <button class="chip" data-v="3" onclick="pickChip('g-latex-mode',this)"><span class="ck">✓</span>ランダム</button>
-        <button class="chip" data-v="0" onclick="pickChip('g-latex-mode',this)"><span class="ck">✓</span>両方表示（解答）</button>
       </div>
     </div>
     <div class="field" id="field-kanji-mode" style="display:none">
@@ -723,7 +722,6 @@ ${pages}
       const rand = Math.random() < 0.5;
       let showTop, showBot;
       if(isAnswer){ showTop=true; showBot=true; }
-      else if(latexMode==='0'){ showTop=true; showBot=true; }
       else if(latexMode==='1'){ showTop=false; showBot=true; }
       else if(latexMode==='2'){ showTop=true; showBot=false; }
       else if(latexMode==='3'){ showTop=rand; showBot=!rand; }
