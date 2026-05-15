@@ -423,6 +423,8 @@ function buildQueueForPDF(countGroup){
   if(isEigo){
     if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
     if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
+  } else if(tb.subject === 'kanji'){
+    base.forEach(d=>items.push({word:d.word, meaning:d.meaning, type:d.genre}));
   } else {
     // 国語：語句=上段・意味=下段固定。dirを保持して問題ページの空欄を制御
     if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'normal'}));
