@@ -367,6 +367,8 @@ async function pickSheet(){
     document.getElementById('rng-hint').textContent = '（全'+items.length+'問）';
     document.getElementById('btn-start').disabled=false;
     document.getElementById('btn-pdf').disabled=false;
+    document.getElementById('field-kanji-mode').style.display = tb.subject === 'kanji' ? '' : 'none';
+    document.getElementById('field-latex-mode').style.display = tb.subject === 'kokugo' ? '' : 'none';
 
   } catch(e){
     document.getElementById('rng-hint').textContent='読み込みに失敗しました';
