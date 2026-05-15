@@ -193,7 +193,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div class="card-type" id="a-type"></div>
     <div class="card-q" id="a-q"></div>
     <div class="card-a" id="a-ans"></div>
-    <div id="a-pron" style="font-size:14px;color:#888;margin-top:6px;opacity:0;transition:opacity .4s;min-height:20px;"></div>
+    <div id="a-pron" style="font-size:14px;color:#888;margin-top:6px;opacity:0;visibility:hidden;transition:opacity .3s;min-height:20px;"></div>
   </div>
   <div class="btn-row"><button class="btn-blue" id="btn-reveal" onclick="revealAnswer()">答えを見る</button></div>
   <div class="btn-row" id="judge-row" style="display:none">
@@ -486,14 +486,14 @@ function renderActive(){
   document.getElementById('a-q').textContent=item.q;
   document.getElementById('a-ans').textContent=item.a;
   document.getElementById('a-ans').classList.remove('show');
-  const pronEl=document.getElementById('a-pron');if(pronEl){pronEl.textContent='';pronEl.style.opacity='0';}
+  const pronEl=document.getElementById('a-pron');if(pronEl){pronEl.textContent=item.pronunciation||'';pronEl.style.opacity='0';pronEl.style.visibility='hidden';}
   const aPron = document.getElementById('a-pron'); if(aPron) aPron.style.opacity='0';
   document.getElementById('btn-reveal').style.display='';
   document.getElementById('judge-row').style.display='none';
 }
 function revealAnswer(){
   document.getElementById('a-ans').classList.add('show');
-  const pron = document.getElementById('a-pron'); if(pron){pron.style.display='';pron.style.opacity='1';}
+  const pron = document.getElementById('a-pron'); if(pron){pron.style.visibility='visible';pron.style.opacity='1';}
   document.getElementById('btn-reveal').style.display='none';
   document.getElementById('judge-row').style.display='flex';
 }
