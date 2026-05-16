@@ -483,6 +483,7 @@ function buildQueueForPDF(countGroup){
 function startTraining(){
   if(!curSheet) return;
   queue=buildQueue('g-count'); idx=0;
+  logTraining(queue.length);
   const initPron=document.getElementById('a-pron');if(initPron){initPron.textContent='';initPron.style.opacity='0';}
   const mode = getVal('g-mode')||'active';
   if(mode==='active'){ showSec('sec-active'); renderActive(); }
@@ -901,6 +902,8 @@ ${pages}
 </body></html>`;
   }
 
+  // ログ記録
+  logPDF(qs.length);
   // 共通：タブを開く
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
@@ -926,6 +929,54 @@ loadManageSheet();
 const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
 let currentUser = null;
+
+// ============================================================
+// ログ記録
+// ============================================================
+async function logTraining(count) {
+  if(!currentUser) return;
+  const tb = TEXTBOOKS[curSheet];
+  if(!tb) return;
+  try {
+    await sbFetch('training_logs', {
+      method: 'POST',
+      headers: {'Prefer': 'return=minimal'},
+      body: JSON.stringify({
+        user_id: currentUser.id,
+        textbook_key: curSheet,
+        textbook_name: tb.label,
+        subject: tb.subject,
+        direction: getVal('g-dir')||'normal',
+        count: count,
+        mode: getVal('g-mode')||'active'
+      })
+    });
+  } catch(e) { console.log('training log error', e); }
+}
+
+async function logPDF(count) {
+  if(!currentUser) return;
+  const tb = TEXTBOOKS[curSheet];
+  if(!tb) return;
+  try {
+    const pdfMode = tb.subject === 'kanji' ? (getVal('g-kanji-mode')||'yomi') :
+                    tb.subject === 'eigo'  ? (getVal('g-eigo-mode')||'ej') :
+                    (getVal('g-latex-mode')||'1');
+    await sbFetch('pdf_logs', {
+      method: 'POST',
+      headers: {'Prefer': 'return=minimal'},
+      body: JSON.stringify({
+        user_id: currentUser.id,
+        textbook_key: curSheet,
+        textbook_name: tb.label,
+        subject: tb.subject,
+        count: count,
+        pdf_mode: pdfMode
+      })
+    });
+  } catch(e) { console.log('pdf log error', e); }
+}
+
 async function sbFetch(path, opts) {
   opts = opts || {};
   const headers = {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type': 'application/json'};
