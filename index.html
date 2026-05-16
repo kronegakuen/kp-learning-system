@@ -134,20 +134,10 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 
 <!-- 設定画面 -->
 <div class="sec on" id="sec-setup">
-  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><div id="user-stats" style="display:none;flex-direction:row;gap:10px;align-items:center;margin-left:8px;">
-  <div style="text-align:center;">
-    <div id="stat-streak" style="font-size:16px;font-weight:500;color:var(--gL);">🔥0</div>
-    <div style="font-size:9px;color:var(--tmu);">連続日数</div>
-  </div>
-  <div style="width:1px;height:28px;background:var(--nv5);"></div>
-  <div style="text-align:center;">
-    <div id="stat-total" style="font-size:16px;font-weight:500;color:var(--gL);">0問</div>
-    <div style="font-size:9px;color:var(--tmu);">累計</div>
-  </div>
-</div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
+  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><div id="user-stats" style="display:none;"><span id="stat-streak"></span><span id="stat-total"></span></div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
   <!-- スタッツカード -->
-  <div id="stats-card" style="display:none;background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px;margin:12px 16px 0;display:none;">
+  <div id="stats-card" style="display:none;background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px;margin:0 0 1rem;">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;">
       <div>
         <div id="sc-streak" style="font-size:20px;font-weight:500;color:var(--gL);">🔥0</div>
