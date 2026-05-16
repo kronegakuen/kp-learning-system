@@ -224,6 +224,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
         </div>
       </div>
     </div>
+    <button onclick="showReviewSection()" style="width:100%;padding:10px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:13px;cursor:pointer;margin-bottom:8px;" id="btn-review">📋 要復習リスト</button>
     <button class="btn-action btn-train" id="btn-start" onclick="startTraining()" disabled>
       ▶ トレーニング開始
     </button>
@@ -309,6 +310,18 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div style="display:flex;gap:12px;">
       <button class="btn-ng" id="btn-ng-p" onclick="judgePassive(false)" disabled>✕ もう一度</button>
       <button class="btn-ok" id="btn-ok-p" onclick="judgePassive(true)" disabled>○ 正解</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- 要復習リスト画面 -->
+<div class="sec" id="sec-review">
+  <div class="hd"><h1 style="font-family:'Kaisei Opti',serif;">要復習リスト</h1><button class="end-btn" onclick="goSetup()">← 戻る</button></div>
+  <div class="wrap">
+    <div class="block">
+      <div id="review-list-container" style="font-size:13px;">読み込み中...</div>
+      <button onclick="startReviewTraining()" style="width:100%;padding:12px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:14px;cursor:pointer;margin-top:12px;">要復習問題だけ再挑戦</button>
     </div>
   </div>
 </div>
@@ -593,6 +606,7 @@ function startTraining(){
   queue=buildQueue('g-count'); idx=0;
   sessionCorrect=0; sessionTotal=0;
   sessionTimes=[]; sessionFastCount=0; sessionSlowCount=0;
+  sessionWrongItems=[]; sessionSlowItems=[];
   logTraining();
   const initPron=document.getElementById('a-pron');if(initPron){initPron.textContent='';initPron.style.opacity='0';}
   const mode = getVal('g-mode')||'active';
@@ -611,6 +625,7 @@ async function renderActive(){
     showResultCard(rate, sessionCorrect, sessionTotal, streak, cumTotal, avgTime, sessionFastCount, sessionSlowCount);
     showBadges(cumTotal, streak);
     logTrainingResult(idx, sessionCorrect, sessionTotal);
+    saveReviewItems(sessionWrongItems, sessionSlowItems);
     setTimeout(loadUserStats, 500);
     return;
   }
@@ -636,7 +651,11 @@ function revealAnswer(){
   const elapsed = Math.round((performance.now() - questionStartTime) / 100) / 10;
   sessionTimes.push(elapsed);
   if(elapsed <= 3) sessionFastCount++;
-  if(elapsed >= 10) sessionSlowCount++;
+  if(elapsed >= 10) {
+    sessionSlowCount++;
+    const item = queue[idx];
+    if(item) sessionSlowItems.push({word:item.q, meaning:item.a, elapsed});
+  }
   document.getElementById('a-ans').classList.add('show');
   const pron = document.getElementById('a-pron'); if(pron){pron.style.visibility='visible';pron.style.opacity='1';}
   // カウントダウン開始
@@ -647,6 +666,10 @@ function revealAnswer(){
 function judge(isCorrect){
   sessionTotal++;
   if(isCorrect) sessionCorrect++;
+  else {
+    const item = queue[idx];
+    if(item) sessionWrongItems.push({word:item.q, meaning:item.a, elapsed: sessionTimes[sessionTimes.length-1]||0});
+  }
   idx++;
   renderActive();
 }
@@ -1437,7 +1460,14 @@ function showResultCard(rate, correct, total, streak, cumTotal, avgTime, fastCou
         '</div>' +
       '</div>' +
     '</div>' : '') +
-    renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '');
+    renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '') +
+    ((sessionWrongItems.length + sessionSlowItems.length) > 0 ?
+      '<div style="margin-top:12px;background:#0C1B33;border-radius:8px;padding:12px;">' +
+      '<div style="font-size:12px;font-weight:500;color:#F09595;margin-bottom:8px;">要復習リスト（'+( sessionWrongItems.length + sessionSlowItems.length )+'問）</div>' +
+      renderReviewList(sessionWrongItems.concat(sessionSlowItems.filter(function(s){return !sessionWrongItems.find(function(w){return w.word===s.word;});}))) +
+      '<button onclick="startReviewTraining()" style="width:100%;padding:10px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:13px;cursor:pointer;margin-top:10px;">要復習問題だけ再挑戦</button>' +
+      '</div>'
+    : '');
 }
 
 
@@ -1540,6 +1570,115 @@ function renderStampCard(stamps, grade) {
   return html;
 }
 
+
+
+// ============================================================
+// 要復習システム
+// ============================================================
+async function saveReviewItems(wrongItems, slowItems) {
+  if(!currentUser || !curSheet) return;
+  const tb = TEXTBOOKS[curSheet];
+  if(!tb) return;
+  
+  const items = [];
+  wrongItems.forEach(function(item) {
+    items.push({
+      user_id: currentUser.id,
+      textbook_key: curSheet,
+      textbook_name: tb.label,
+      word: item.word,
+      meaning: item.meaning,
+      reason: 'wrong',
+      elapsed_secs: item.elapsed||0
+    });
+  });
+  slowItems.forEach(function(item) {
+    // 間違いリストと重複しない
+    if(!wrongItems.find(function(w){return w.word===item.word;})) {
+      items.push({
+        user_id: currentUser.id,
+        textbook_key: curSheet,
+        textbook_name: tb.label,
+        word: item.word,
+        meaning: item.meaning,
+        reason: 'slow',
+        elapsed_secs: item.elapsed||0
+      });
+    }
+  });
+  
+  if(!items.length) return;
+  try {
+    await sbFetch('review_items', {
+      method: 'POST',
+      headers: {'Prefer': 'resolution=ignore-duplicates,return=minimal'},
+      body: JSON.stringify(items)
+    });
+  } catch(e) { console.log('review save error', e); }
+}
+
+async function loadReviewItems() {
+  if(!currentUser) return [];
+  try {
+    const items = await sbFetch('review_items?user_id=eq.'+currentUser.id+'&order=created_at.desc&select=*');
+    return items || [];
+  } catch(e) { return []; }
+}
+
+async function deleteReviewItem(id) {
+  try {
+    await sbFetch('review_items?id=eq.'+id, {method:'DELETE'});
+  } catch(e) { console.log('review delete error', e); }
+}
+
+
+async function showReviewSection() {
+  showSec('sec-review');
+  const items = await loadReviewItems();
+  const el = document.getElementById('review-list-container');
+  if(!items.length) {
+    el.innerHTML = '<p style="color:var(--tmu);text-align:center;padding:20px;">要復習リストは空です</p>';
+    return;
+  }
+  el.innerHTML = renderReviewList(items);
+}
+
+async function startReviewTraining() {
+  const items = await loadReviewItems();
+  if(!items.length) { alert('要復習リストが空です'); return; }
+  queue = items.map(function(item) {
+    return {q: item.word, a: item.meaning, type: item.textbook_name, reviewId: item.id};
+  });
+  idx = 0;
+  sessionCorrect=0; sessionTotal=0;
+  sessionTimes=[]; sessionFastCount=0; sessionSlowCount=0;
+  sessionWrongItems=[]; sessionSlowItems=[];
+  window._isReviewMode = true;
+  logTraining();
+  showSec('sec-active');
+  renderActive();
+}
+
+function renderReviewList(items) {
+  if(!items.length) return '<p style="color:var(--tmu);font-size:13px;text-align:center;padding:12px;">要復習リストは空です</p>';
+  var html = '<div style="display:flex;flex-direction:column;gap:6px;">';
+  items.forEach(function(item) {
+    var borderColor = item.reason === 'wrong' ? '#F09595' : '#EF9F27';
+    var label = item.reason === 'wrong' ? '✕ 不正解' : '⏱ '+item.elapsed_secs+'秒かかった';
+    var labelColor = item.reason === 'wrong' ? '#F09595' : '#EF9F27';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--nv7);border-radius:6px;border-left:3px solid '+borderColor+';">';
+    html += '<div>';
+    html += '<div style="font-size:10px;color:'+labelColor+';margin-bottom:2px;">'+label+'</div>';
+    html += '<span style="font-family:\'Zen Old Mincho\',serif;font-size:15px;color:var(--tb);">'+item.word+'</span>';
+    html += '</div>';
+    html += '<div style="text-align:right;">';
+    html += '<span style="font-size:12px;color:var(--gL);">'+item.meaning+'</span>';
+    html += '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
 
 // ============================================================
 // カウントダウン（ズル防止）
