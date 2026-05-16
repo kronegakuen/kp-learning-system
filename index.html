@@ -575,7 +575,7 @@ function startTraining(){
   if(!curSheet) return;
   queue=buildQueue('g-count'); idx=0;
   sessionCorrect=0; sessionTotal=0;
-  logTraining(queue.length);
+  logTraining();
   const initPron=document.getElementById('a-pron');if(initPron){initPron.textContent='';initPron.style.opacity='0';}
   const mode = getVal('g-mode')||'active';
   if(mode==='active'){ showSec('sec-active'); renderActive(); }
@@ -586,17 +586,12 @@ async function renderActive(){
     showSec('sec-end');
     const rate = sessionTotal > 0 ? Math.round(sessionCorrect/sessionTotal*100) : 0;
     document.getElementById('end-msg').textContent = '';
-    // 結果カード表示
-    // ストリーク・累計更新後に表示
     await loadUserStats();
     const streak = window._userStreak || 0;
     const cumTotal = window._userTotal || 0;
-    // 結果カード表示
     showResultCard(rate, sessionCorrect, sessionTotal, streak, cumTotal);
-    // バッジチェック
     showBadges(cumTotal, streak);
-    // 正答率をログに記録
-    logTrainingResult(sessionCorrect, sessionTotal);
+    logTrainingResult(idx, sessionCorrect, sessionTotal);
     return;
   }
   const item=queue[idx], tot=queue.length;
@@ -651,7 +646,7 @@ async function renderPassiveCard(){
     const cumTotal = window._userTotal || 0;
     showResultCard(pRate, passiveCorrect, passiveTotal, streak, cumTotal);
     showBadges(cumTotal, streak);
-    logTrainingResult(passiveCorrect, passiveTotal);
+    logTrainingResult(idx, passiveCorrect, passiveTotal);
     return;
   }
   const item=queue[idx];
@@ -1542,39 +1537,40 @@ async function loadUserStats() {
   } catch(e) { console.log('stats error', e); }
 }
 
-async function logTrainingResult(correct, total) {
+async function logTrainingResult(count, correct, total) {
   if(!currentUser || !curSheet) return;
-  // 最新のtraining_logを更新
   try {
-    const logs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&order=created_at.desc&limit=1&select=id');
-    if(logs && logs[0]) {
-      await sbFetch('training_logs?id=eq.'+logs[0].id, {
+    const logId = window._currentLogId;
+    if(logId) {
+      await sbFetch('training_logs?id=eq.'+logId, {
         method: 'PATCH',
         headers: {'Prefer': 'return=minimal'},
-        body: JSON.stringify({correct, total})
+        body: JSON.stringify({count, correct, total})
       });
+      window._currentLogId = null;
     }
   } catch(e) { console.log('result log error', e); }
 }
 
-async function logTraining(count) {
+async function logTraining() {
   if(!currentUser) return;
   const tb = TEXTBOOKS[curSheet];
   if(!tb) return;
   try {
-    await sbFetch('training_logs', {
+    const res = await sbFetch('training_logs', {
       method: 'POST',
-      headers: {'Prefer': 'return=minimal'},
+      headers: {'Prefer': 'return=representation'},
       body: JSON.stringify({
         user_id: currentUser.id,
         textbook_key: curSheet,
         textbook_name: tb.label,
         subject: tb.subject,
         direction: getVal('g-dir')||'normal',
-        count: count,
+        count: 0,
         mode: getVal('g-mode')||'active'
       })
     });
+    if(res && res[0]) window._currentLogId = res[0].id;
   } catch(e) { console.log('training log error', e); }
 }
 
