@@ -575,7 +575,7 @@ function startTraining(){
   if(mode==='active'){ showSec('sec-active'); renderActive(); }
   else { showSec('sec-passive'); startPassive(); }
 }
-function renderActive(){
+async function renderActive(){
   if(idx>=queue.length){
     showSec('sec-end');
     const rate = sessionTotal > 0 ? Math.round(sessionCorrect/sessionTotal*100) : 0;
