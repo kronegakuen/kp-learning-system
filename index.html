@@ -69,16 +69,11 @@ const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
 let currentUser = null;
 
-async function sbFetch(path, opts={})){
-  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer '+SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      ...opts.headers
-    },
-    ...opts
-  });
+async function sbFetch(path, opts={}) {
+  const headers = {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type': 'application/json'};
+  if(opts.headers) Object.assign(headers, opts.headers);
+  const fetchOpts = Object.assign({}, opts, {headers});
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, fetchOpts);
   return res.json();
 }
 
@@ -733,16 +728,11 @@ const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
 let currentUser = null;
 
-async function sbFetch(path, opts={})){
-  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer '+SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      ...opts.headers
-    },
-    ...opts
-  });
+async function sbFetch(path, opts={}) {
+  const headers = {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type': 'application/json'};
+  if(opts.headers) Object.assign(headers, opts.headers);
+  const fetchOpts = Object.assign({}, opts, {headers});
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, fetchOpts);
   return res.json();
 }
 
@@ -839,16 +829,11 @@ const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
 let currentUser = null;
 
-async function sbFetch(path, opts={})){
-  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer '+SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      ...opts.headers
-    },
-    ...opts
-  });
+async function sbFetch(path, opts={}) {
+  const headers = {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type': 'application/json'};
+  if(opts.headers) Object.assign(headers, opts.headers);
+  const fetchOpts = Object.assign({}, opts, {headers});
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, fetchOpts);
   return res.json();
 }
 
@@ -1062,16 +1047,11 @@ const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
 let currentUser = null;
 
-async function sbFetch(path, opts={})){
-  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer '+SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      ...opts.headers
-    },
-    ...opts
-  });
+async function sbFetch(path, opts={}) {
+  const headers = {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY, 'Content-Type': 'application/json'};
+  if(opts.headers) Object.assign(headers, opts.headers);
+  const fetchOpts = Object.assign({}, opts, {headers});
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, fetchOpts);
   return res.json();
 }
 
