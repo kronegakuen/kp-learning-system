@@ -1091,21 +1091,36 @@ async function loadUserList() {
   // テキスト一覧
   const tbKeys = Object.keys(TEXTBOOKS);
   
+  // 全ユーザーのトレーニングログを取得してスタンプ計算
+  const allTrainLogs = await sbFetch('training_logs?select=user_id,count');
+  const allPdfLogs   = await sbFetch('pdf_logs?select=user_id,count');
+  const trainMap = {}, pdfMap = {};
+  if(allTrainLogs) allTrainLogs.forEach(l => { trainMap[l.user_id] = (trainMap[l.user_id]||0) + (l.count||0); });
+  if(allPdfLogs)   allPdfLogs.forEach(l => { pdfMap[l.user_id]   = (pdfMap[l.user_id]||0)   + (l.count||0); });
+
   let html = '<table style="width:100%;border-collapse:collapse;">';
   html += '<tr style="font-size:11px;color:var(--tmu);border-bottom:1px solid var(--nv5);">';
-  html += '<th style="padding:6px;text-align:left;">名前</th><th style="padding:6px;text-align:left;">学年</th><th style="padding:6px;text-align:left;">ID</th><th style="padding:6px;text-align:left;">アクセス権</th><th></th>';
+  html += '<th style="padding:6px;text-align:left;">名前</th><th style="padding:6px;text-align:left;">学年</th><th style="padding:6px;text-align:left;">称号</th><th style="padding:6px;text-align:left;">スタンプ</th><th style="padding:6px;text-align:left;">累計問題</th><th style="padding:6px;text-align:left;">アクセス権</th><th></th>';
   html += '</tr>';
   
   users.forEach(u => {
     const userAccess = accessMap[u.id] || [];
     const tbLabels = userAccess.map(k => TEXTBOOKS[k] ? TEXTBOOKS[k].label : k).join('、');
-    html += `<tr style="border-bottom:1px solid var(--nv6);">
-      <td style="padding:8px;color:var(--tb)">${u.name}</td>
-      <td style="padding:8px;color:var(--tm)">${u.grade||''}</td>
-      <td style="padding:8px;color:var(--tmu);font-size:11px">${u.username}</td>
-      <td style="padding:8px;font-size:11px;color:var(--gL)">${tbLabels||'なし'}</td>
-      <td style="padding:8px;"><button onclick="editAccess('${u.id}','${u.name}')" style="font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">編集</button></td>
-    </tr>`;
+    const totalQ   = trainMap[u.id] || 0;
+    const totalPDF = pdfMap[u.id]   || 0;
+    const stamps   = calcStamps(totalQ, totalPDF);
+    const cardStamps = stamps % STAMPS_PER_CARD;
+    const title    = getCurrentTitle(stamps, u.grade||'');
+    const stampBar = '⭐'.repeat(cardStamps) + '○'.repeat(STAMPS_PER_CARD - cardStamps);
+    html += '<tr style="border-bottom:1px solid var(--nv6);">' +
+      '<td style="padding:8px;color:var(--tb)">'+u.name+'</td>' +
+      '<td style="padding:8px;color:var(--tm)">'+( u.grade||''  )+'</td>' +
+      '<td style="padding:8px;color:var(--gL);font-size:12px;font-weight:500;">'+title.name+'</td>' +
+      '<td style="padding:8px;font-size:11px;letter-spacing:1px;">'+stampBar+'</td>' +
+      '<td style="padding:8px;color:var(--tmu);font-size:11px;">'+totalQ+'問</td>' +
+      '<td style="padding:8px;font-size:11px;color:var(--gL)">'+( tbLabels||'なし' )+'</td>' +
+      '<td style="padding:8px;"><button onclick="editAccess(''+u.id+'',''+u.name+'')" style="font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">編集</button></td>' +
+    '</tr>';
   });
   html += '</table>';
   
