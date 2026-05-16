@@ -592,6 +592,7 @@ async function renderActive(){
     showResultCard(rate, sessionCorrect, sessionTotal, streak, cumTotal);
     showBadges(cumTotal, streak);
     logTrainingResult(idx, sessionCorrect, sessionTotal);
+    setTimeout(loadUserStats, 500);
     return;
   }
   const item=queue[idx], tot=queue.length;
@@ -647,6 +648,7 @@ async function renderPassiveCard(){
     showResultCard(pRate, passiveCorrect, passiveTotal, streak, cumTotal);
     showBadges(cumTotal, streak);
     logTrainingResult(idx, passiveCorrect, passiveTotal);
+    setTimeout(loadUserStats, 500);
     return;
   }
   const item=queue[idx];
