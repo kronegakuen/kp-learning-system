@@ -1081,10 +1081,7 @@ async function editAccess(userId, userName) {
     msg += (currentKeys.includes(k) ? '☑' : '☐') + ' ' + TEXTBOOKS[k].label + ' (' + k + ')\n';
   });
   
-  const input = prompt(msg + '
-
-許可するテキストキーをカンマ区切りで入力 (例: tb_1,tb_2)
-現在: ' + (currentKeys.join(',')||'なし'));
+  const input = prompt(msg + '\n\n許可するテキストキーをカンマ区切りで入力 (例: tb_1,tb_2)\n現在: ' + (currentKeys.join(',')||'なし'));
   if(input === null) return;
   
   const newKeys = input.split(',').map(s=>s.trim()).filter(s=>s);
