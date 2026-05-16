@@ -1076,9 +1076,7 @@ async function editAccess(userId, userName) {
   const currentKeys = current.map(a => a.textbook_key);
   
   // チェックボックスダイアログ
-  let msg = userName + 'のアクセス権を選択:
-
-';
+  let msg = userName + 'のアクセス権を選択:\n\n';
   tbKeys.forEach(k => {
     msg += (currentKeys.includes(k) ? '☑' : '☐') + ' ' + TEXTBOOKS[k].label + ' (' + k + ')
 ';
