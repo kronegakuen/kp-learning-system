@@ -64,13 +64,77 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 .loading{text-align:center;padding:2rem;color:var(--tmu);font-size:14px;}
 .error-msg{color:#F09595;font-size:13px;margin-top:6px;text-align:center;}
 </style>
+<script>
+const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
+let currentUser = null;
+
+async function sbFetch(path, opts={})){
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer '+SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      ...opts.headers
+    },
+    ...opts
+  });
+  return res.json();
+}
+
+async function login(){
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  if(!username||!password) return;
+  
+  document.getElementById('login-err').textContent = '';
+  const data = await sbFetch('users?username=eq.'+encodeURIComponent(username)+'&password=eq.'+encodeURIComponent(password)+'&select=*');
+  
+  if(!data||!data.length){
+    document.getElementById('login-err').textContent = 'IDまたはパスワードが違います';
+    return;
+  }
+  
+  currentUser = data[0];
+  
+  // アクセス権を取得
+  const access = await sbFetch('access?user_id=eq.'+currentUser.id+'&select=textbook_key');
+  currentUser.accessKeys = access.map(a=>a.textbook_key);
+  
+  // ログイン画面を隠してメイン画面を表示
+  document.getElementById('sec-login').style.display = 'none';
+  document.getElementById('sec-main').style.display = '';
+  document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+  
+  loadManageSheet();
+}
+
+function logout(){
+  currentUser = null;
+  document.getElementById('sec-login').style.display = '';
+  document.getElementById('sec-main').style.display = 'none';
+}
+</script>
 </head>
 <body>
+<!-- ログイン画面 -->
+<div id="sec-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+  <div style="background:var(--nv7);border:1px solid var(--nv5);border-radius:16px;padding:2.5rem 2rem;width:320px;text-align:center;">
+    <div style="font-size:22px;font-weight:700;color:var(--gL);margin-bottom:0.5rem;">KRONE Prep</div>
+    <div style="font-size:12px;color:var(--tmu);margin-bottom:2rem;">β版</div>
+    <input id="login-user" type="text" placeholder="ID" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;">
+    <input id="login-pass" type="password" placeholder="パスワード" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()" style="width:100%;padding:11px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">ログイン</button>
+    <div id="login-err" style="color:#F09595;font-size:13px;margin-top:10px;min-height:18px;"></div>
+  </div>
+</div>
+<!-- メイン画面 -->
+<div id="sec-main" style="display:none;">
 <div class="wrap">
 
 <!-- 設定画面 -->
 <div class="sec on" id="sec-setup">
-  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.2</span></div>
+  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.2</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
   <div class="block">
     <div class="block-title">共通設定</div>
@@ -284,6 +348,8 @@ async function loadManageSheet(){
       const [label, sheetName, subject, ansWidth] = rows[i];
       if(!label||!sheetName) continue;
       const key = 'tb_'+i;
+      // アクセス権チェック（教師は全テキスト、生徒はaccessKeysに含まれるものだけ）
+      if(currentUser && currentUser.role !== 'teacher' && currentUser.accessKeys && !currentUser.accessKeys.includes(key)) continue;
       TEXTBOOKS[key] = {
         label: label.trim(),
         sheetName: sheetName.trim(),
@@ -662,12 +728,77 @@ h1{font-size:11pt;font-weight:bold;text-align:center;margin:5mm 0 0.5mm;border-b
 .acell{flex:1;display:flex;align-items:center;padding:0 1mm;}
 .ans-line{flex:1;border-bottom:0.5pt solid #999;height:3.5mm;}
 .atxt{font-size:9pt;color:#1a4f8a;font-weight:bold;}.wbold{font-size:10pt;font-weight:bold;}.ans-line-w{display:block;width:90%;border-bottom:0.5pt solid #999;height:3.5mm;}
-</style></head><body>
+</style><script>
+const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
+let currentUser = null;
+
+async function sbFetch(path, opts={})){
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer '+SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      ...opts.headers
+    },
+    ...opts
+  });
+  return res.json();
+}
+
+async function login(){
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  if(!username||!password) return;
+  
+  document.getElementById('login-err').textContent = '';
+  const data = await sbFetch('users?username=eq.'+encodeURIComponent(username)+'&password=eq.'+encodeURIComponent(password)+'&select=*');
+  
+  if(!data||!data.length){
+    document.getElementById('login-err').textContent = 'IDまたはパスワードが違います';
+    return;
+  }
+  
+  currentUser = data[0];
+  
+  // アクセス権を取得
+  const access = await sbFetch('access?user_id=eq.'+currentUser.id+'&select=textbook_key');
+  currentUser.accessKeys = access.map(a=>a.textbook_key);
+  
+  // ログイン画面を隠してメイン画面を表示
+  document.getElementById('sec-login').style.display = 'none';
+  document.getElementById('sec-main').style.display = '';
+  document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+  
+  loadManageSheet();
+}
+
+function logout(){
+  currentUser = null;
+  document.getElementById('sec-login').style.display = '';
+  document.getElementById('sec-main').style.display = 'none';
+}
+</script>
+</head><body>
+<!-- ログイン画面 -->
+<div id="sec-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+  <div style="background:var(--nv7);border:1px solid var(--nv5);border-radius:16px;padding:2.5rem 2rem;width:320px;text-align:center;">
+    <div style="font-size:22px;font-weight:700;color:var(--gL);margin-bottom:0.5rem;">KRONE Prep</div>
+    <div style="font-size:12px;color:var(--tmu);margin-bottom:2rem;">β版</div>
+    <input id="login-user" type="text" placeholder="ID" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;">
+    <input id="login-pass" type="password" placeholder="パスワード" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()" style="width:100%;padding:11px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">ログイン</button>
+    <div id="login-err" style="color:#F09595;font-size:13px;margin-top:10px;min-height:18px;"></div>
+  </div>
+</div>
+<!-- メイン画面 -->
+<div id="sec-main" style="display:none;">
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
 ${pages}
+</div>
 </body></html>`;
 
 
@@ -703,7 +834,59 @@ ${pages}
     const kQP=makeKanjiPages(qs,kanjiMode,false);
     const kAP=makeKanjiPages(qs,'answer',true);
     const kst='@page{size:A4 landscape;margin:10mm 7mm;}@media print{.no-print{display:none!important;}body{margin:0;}.kpage-break{page-break-before:always;}}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;color:#000;}.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}.no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;border:1px solid #aaa;border-radius:5px;}.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}.kmain{display:flex;flex-direction:row;height:186mm;width:100%;}.ktitle{width:14mm;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm 1mm;border:0.5pt solid #85C1E9;border-left:none;}.ktitle-main{font-size:12pt;font-weight:bold;writing-mode:vertical-rl;line-height:1.4;}.ktitle-sub{font-size:6pt;color:#555;writing-mode:vertical-rl;margin-top:2mm;}.ksection{flex:1;display:flex;flex-direction:column;border:0.5pt solid #85C1E9;}.kmrow{display:flex;flex-direction:row-reverse;flex:1;overflow:hidden;}.ksep-h{border-top:1.5pt solid #378ADD;width:100%;flex-shrink:0;}.kmblock{flex:1;border-left:0.5pt solid #85C1E9;display:flex;flex-direction:column;overflow:hidden;}.kmblock:last-child{border-left:none;}.kmno{background:#2E86C1;color:#fff;font-size:7pt;height:6mm;min-height:6mm;display:flex;align-items:center;justify-content:center;writing-mode:horizontal-tb;flex-shrink:0;}.kmtop{height:40mm;min-height:40mm;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;flex-shrink:0;overflow:hidden;}.kmsep{border-top:1pt dashed #E74C3C;flex-shrink:0;}.kmbot{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;overflow:hidden;}.kvword{font-size:20pt;font-weight:bold;line-height:1.6;writing-mode:vertical-rl;}.kvmean{font-size:13pt;line-height:1.6;writing-mode:vertical-rl;}';
-    html='<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>'+sheetLabelK+'</title><style>'+kst+'</style></head><body><div class="no-print"><button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button><button onclick="window.close()">閉じる</button></div>'+kQP+kAP+'</body></html>';
+    html='<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>'+sheetLabelK+'</title><style>'+kst+'</style><script>
+const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
+let currentUser = null;
+
+async function sbFetch(path, opts={})){
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer '+SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      ...opts.headers
+    },
+    ...opts
+  });
+  return res.json();
+}
+
+async function login(){
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  if(!username||!password) return;
+  
+  document.getElementById('login-err').textContent = '';
+  const data = await sbFetch('users?username=eq.'+encodeURIComponent(username)+'&password=eq.'+encodeURIComponent(password)+'&select=*');
+  
+  if(!data||!data.length){
+    document.getElementById('login-err').textContent = 'IDまたはパスワードが違います';
+    return;
+  }
+  
+  currentUser = data[0];
+  
+  // アクセス権を取得
+  const access = await sbFetch('access?user_id=eq.'+currentUser.id+'&select=textbook_key');
+  currentUser.accessKeys = access.map(a=>a.textbook_key);
+  
+  // ログイン画面を隠してメイン画面を表示
+  document.getElementById('sec-login').style.display = 'none';
+  document.getElementById('sec-main').style.display = '';
+  document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+  
+  loadManageSheet();
+}
+
+function logout(){
+  currentUser = null;
+  document.getElementById('sec-login').style.display = '';
+  document.getElementById('sec-main').style.display = 'none';
+}
+</script>
+</head><body><div class="no-print"><button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button><button onclick="window.close()">閉じる</button></div>'+kQP+kAP+'</div>
+</body></html>';
 
   } else {
     const PER_PAGE = 20;
@@ -874,12 +1057,77 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   letter-spacing:0.03em;
   writing-mode:vertical-rl;
 }
-</style></head><body>
+</style><script>
+const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
+let currentUser = null;
+
+async function sbFetch(path, opts={})){
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer '+SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      ...opts.headers
+    },
+    ...opts
+  });
+  return res.json();
+}
+
+async function login(){
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  if(!username||!password) return;
+  
+  document.getElementById('login-err').textContent = '';
+  const data = await sbFetch('users?username=eq.'+encodeURIComponent(username)+'&password=eq.'+encodeURIComponent(password)+'&select=*');
+  
+  if(!data||!data.length){
+    document.getElementById('login-err').textContent = 'IDまたはパスワードが違います';
+    return;
+  }
+  
+  currentUser = data[0];
+  
+  // アクセス権を取得
+  const access = await sbFetch('access?user_id=eq.'+currentUser.id+'&select=textbook_key');
+  currentUser.accessKeys = access.map(a=>a.textbook_key);
+  
+  // ログイン画面を隠してメイン画面を表示
+  document.getElementById('sec-login').style.display = 'none';
+  document.getElementById('sec-main').style.display = '';
+  document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+  
+  loadManageSheet();
+}
+
+function logout(){
+  currentUser = null;
+  document.getElementById('sec-login').style.display = '';
+  document.getElementById('sec-main').style.display = 'none';
+}
+</script>
+</head><body>
+<!-- ログイン画面 -->
+<div id="sec-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+  <div style="background:var(--nv7);border:1px solid var(--nv5);border-radius:16px;padding:2.5rem 2rem;width:320px;text-align:center;">
+    <div style="font-size:22px;font-weight:700;color:var(--gL);margin-bottom:0.5rem;">KRONE Prep</div>
+    <div style="font-size:12px;color:var(--tmu);margin-bottom:2rem;">β版</div>
+    <input id="login-user" type="text" placeholder="ID" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;">
+    <input id="login-pass" type="password" placeholder="パスワード" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()" style="width:100%;padding:11px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">ログイン</button>
+    <div id="login-err" style="color:#F09595;font-size:13px;margin-top:10px;min-height:18px;"></div>
+  </div>
+</div>
+<!-- メイン画面 -->
+<div id="sec-main" style="display:none;">
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
 ${pages}
+</div>
 </body></html>`;
   }
 
@@ -901,5 +1149,6 @@ ${pages}
 // ============================================================
 loadManageSheet();
 </script>
+</div>
 </body>
 </html>
