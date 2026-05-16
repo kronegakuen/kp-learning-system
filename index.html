@@ -283,8 +283,9 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
   <div class="btn-row"><button class="btn-blue" id="btn-reveal" onclick="revealAnswer()">答えを見る</button></div>
   <div class="btn-row" id="judge-row" style="display:none">
-    <button class="btn-ng" onclick="judge(false)">✕ もう一度</button>
-    <button class="btn-ok" onclick="judge(true)">○ 正解</button>
+    <div id="judge-countdown" style="font-size:12px;color:var(--tmu);text-align:center;margin-bottom:6px;display:none;"></div>
+    <button class="btn-ng" id="btn-ng-a" onclick="judge(false)" disabled>✕ もう一度</button>
+    <button class="btn-ok" id="btn-ok-a" onclick="judge(true)" disabled>○ 正解</button>
   </div>
 </div>
 
@@ -303,9 +304,12 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <button class="chip" id="btn-pause" onclick="togglePause()">⏸ 一時停止</button>
     <button class="chip" onclick="skipPassive()">→ 次へ</button>
   </div>
-  <div id="p-judge-row" style="display:none;justify-content:center;gap:12px;margin-top:12px;">
-    <button class="btn-ng" onclick="judgePassive(false)">✕ もう一度</button>
-    <button class="btn-ok" onclick="judgePassive(true)">○ 正解</button>
+  <div id="p-judge-row" style="display:none;flex-direction:column;align-items:center;gap:8px;margin-top:12px;">
+    <div id="p-judge-countdown" style="font-size:12px;color:var(--tmu);display:none;"></div>
+    <div style="display:flex;gap:12px;">
+      <button class="btn-ng" id="btn-ng-p" onclick="judgePassive(false)" disabled>✕ もう一度</button>
+      <button class="btn-ok" id="btn-ok-p" onclick="judgePassive(true)" disabled>○ 正解</button>
+    </div>
   </div>
 </div>
 
@@ -627,6 +631,8 @@ async function renderActive(){
 function revealAnswer(){
   document.getElementById('a-ans').classList.add('show');
   const pron = document.getElementById('a-pron'); if(pron){pron.style.visibility='visible';pron.style.opacity='1';}
+  // カウントダウン開始
+  startCountdown('judge-countdown','btn-ng-a','btn-ok-a');
   document.getElementById('btn-reveal').style.display='none';
   document.getElementById('judge-row').style.display='flex';
 }
@@ -686,6 +692,7 @@ function tickPassive(now){
       document.getElementById('p-ans').classList.add('show');
       document.getElementById('p-judge-row').style.display='flex';
       const pp=document.getElementById('p-pron');if(pp){pp.style.visibility='visible';pp.style.opacity='1';}
+      startCountdown('p-judge-countdown','btn-ng-p','btn-ok-p');
       document.getElementById('p-timer').style.background='#1D9E75';
       document.getElementById('p-timer').style.width='100%';
     } else {
@@ -1505,6 +1512,42 @@ function renderStampCard(stamps, grade) {
   html += '<div style="font-size:10px;color:var(--tmu);text-align:center;">正解100問でスタンプ1枚・10枚で称号アップ！</div>';
   html += '</div>';
   return html;
+}
+
+
+// ============================================================
+// カウントダウン（ズル防止）
+// ============================================================
+const JUDGE_WAIT_SECS = 2;
+
+function startCountdown(countdownId, ngId, okId) {
+  const cdEl = document.getElementById(countdownId);
+  const ngBtn = document.getElementById(ngId);
+  const okBtn = document.getElementById(okId);
+  if(!cdEl || !ngBtn || !okBtn) return;
+
+  ngBtn.disabled = true;
+  okBtn.disabled = true;
+  okBtn.style.opacity = '0.4';
+  ngBtn.style.opacity = '0.4';
+  cdEl.style.display = 'block';
+
+  let remaining = JUDGE_WAIT_SECS;
+  cdEl.textContent = remaining + '秒後に回答できます';
+
+  const timer = setInterval(function() {
+    remaining--;
+    if(remaining <= 0) {
+      clearInterval(timer);
+      cdEl.style.display = 'none';
+      ngBtn.disabled = false;
+      okBtn.disabled = false;
+      okBtn.style.opacity = '1';
+      ngBtn.style.opacity = '1';
+    } else {
+      cdEl.textContent = remaining + '秒後に回答できます';
+    }
+  }, 1000);
 }
 
 // ============================================================
