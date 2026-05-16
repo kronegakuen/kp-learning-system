@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>クローネラボ</title>
+<title>クローネらぼ</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{--nv9:#060D1A;--nv8:#0C1B33;--nv7:#0F2240;--nv6:#1A3260;--nv5:#2A4A80;--gold:#BA7517;--gL:#EF9F27;--tb:#EAF1FA;--tm:#B0C4DE;--tmu:#7A9CC0;}
@@ -71,7 +71,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 <!-- ログイン画面 -->
 <div id="sec-login" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:var(--nv9);z-index:9999;">
   <div style="background:var(--nv7);border:1px solid var(--nv5);border-radius:16px;padding:2.5rem 2rem;width:320px;text-align:center;">
-    <div style="font-size:22px;font-weight:700;color:var(--gL);margin-bottom:0.5rem;">クローネラボ</div>
+    <div style="font-size:22px;font-weight:700;color:var(--gL);margin-bottom:0.5rem;font-family:'Kaisei Opti',serif;">クローネらぼ</div>
     <div style="font-size:12px;color:var(--tmu);margin-bottom:2rem;">β版</div>
     <input id="login-user" type="text" placeholder="ID" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;">
     <input id="login-pass" type="password" placeholder="パスワード" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;" onkeydown="if(event.key==='Enter')login()">
@@ -134,7 +134,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 
 <!-- 設定画面 -->
 <div class="sec on" id="sec-setup">
-  <div class="hd"><h1>クローネラボ</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.6</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><div id="user-stats" style="display:none;"></div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
+  <div class="hd"><h1 style="font-family:'Kaisei Opti',serif;">クローネらぼ</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.6</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><div id="user-stats" style="display:none;"></div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
   <!-- スタッツカード -->
   <div id="stats-card" style="display:none;background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px;margin:0 0 1rem;">
