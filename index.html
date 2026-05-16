@@ -6,7 +6,7 @@
 <title>クローネらぼ</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{--nv9:#060D1A;--nv8:#0C1B33;--nv7:#0F2240;--nv6:#1A3260;--nv5:#2A4A80;--gold:#BA7517;--gL:#EF9F27;--tb:#EAF1FA;--tm:#B0C4DE;--tmu:#7A9CC0;}
+:root{--nv9:#060D1A;--nv8:#0C1B33;--nv7:#0F2240;--nv6:#1A3260;--nv5:#2A4A80;--gold:#BA7517;--gL:#EF9F27;--tb:#EAF1FA;--tm:#B0C4DE;--tmu:#7A9CC0;--font-title:'Kaisei Opti',serif;}
 body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:var(--nv9);color:var(--tb);min-height:100vh;}
 .wrap{max-width:680px;margin:0 auto;padding:1.5rem 1rem;}
 .sec{display:none;}.sec.on{display:block;}
@@ -1278,7 +1278,7 @@ async function loadAdminReviews() {
     html += '<div style="background:var(--nv7);border-radius:10px;padding:12px;margin-bottom:10px;">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
     html += '<div>';
-    html += '<span style="font-family:'Kaisei Opti',serif;font-size:15px;font-weight:700;color:var(--tb);">'+u.name+'</span>';
+    html += '<span style="font-family:var(--font-title);font-size:15px;font-weight:700;color:var(--tb);">'+u.name+'</span>';
     html += '<span style="font-size:11px;color:var(--tmu);margin-left:8px;">'+( u.grade||'' )+'</span>';
     html += '</div>';
     html += '<span style="font-size:12px;color:#F09595;font-weight:500;">要復習 '+userItems.length+'問</span>';
