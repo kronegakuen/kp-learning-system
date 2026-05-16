@@ -192,12 +192,12 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div class="field">
       <span class="field-label">モード</span>
       <div class="chip-group" id="g-mode">
-        <button class="chip on" data-v="active" onclick="pickMode(this)"><span class="ck">✓</span>チェックモード</button>
-        <button class="chip" data-v="passive" onclick="pickMode(this)"><span class="ck">✓</span>オートモード</button>
+        <button class="chip on" data-v="active" onclick="pickMode(this)"><span class="ck">✓</span>じぶんでモード</button>
+        <button class="chip" data-v="passive" onclick="pickMode(this)"><span class="ck">✓</span>おまかせモード</button>
       </div>
     </div>
     <div id="field-timer" style="display:none;margin-top:.75rem">
-      <span class="field-label">オートモードの表示時間</span>
+      <span class="field-label">おまかせモードの表示時間</span>
       <div class="slider-wrap">
         <div class="slider-row">
           <label>問題</label>
@@ -257,7 +257,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
 </div>
 
-<!-- チェックモード -->
+<!-- じぶんでモード -->
 <div class="sec" id="sec-active">
   <div class="hd"><h1 id="a-title">トレーニング</h1><button class="end-btn" onclick="goSetup()">終了</button></div>
   <div class="prog-bar"><div class="prog-fill" id="a-prog" style="width:0%"></div></div>
@@ -275,9 +275,9 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
 </div>
 
-<!-- オートモード -->
+<!-- おまかせモード -->
 <div class="sec" id="sec-passive">
-  <div class="hd"><h1>オートモード</h1><button class="end-btn" onclick="goSetup()">終了</button></div>
+  <div class="hd"><h1>おまかせモード</h1><button class="end-btn" onclick="goSetup()">終了</button></div>
   <div class="timer-bar"><div class="timer-fill" id="p-timer" style="background:#378ADD;width:100%"></div></div>
   <div class="ctr" id="p-ctr"></div>
   <div class="card">
@@ -569,7 +569,7 @@ function buildQueueForPDF(countGroup){
 }
 
 // ============================================================
-// チェックモード
+// じぶんでモード
 // ============================================================
 function startTraining(){
   if(!curSheet) return;
@@ -629,7 +629,7 @@ function judge(isCorrect){
 }
 
 // ============================================================
-// オートモード
+// おまかせモード
 // ============================================================
 function getQms(){ return parseInt(document.getElementById('sl-q').value)*1000; }
 function getAms(){ return parseInt(document.getElementById('sl-a').value)*1000; }
