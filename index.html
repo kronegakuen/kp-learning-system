@@ -146,6 +146,28 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
 </div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
+  <!-- スタッツカード -->
+  <div id="stats-card" style="display:none;background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px;margin:12px 16px 0;display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;">
+      <div>
+        <div id="sc-streak" style="font-size:20px;font-weight:500;color:var(--gL);">🔥0</div>
+        <div style="font-size:10px;color:var(--tmu);">連続学習</div>
+      </div>
+      <div>
+        <div id="sc-total" style="font-size:20px;font-weight:500;color:var(--gL);">0問</div>
+        <div style="font-size:10px;color:var(--tmu);">累計問題</div>
+      </div>
+      <div>
+        <div id="sc-correct" style="font-size:20px;font-weight:500;color:var(--gL);">0問</div>
+        <div style="font-size:10px;color:var(--tmu);">累計正解</div>
+      </div>
+      <div>
+        <div id="sc-rate" style="font-size:20px;font-weight:500;color:var(--gL);">--%</div>
+        <div style="font-size:10px;color:var(--tmu);">累計正答率</div>
+      </div>
+    </div>
+  </div>
+
   <div class="block">
     <div class="block-title">共通設定</div>
     <div class="field">
@@ -1525,12 +1547,28 @@ async function loadUserStats() {
       } else break;
     }
     
+    // 累計正解数・正答率
+    const correctLogs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&select=correct,total');
+    const totalCorrect = correctLogs ? correctLogs.reduce((s,l)=>s+(l.correct||0),0) : 0;
+    const totalAnswered = correctLogs ? correctLogs.reduce((s,l)=>s+(l.total||0),0) : 0;
+    const totalRate = totalAnswered > 0 ? Math.round(totalCorrect/totalAnswered*100) : 0;
+
     // ヘッダー更新
     const el = document.getElementById('user-stats');
     el.style.display = 'flex';
     document.getElementById('stat-streak').textContent = '🔥'+streak;
     document.getElementById('stat-total').textContent = total+'問';
-    
+
+    // スタッツカード更新
+    const sc = document.getElementById('stats-card');
+    if(sc) {
+      sc.style.display = 'block';
+      document.getElementById('sc-streak').textContent = '🔥'+streak+'日';
+      document.getElementById('sc-total').textContent = total+'問';
+      document.getElementById('sc-correct').textContent = totalCorrect+'問';
+      document.getElementById('sc-rate').textContent = totalAnswered>0 ? totalRate+'%' : '--%';
+    }
+
     // グローバルに保存
     window._userStreak = streak;
     window._userTotal = total;
