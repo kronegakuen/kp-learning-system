@@ -592,6 +592,7 @@ function startTraining(){
   if(!curSheet) return;
   queue=buildQueue('g-count'); idx=0;
   sessionCorrect=0; sessionTotal=0;
+  sessionTimes=[]; sessionFastCount=0; sessionSlowCount=0;
   logTraining();
   const initPron=document.getElementById('a-pron');if(initPron){initPron.textContent='';initPron.style.opacity='0';}
   const mode = getVal('g-mode')||'active';
@@ -606,7 +607,8 @@ async function renderActive(){
     await loadUserStats();
     const streak = window._userStreak || 0;
     const cumTotal = window._userTotal || 0;
-    showResultCard(rate, sessionCorrect, sessionTotal, streak, cumTotal);
+    const avgTime = sessionTimes.length > 0 ? Math.round(sessionTimes.reduce(function(a,b){return a+b;},0) / sessionTimes.length * 10) / 10 : 0;
+    showResultCard(rate, sessionCorrect, sessionTotal, streak, cumTotal, avgTime, sessionFastCount, sessionSlowCount);
     showBadges(cumTotal, streak);
     logTrainingResult(idx, sessionCorrect, sessionTotal);
     setTimeout(loadUserStats, 500);
@@ -618,6 +620,7 @@ async function renderActive(){
   document.getElementById('a-type').textContent=item.type;
   document.getElementById('a-q').textContent=item.q;
   document.getElementById('a-ans').textContent=item.a;
+  questionStartTime = performance.now();
   document.getElementById('a-ans').classList.remove('show');
   const pronEl=document.getElementById('a-pron');if(pronEl){
     const pron = item.pronunciation||'';
@@ -629,6 +632,11 @@ async function renderActive(){
   document.getElementById('judge-row').style.display='none';
 }
 function revealAnswer(){
+  // 回答時間を記録
+  const elapsed = Math.round((performance.now() - questionStartTime) / 100) / 10;
+  sessionTimes.push(elapsed);
+  if(elapsed <= 3) sessionFastCount++;
+  if(elapsed >= 10) sessionSlowCount++;
   document.getElementById('a-ans').classList.add('show');
   const pron = document.getElementById('a-pron'); if(pron){pron.style.visibility='visible';pron.style.opacity='1';}
   // カウントダウン開始
@@ -1382,7 +1390,8 @@ function getResultConfig(rate) {
   };
 }
 
-function showResultCard(rate, correct, total, streak, cumTotal) {
+function showResultCard(rate, correct, total, streak, cumTotal, avgTime, fastCount, slowCount) {
+  avgTime = avgTime || 0; fastCount = fastCount || 0; slowCount = slowCount || 0;
   const cfg = getResultConfig(rate);
   const quotes = QUOTES[cfg.quoteKey];
   const q = quotes[Math.floor(Math.random() * quotes.length)];
@@ -1403,7 +1412,7 @@ function showResultCard(rate, correct, total, streak, cumTotal) {
     '<div style="font-size:14px;color:'+cfg.color+';margin-bottom:14px;">'+cfg.comment+'</div>' +
     '<div style="display:flex;gap:8px;justify-content:center;">' +
       '<div style="background:#0C1B33;border-radius:8px;padding:8px 14px;text-align:center;flex:1;">' +
-        '<div style="font-size:16px;font-weight:500;color:#EF9F27;">🔥'+streak+'日</div>' +
+        '<div style="font-size:16px;font-weight:500;color:#EF9F27;">'+streak+'日</div>' +
         '<div style="font-size:10px;color:#7A9CC0;">連続学習</div>' +
       '</div>' +
       '<div style="background:#0C1B33;border-radius:8px;padding:8px 14px;text-align:center;flex:1;">' +
@@ -1411,6 +1420,23 @@ function showResultCard(rate, correct, total, streak, cumTotal) {
         '<div style="font-size:10px;color:#7A9CC0;">累計達成</div>' +
       '</div>' +
     '</div>' +
+    (avgTime > 0 ? '<div style="background:#0C1B33;border-radius:8px;padding:10px;margin-bottom:10px;margin-top:10px;">' +
+      '<div style="font-size:12px;color:#7A9CC0;margin-bottom:6px;">回答時間</div>' +
+      '<div style="display:flex;gap:8px;justify-content:center;">' +
+        '<div style="text-align:center;flex:1;">' +
+          '<div style="font-size:18px;font-weight:500;color:#EF9F27;">'+avgTime+'秒</div>' +
+          '<div style="font-size:10px;color:#7A9CC0;">平均時間</div>' +
+        '</div>' +
+        '<div style="text-align:center;flex:1;">' +
+          '<div style="font-size:18px;font-weight:500;color:#5DCAA5;">'+fastCount+'問</div>' +
+          '<div style="font-size:10px;color:#7A9CC0;">得意（3秒以内）</div>' +
+        '</div>' +
+        '<div style="text-align:center;flex:1;">' +
+          '<div style="font-size:18px;font-weight:500;color:#F09595;">'+slowCount+'問</div>' +
+          '<div style="font-size:10px;color:#7A9CC0;">要復習（10秒以上）</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' : '') +
     renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '');
 }
 
