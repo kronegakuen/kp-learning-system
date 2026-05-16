@@ -1510,9 +1510,6 @@ function getResultConfig(rate) {
 function showResultCard(rate, correct, total, streak, cumTotal, avgTime, fastCount, slowCount) {
   avgTime = avgTime || 0; fastCount = fastCount || 0; slowCount = slowCount || 0;
   const cfg = getResultConfig(rate);
-  const quotes = QUOTES[cfg.quoteKey];
-  const q = quotes[Math.floor(Math.random() * quotes.length)];
-
   const card = document.getElementById('result-card');
   card.style.display = 'block';
   card.style.border = cfg.border;
@@ -1522,10 +1519,6 @@ function showResultCard(rate, correct, total, streak, cumTotal, avgTime, fastCou
     '<div style="font-size:20px;font-weight:500;color:'+cfg.color+';margin-bottom:2px;">'+cfg.label+'</div>' +
     '<div style="font-size:56px;font-weight:500;color:'+cfg.color+';line-height:1.0;">'+rate+'%</div>' +
     '<div style="font-size:16px;color:#B0C4DE;margin-bottom:14px;">'+correct+' / '+total+'問正解</div>' +
-    '<div style="background:#1A3260;padding:12px;margin-bottom:14px;border-left:3px solid '+cfg.color+';">' +
-      '<div style="font-size:11px;color:#7A9CC0;margin-bottom:4px;">— '+q.author+'</div>' +
-      '<div style="font-size:13px;color:#EAF1FA;line-height:1.6;text-align:left;">'+q.text+'</div>' +
-    '</div>' +
     '<div style="font-size:14px;color:'+cfg.color+';margin-bottom:14px;">'+cfg.comment+'</div>' +
     '<div style="display:flex;gap:8px;justify-content:center;">' +
       '<div style="background:#0C1B33;border-radius:8px;padding:8px 14px;text-align:center;flex:1;">' +
