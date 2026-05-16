@@ -81,6 +81,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 <!-- 管理画面 -->
 <div id="sec-admin" style="display:none;">
 <div class="wrap">
+  <div class="hd"><h1>管理画面</h1><button onclick="showMain()" style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">← トレーニングへ戻る</button></div>
   <div class="block">
     <div class="block-title">ユーザー管理</div>
     <div class="field">
@@ -1273,6 +1274,8 @@ function logout() {
   currentUser = null;
   document.getElementById('sec-login').style.display = '';
   document.getElementById('sec-main').style.display = 'none';
+  document.getElementById('sec-admin').style.display = 'none';
+  document.getElementById('btn-admin').style.display = 'none';
 }
 </script>
 </body>
