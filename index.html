@@ -1119,7 +1119,7 @@ async function loadUserList() {
       '<td style="padding:8px;font-size:11px;letter-spacing:1px;">'+stampBar+'</td>' +
       '<td style="padding:8px;color:var(--tmu);font-size:11px;">'+totalQ+'問</td>' +
       '<td style="padding:8px;font-size:11px;color:var(--gL)">'+( tbLabels||'なし' )+'</td>' +
-      '<td style="padding:8px;"><button onclick="editAccess('"+u.id+"','"+u.name+"')" style="font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">編集</button></td>' +
+      '<td style="padding:8px;"><button onclick="editAccess(this.dataset.uid,this.dataset.uname)" data-uid="'+u.id+'" data-uname="'+u.name+'" style="font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">編集</button></td>' +
     '</tr>';
   });
   html += '</table>';
