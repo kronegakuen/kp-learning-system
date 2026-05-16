@@ -134,26 +134,26 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 
 <!-- 設定画面 -->
 <div class="sec on" id="sec-setup">
-  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><div id="user-stats" style="display:none;"><span id="stat-streak"></span><span id="stat-total"></span></div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
+  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><div id="user-stats" style="display:none;"></div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
   <!-- スタッツカード -->
   <div id="stats-card" style="display:none;background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px;margin:0 0 1rem;">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;">
       <div>
-        <div id="sc-streak" style="font-size:20px;font-weight:500;color:var(--gL);">🔥0</div>
-        <div style="font-size:10px;color:var(--tmu);">連続学習</div>
+        <div id="sc-streak" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">日</span></div>
+        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">連続学習</div>
       </div>
       <div>
-        <div id="sc-total" style="font-size:20px;font-weight:500;color:var(--gL);">0問</div>
-        <div style="font-size:10px;color:var(--tmu);">累計問題</div>
+        <div id="sc-total" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">問</span></div>
+        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計問題</div>
       </div>
       <div>
-        <div id="sc-correct" style="font-size:20px;font-weight:500;color:var(--gL);">0問</div>
-        <div style="font-size:10px;color:var(--tmu);">累計正解</div>
+        <div id="sc-correct" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">問</span></div>
+        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計正解</div>
       </div>
       <div>
-        <div id="sc-rate" style="font-size:20px;font-weight:500;color:var(--gL);">--%</div>
-        <div style="font-size:10px;color:var(--tmu);">累計正答率</div>
+        <div id="sc-rate" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">--<span style="font-size:13px;">%</span></div>
+        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計正答率</div>
       </div>
     </div>
   </div>
@@ -1553,10 +1553,10 @@ async function loadUserStats() {
     const sc = document.getElementById('stats-card');
     if(sc) {
       sc.style.display = 'block';
-      document.getElementById('sc-streak').textContent = '🔥'+streak+'日';
-      document.getElementById('sc-total').textContent = total+'問';
-      document.getElementById('sc-correct').textContent = totalCorrect+'問';
-      document.getElementById('sc-rate').textContent = totalAnswered>0 ? totalRate+'%' : '--%';
+      document.getElementById('sc-streak').innerHTML = '<span style="font-family:\'BIZ UDPGothic\',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">'+streak+'<span style="font-size:13px;">日</span></span>';
+      document.getElementById('sc-total').innerHTML = '<span style="font-family:\'BIZ UDPGothic\',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">'+total+'<span style="font-size:13px;">問</span></span>';
+      document.getElementById('sc-correct').innerHTML = '<span style="font-family:\'BIZ UDPGothic\',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">'+totalCorrect+'<span style="font-size:13px;">問</span></span>';
+      document.getElementById('sc-rate').innerHTML = totalAnswered>0 ? '<span style="font-family:\'BIZ UDPGothic\',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">'+totalRate+'<span style="font-size:13px;">%</span></span>' : '--<span style="font-size:13px;">%</span>';
     }
 
     // グローバルに保存
