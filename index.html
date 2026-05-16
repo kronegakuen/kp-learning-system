@@ -602,7 +602,7 @@ async function renderActive(){
   document.getElementById('a-ans').classList.remove('show');
   const pronEl=document.getElementById('a-pron');if(pronEl){
     const pron = item.pronunciation||'';
-    pronEl.innerHTML = pron.replace(/\|([^|]+)\|/g,'<span style="color:var(--gL);font-weight:500;">|$1|</span>');
+    pronEl.innerHTML = pron.replace(/\|([^|]+)\|/g,'<span style="color:transparent;font-size:0;">|</span><span style="color:var(--gL);font-weight:700;">$1</span><span style="color:transparent;font-size:0;">|</span>');
     pronEl.style.opacity='0';pronEl.style.visibility='hidden';
   }
   const aPron = document.getElementById('a-pron'); if(aPron) aPron.style.opacity='0';
