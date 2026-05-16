@@ -289,6 +289,10 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <button class="chip" id="btn-pause" onclick="togglePause()">⏸ 一時停止</button>
     <button class="chip" onclick="skipPassive()">→ 次へ</button>
   </div>
+  <div id="p-judge-row" style="display:none;justify-content:center;gap:12px;margin-top:8px;">
+    <button class="btn-ng" onclick="judgePassive(false)">✕</button>
+    <button class="btn-ok" onclick="judgePassive(true)">○</button>
+  </div>
 </div>
 
 <!-- 完了画面 -->
@@ -630,15 +634,23 @@ function getQms(){ return parseInt(document.getElementById('sl-q').value)*1000; 
 function getAms(){ return parseInt(document.getElementById('sl-a').value)*1000; }
 
 function startPassive(){
+  passiveCorrect=0; passiveTotal=0;
   paused=false; phase='q'; phaseStart=performance.now();
   renderPassiveCard();
   cancelAnimationFrame(rafId);
   rafId=requestAnimationFrame(tickPassive);
 }
-function renderPassiveCard(){
+async function renderPassiveCard(){
   if(idx>=queue.length){
     stopPassive(); showSec('sec-end');
-    document.getElementById('end-msg').textContent=queue.length+'問 完了（オートモード）';
+    const pRate = passiveTotal > 0 ? Math.round(passiveCorrect/passiveTotal*100) : 0;
+    document.getElementById('end-msg').textContent = '';
+    await loadUserStats();
+    const streak = window._userStreak || 0;
+    const cumTotal = window._userTotal || 0;
+    showResultCard(pRate, passiveCorrect, passiveTotal, streak, cumTotal);
+    showBadges(cumTotal, streak);
+    logTrainingResult(passiveCorrect, passiveTotal);
     return;
   }
   const item=queue[idx];
@@ -646,6 +658,7 @@ function renderPassiveCard(){
   document.getElementById('p-q').textContent=item.q;
   document.getElementById('p-ans').textContent=item.a;
   document.getElementById('p-ans').classList.remove('show');
+  document.getElementById('p-judge-row').style.display='none';
   document.getElementById('p-ctr').textContent=(idx+1)+' / '+queue.length;
   document.getElementById('p-timer').style.background='#378ADD';
   document.getElementById('p-timer').style.width='100%';
@@ -659,6 +672,7 @@ function tickPassive(now){
     if(phase==='q'){
       phase='a'; phaseStart=now;
       document.getElementById('p-ans').classList.add('show');
+      document.getElementById('p-judge-row').style.display='flex';
       document.getElementById('p-timer').style.background='#1D9E75';
       document.getElementById('p-timer').style.width='100%';
     } else {
@@ -667,6 +681,12 @@ function tickPassive(now){
   }
   rafId=requestAnimationFrame(tickPassive);
 }
+function judgePassive(isCorrect) {
+  passiveTotal++;
+  if(isCorrect) passiveCorrect++;
+  document.getElementById('p-judge-row').style.display='none';
+}
+
 function skipPassive(){
   cancelAnimationFrame(rafId);
   idx++; phase='q'; phaseStart=performance.now();
