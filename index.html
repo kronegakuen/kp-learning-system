@@ -119,6 +119,20 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
 
   <div class="block">
+    <div class="block-title">要復習状況</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <select id="review-user-filter" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+        <option value="">全生徒</option>
+      </select>
+      <select id="review-tb-filter" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+        <option value="">全テキスト</option>
+      </select>
+    </div>
+    <button onclick="loadAdminReviews()" class="btn-action btn-train" style="margin-top:0;margin-bottom:8px;">要復習を表示</button>
+    <div id="admin-review-list"></div>
+  </div>
+
+  <div class="block">
     <div class="block-title">学習状況</div>
     <select id="chart-user" onchange="loadChart()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;margin-bottom:8px;">
       <option value="">ユーザーを選択</option>
@@ -1205,11 +1219,90 @@ async function loadUserList() {
   const chartEl  = document.getElementById('chart-user');
   filterEl.innerHTML = '<option value="">全ユーザー</option>';
   chartEl.innerHTML  = '<option value="">ユーザーを選択</option>';
+  const reviewFilter = document.getElementById('review-user-filter');
+  if(reviewFilter) reviewFilter.innerHTML = '<option value="">全生徒</option>';
   users.forEach(u => {
     filterEl.innerHTML += `<option value="${u.id}">${u.name}</option>`;
     chartEl.innerHTML  += `<option value="${u.id}">${u.name}</option>`;
+    if(reviewFilter) reviewFilter.innerHTML += `<option value="${u.id}">${u.name}</option>`;
   });
   
+  el.innerHTML = html;
+}
+
+
+async function loadAdminReviews() {
+  const userId = document.getElementById('review-user-filter').value;
+  const tbKey  = document.getElementById('review-tb-filter').value;
+  const el     = document.getElementById('admin-review-list');
+  el.innerHTML = '<p style="color:var(--tmu);font-size:13px;">読み込み中...</p>';
+
+  // 全ユーザーの要復習を取得
+  let query = 'review_items?order=user_id.asc,created_at.desc&select=*';
+  if(userId) query += '&user_id=eq.'+userId;
+  if(tbKey)  query += '&textbook_key=eq.'+tbKey;
+
+  const items = await sbFetch(query);
+  const users = await sbFetch('users?role=eq.student&select=id,name,grade');
+
+  if(!items || !items.length) {
+    el.innerHTML = '<p style="color:var(--tmu);font-size:13px;text-align:center;padding:12px;">要復習項目はありません</p>';
+    return;
+  }
+
+  // ユーザーマップ
+  const userMap = {};
+  if(users) users.forEach(function(u){ userMap[u.id] = u; });
+
+  // ユーザーごとにグループ化
+  const grouped = {};
+  items.forEach(function(item) {
+    if(!grouped[item.user_id]) grouped[item.user_id] = [];
+    grouped[item.user_id].push(item);
+  });
+
+  // テキストフィルターに選択肢を追加
+  const tbFilter = document.getElementById('review-tb-filter');
+  const tbKeys = [...new Set(items.map(function(i){return i.textbook_key;}))];
+  tbFilter.innerHTML = '<option value="">全テキスト</option>';
+  tbKeys.forEach(function(k) {
+    const label = TEXTBOOKS[k] ? TEXTBOOKS[k].label : k;
+    tbFilter.innerHTML += '<option value="'+k+'">'+label+'</option>';
+  });
+
+  let html = '';
+  Object.keys(grouped).forEach(function(uid) {
+    const u = userMap[uid] || {name:'不明', grade:''};
+    const userItems = grouped[uid];
+    html += '<div style="background:var(--nv7);border-radius:10px;padding:12px;margin-bottom:10px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+    html += '<div>';
+    html += '<span style="font-family:'Kaisei Opti',serif;font-size:15px;font-weight:700;color:var(--tb);">'+u.name+'</span>';
+    html += '<span style="font-size:11px;color:var(--tmu);margin-left:8px;">'+( u.grade||'' )+'</span>';
+    html += '</div>';
+    html += '<span style="font-size:12px;color:#F09595;font-weight:500;">要復習 '+userItems.length+'問</span>';
+    html += '</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:5px;">';
+    userItems.slice(0,5).forEach(function(item) {
+      var borderColor = item.reason === 'wrong' ? '#F09595' : '#EF9F27';
+      var labelColor  = item.reason === 'wrong' ? '#F09595' : '#EF9F27';
+      var label = item.reason === 'wrong' ? '✕ 不正解' : '⏱ '+item.elapsed_secs+'秒';
+      var tbLabel = TEXTBOOKS[item.textbook_key] ? TEXTBOOKS[item.textbook_key].label : item.textbook_key;
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--nv8);border-radius:6px;border-left:3px solid '+borderColor+';">';
+      html += '<div>';
+      html += '<div style="font-size:9px;color:'+labelColor+';margin-bottom:1px;">'+label+'　'+tbLabel+'</div>';
+      html += '<span style="font-size:14px;color:var(--tb);">'+item.word+'</span>';
+      html += '</div>';
+      html += '<span style="font-size:12px;color:var(--gL);">'+item.meaning+'</span>';
+      html += '</div>';
+    });
+    if(userItems.length > 5) {
+      html += '<div style="text-align:center;padding:4px;font-size:11px;color:var(--tmu);">他'+(userItems.length-5)+'問</div>';
+    }
+    html += '</div>';
+    html += '</div>';
+  });
+
   el.innerHTML = html;
 }
 
