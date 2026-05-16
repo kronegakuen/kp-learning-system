@@ -1078,8 +1078,7 @@ async function editAccess(userId, userName) {
   // チェックボックスダイアログ
   let msg = userName + 'のアクセス権を選択:\n\n';
   tbKeys.forEach(k => {
-    msg += (currentKeys.includes(k) ? '☑' : '☐') + ' ' + TEXTBOOKS[k].label + ' (' + k + ')
-';
+    msg += (currentKeys.includes(k) ? '☑' : '☐') + ' ' + TEXTBOOKS[k].label + ' (' + k + ')\n';
   });
   
   const input = prompt(msg + '
