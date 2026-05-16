@@ -1543,11 +1543,9 @@ async function loadUserStats() {
     const totalAnswered = correctLogs ? correctLogs.reduce((s,l)=>s+(l.total||0),0) : 0;
     const totalRate = totalAnswered > 0 ? Math.round(totalCorrect/totalAnswered*100) : 0;
 
-    // ヘッダー更新
+    // ヘッダー更新（非表示）
     const el = document.getElementById('user-stats');
-    el.style.display = 'flex';
-    document.getElementById('stat-streak').textContent = '🔥'+streak;
-    document.getElementById('stat-total').textContent = total+'問';
+    if(el) el.style.display = 'none';
 
     // スタッツカード更新
     const sc = document.getElementById('stats-card');
