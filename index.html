@@ -133,7 +133,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 
 <!-- 設定画面 -->
 <div class="sec on" id="sec-setup">
-  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
+  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><span id="user-stats" style="font-size:11px;color:var(--tmu);margin-left:8px;display:none;"></span><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
   <div class="block">
     <div class="block-title">共通設定</div>
@@ -259,8 +259,8 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
   <div class="btn-row"><button class="btn-blue" id="btn-reveal" onclick="revealAnswer()">答えを見る</button></div>
   <div class="btn-row" id="judge-row" style="display:none">
-    <button class="btn-ng" onclick="judge()">✕ もう一度</button>
-    <button class="btn-ok" onclick="judge()">○ 正解</button>
+    <button class="btn-ng" onclick="judge(false)">✕ もう一度</button>
+    <button class="btn-ok" onclick="judge(true)">○ 正解</button>
   </div>
 </div>
 
@@ -532,6 +532,7 @@ function buildQueueForPDF(countGroup){
 function startTraining(){
   if(!curSheet) return;
   queue=buildQueue('g-count'); idx=0;
+  sessionCorrect=0; sessionTotal=0;
   logTraining(queue.length);
   const initPron=document.getElementById('a-pron');if(initPron){initPron.textContent='';initPron.style.opacity='0';}
   const mode = getVal('g-mode')||'active';
@@ -541,7 +542,10 @@ function startTraining(){
 function renderActive(){
   if(idx>=queue.length){
     showSec('sec-end');
-    document.getElementById('end-msg').textContent=queue.length+'問 完了';
+    const rate = sessionTotal > 0 ? Math.round(sessionCorrect/sessionTotal*100) : 0;
+    document.getElementById('end-msg').textContent = queue.length+'問 完了　正答率 '+rate+'%　('+sessionCorrect+'/'+sessionTotal+')';
+    // 正答率をログに記録
+    logTrainingResult(sessionCorrect, sessionTotal);
     return;
   }
   const item=queue[idx], tot=queue.length;
@@ -562,7 +566,12 @@ function revealAnswer(){
   document.getElementById('btn-reveal').style.display='none';
   document.getElementById('judge-row').style.display='flex';
 }
-function judge(){ idx++; renderActive(); }
+function judge(isCorrect){
+  sessionTotal++;
+  if(isCorrect) sessionCorrect++;
+  idx++;
+  renderActive();
+}
 
 // ============================================================
 // オートモード
@@ -1200,6 +1209,50 @@ async function loadChart() {
 // ============================================================
 // ログ記録
 // ============================================================
+async function loadUserStats() {
+  if(!currentUser) return;
+  try {
+    // 累計問題数
+    const logs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&select=count,created_at');
+    if(!logs||!logs.length) return;
+    
+    const total = logs.reduce((s,l) => s+(l.count||0), 0);
+    
+    // ストリーク計算
+    const dates = [...new Set(logs.map(l => l.created_at.split('T')[0]))].sort().reverse();
+    let streak = 0;
+    const today = new Date().toISOString().split('T')[0];
+    let check = today;
+    for(const d of dates) {
+      if(d === check) {
+        streak++;
+        const dt = new Date(check);
+        dt.setDate(dt.getDate()-1);
+        check = dt.toISOString().split('T')[0];
+      } else break;
+    }
+    
+    const el = document.getElementById('user-stats');
+    el.style.display = '';
+    el.textContent = '🔥'+streak+'日連続　累計'+total+'問';
+  } catch(e) { console.log('stats error', e); }
+}
+
+async function logTrainingResult(correct, total) {
+  if(!currentUser || !curSheet) return;
+  // 最新のtraining_logを更新
+  try {
+    const logs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&order=created_at.desc&limit=1&select=id');
+    if(logs && logs[0]) {
+      await sbFetch('training_logs?id=eq.'+logs[0].id, {
+        method: 'PATCH',
+        headers: {'Prefer': 'return=minimal'},
+        body: JSON.stringify({correct, total})
+      });
+    }
+  } catch(e) { console.log('result log error', e); }
+}
+
 async function logTraining(count) {
   if(!currentUser) return;
   const tb = TEXTBOOKS[curSheet];
@@ -1268,6 +1321,7 @@ async function login() {
   document.getElementById('sec-main').style.display = '';
   document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
   if(currentUser.role === 'teacher') document.getElementById('btn-admin').style.display = '';
+  loadUserStats();
   window.loadManageSheet();
 }
 function logout() {
