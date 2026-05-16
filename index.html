@@ -1330,6 +1330,8 @@ function showResultCard(rate, correct, total, streak, cumTotal) {
   const card = document.getElementById('result-card');
   card.style.display = 'block';
   card.style.border = cfg.border;
+  const stampData = window._stampData || {stamps:0};
+  const grade = currentUser ? currentUser.grade||'' : '';
   card.innerHTML =
     '<div style="font-size:20px;font-weight:500;color:'+cfg.color+';margin-bottom:2px;">'+cfg.label+'</div>' +
     '<div style="font-size:56px;font-weight:500;color:'+cfg.color+';line-height:1.0;">'+rate+'%</div>' +
@@ -1348,7 +1350,88 @@ function showResultCard(rate, correct, total, streak, cumTotal) {
         '<div style="font-size:16px;font-weight:500;color:#EF9F27;">'+cumTotal+'問</div>' +
         '<div style="font-size:10px;color:#7A9CC0;">累計達成</div>' +
       '</div>' +
-    '</div>';
+    '</div>' +
+    renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '');
+}
+
+
+// ============================================================
+// 称号・スタンプシステム
+// ============================================================
+const TITLES = {
+  elementary_low: [
+    {lv:1, name:'めばえ'}, {lv:2, name:'ほしのたね'}, {lv:3, name:'おほしさま'},
+    {lv:4, name:'キラキラぼし'}, {lv:5, name:'ながれぼし'}, {lv:6, name:'クローネマスター'}
+  ],
+  elementary_mid: [
+    {lv:1, name:'クローバー'}, {lv:2, name:'スミレ'}, {lv:3, name:'コスモス'},
+    {lv:4, name:'ダリア'}, {lv:5, name:'ローズ'}, {lv:6, name:'クローネマスター'}
+  ],
+  other: [
+    {lv:1, name:'ノーマル'}, {lv:2, name:'アドバンス'}, {lv:3, name:'エキスパート'},
+    {lv:4, name:'プレミアム'}, {lv:5, name:'プライム'}, {lv:6, name:'クローネマスター'}
+  ]
+};
+const STAMPS_PER_CARD = 10;
+
+function getTitleSet(grade) {
+  if(!grade) return TITLES.other;
+  if(/小[12]/.test(grade)) return TITLES.elementary_low;
+  if(/小[345]/.test(grade)) return TITLES.elementary_mid;
+  return TITLES.other;
+}
+
+function calcStamps(totalQ, totalPDF) {
+  return Math.floor((totalQ||0) / 100) + Math.floor((totalPDF||0) / 40);
+}
+
+function getCurrentTitle(stamps, grade) {
+  const set = getTitleSet(grade);
+  const idx = Math.min(Math.floor(stamps / STAMPS_PER_CARD), set.length - 1);
+  return set[idx];
+}
+
+async function loadStampData() {
+  if(!currentUser) return {stamps:0, totalQ:0, totalPDF:0};
+  try {
+    const trainLogs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&select=count');
+    const pdfLogs   = await sbFetch('pdf_logs?user_id=eq.'+currentUser.id+'&select=count');
+    const totalQ   = trainLogs ? trainLogs.reduce(function(s,l){return s+(l.count||0);},0) : 0;
+    const totalPDF = pdfLogs   ? pdfLogs.reduce(function(s,l){return s+(l.count||0);},0)   : 0;
+    const stamps   = calcStamps(totalQ, totalPDF);
+    return {stamps, totalQ, totalPDF};
+  } catch(e) { return {stamps:0, totalQ:0, totalPDF:0}; }
+}
+
+function renderStampCard(stamps, grade) {
+  const cardStamps = stamps % STAMPS_PER_CARD;
+  const title = getCurrentTitle(stamps, grade);
+  const set = getTitleSet(grade);
+  const nextIdx = Math.min(Math.floor(stamps/STAMPS_PER_CARD)+1, set.length-1);
+  const nextTitle = set[nextIdx];
+  var html = '<div style="background:var(--nv8);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-top:12px;">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+  html += '<div style="font-size:13px;font-weight:500;color:var(--gL);">スタンプカード</div>';
+  html += '<div style="font-size:11px;color:var(--tmu);">'+cardStamps+' / '+STAMPS_PER_CARD+'枚</div>';
+  html += '</div>';
+  html += '<div style="text-align:center;margin-bottom:10px;">';
+  html += '<div style="font-size:20px;font-weight:500;color:var(--gL);">'+title.name+'</div>';
+  if(nextTitle && nextTitle.name !== title.name) {
+    html += '<div style="font-size:10px;color:var(--tmu);">次の称号: '+nextTitle.name+'</div>';
+  }
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px;">';
+  for(var i=0;i<STAMPS_PER_CARD;i++) {
+    if(i < cardStamps) {
+      html += '<div style="aspect-ratio:1;background:var(--nv6);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;">⭐</div>';
+    } else {
+      html += '<div style="aspect-ratio:1;background:var(--nv9);border-radius:6px;border:1px dashed var(--nv5);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--nv5);">○</div>';
+    }
+  }
+  html += '</div>';
+  html += '<div style="font-size:10px;color:var(--tmu);text-align:center;">100問でスタンプ1枚・10枚で称号アップ！</div>';
+  html += '</div>';
+  return html;
 }
 
 // ============================================================
@@ -1411,6 +1494,8 @@ async function loadUserStats() {
     // グローバルに保存
     window._userStreak = streak;
     window._userTotal = total;
+    // スタンプデータ保存
+    window._stampData = await loadStampData();
   } catch(e) { console.log('stats error', e); }
 }
 
