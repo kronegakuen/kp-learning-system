@@ -284,7 +284,7 @@ function parseCSV(text){
 // ============================================================
 // 起動時：管理シートを読んでテキスト一覧を生成
 // ============================================================
-async function loadManageSheet(){
+window.loadManageSheet = async function loadManageSheet(){
   try{
     const res = await fetch(csvUrl(MANAGE_SHEET));
     if(!res.ok) throw new Error('管理シートの読み込みに失敗しました');
@@ -950,7 +950,7 @@ async function login() {
   document.getElementById('sec-login').style.display = 'none';
   document.getElementById('sec-main').style.display = '';
   document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
-  loadManageSheet();
+  window.loadManageSheet();
 }
 function logout() {
   currentUser = null;
