@@ -133,7 +133,17 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 
 <!-- 設定画面 -->
 <div class="sec on" id="sec-setup">
-  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><span id="user-stats" style="font-size:11px;color:var(--tmu);margin-left:8px;display:none;"></span><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
+  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.4</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><div id="user-stats" style="display:none;flex-direction:row;gap:10px;align-items:center;margin-left:8px;">
+  <div style="text-align:center;">
+    <div id="stat-streak" style="font-size:16px;font-weight:500;color:var(--gL);">🔥0</div>
+    <div style="font-size:9px;color:var(--tmu);">連続日数</div>
+  </div>
+  <div style="width:1px;height:28px;background:var(--nv5);"></div>
+  <div style="text-align:center;">
+    <div id="stat-total" style="font-size:16px;font-weight:500;color:var(--gL);">0問</div>
+    <div style="font-size:9px;color:var(--tmu);">累計</div>
+  </div>
+</div><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
   <div class="block">
     <div class="block-title">共通設定</div>
@@ -284,6 +294,25 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 <div class="sec" id="sec-end">
   <div class="end-box">
     <div class="big">お疲れさまでした！</div>
+    <div id="result-card" style="background:var(--nv7);border:1px solid var(--gold);border-radius:16px;padding:20px;margin:12px 0;text-align:center;display:none;">
+      <div id="result-rate" style="font-size:48px;font-weight:500;color:var(--gL);line-height:1.1;">--</div>
+      <div style="font-size:13px;color:var(--tm);margin-bottom:16px;">正答率</div>
+      <div id="result-detail" style="font-size:13px;color:var(--tb);margin-bottom:16px;"></div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <div style="background:var(--nv8);border-radius:8px;padding:8px 16px;text-align:center;">
+          <div id="result-streak" style="font-size:18px;font-weight:500;color:var(--gL);">🔥--</div>
+          <div style="font-size:10px;color:var(--tmu);">連続学習</div>
+        </div>
+        <div style="background:var(--nv8);border-radius:8px;padding:8px 16px;text-align:center;">
+          <div id="result-total" style="font-size:18px;font-weight:500;color:var(--gL);">--問</div>
+          <div style="font-size:10px;color:var(--tmu);">累計達成</div>
+        </div>
+      </div>
+    </div>
+    <div id="badge-area" style="margin:12px 0;display:none;">
+      <div style="font-size:12px;color:var(--tmu);margin-bottom:8px;">獲得バッジ</div>
+      <div id="badge-list" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
+    </div>
     <div class="sub" id="end-msg"></div>
     <button class="btn-action btn-back" onclick="goSetup()">← 設定に戻る</button>
   </div>
@@ -459,7 +488,14 @@ function showSec(id){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
 }
-function goSetup(){ stopPassive(); showSec('sec-setup'); }
+function goSetup(){
+  stopPassive();
+  showSec('sec-setup');
+  const card = document.getElementById('result-card');
+  if(card) card.style.display = 'none';
+  const area = document.getElementById('badge-area');
+  if(area) area.style.display = 'none';
+}
 
 function pickChip(gid, el){
   document.querySelectorAll('#'+gid+' .chip').forEach(b=>b.classList.remove('on'));
@@ -543,7 +579,20 @@ function renderActive(){
   if(idx>=queue.length){
     showSec('sec-end');
     const rate = sessionTotal > 0 ? Math.round(sessionCorrect/sessionTotal*100) : 0;
-    document.getElementById('end-msg').textContent = queue.length+'問 完了　正答率 '+rate+'%　('+sessionCorrect+'/'+sessionTotal+')';
+    document.getElementById('end-msg').textContent = '';
+    // 結果カード表示
+    const card = document.getElementById('result-card');
+    card.style.display = 'block';
+    document.getElementById('result-rate').textContent = rate+'%';
+    document.getElementById('result-detail').textContent = queue.length+'問完了　'+sessionCorrect+'/'+sessionTotal+'問正解';
+    // ストリーク・累計更新後に表示
+    await loadUserStats();
+    const streak = window._userStreak || 0;
+    const total = window._userTotal || 0;
+    document.getElementById('result-streak').textContent = '🔥'+streak+'日';
+    document.getElementById('result-total').textContent = total+'問';
+    // バッジチェック
+    showBadges(total, streak);
     // 正答率をログに記録
     logTrainingResult(sessionCorrect, sessionTotal);
     return;
@@ -1206,20 +1255,46 @@ async function loadChart() {
   ctx.fillText(0, 35, H - 20);
 }
 
+
+// ============================================================
+// バッジシステム
+// ============================================================
+const BADGES = [
+  {id:'q10',   icon:'🌱', label:'10問達成',    check:(t,s)=>t>=10},
+  {id:'q50',   icon:'⭐', label:'50問達成',    check:(t,s)=>t>=50},
+  {id:'q100',  icon:'🏅', label:'100問達成',   check:(t,s)=>t>=100},
+  {id:'q300',  icon:'🏆', label:'300問達成',   check:(t,s)=>t>=300},
+  {id:'q500',  icon:'💎', label:'500問達成',   check:(t,s)=>t>=500},
+  {id:'s3',    icon:'🔥', label:'3日連続',     check:(t,s)=>s>=3},
+  {id:'s7',    icon:'🔥🔥', label:'7日連続',  check:(t,s)=>s>=7},
+  {id:'s30',   icon:'👑', label:'30日連続',    check:(t,s)=>s>=30},
+];
+
+function showBadges(total, streak) {
+  const earned = BADGES.filter(b => b.check(total, streak));
+  if(!earned.length) return;
+  const area = document.getElementById('badge-area');
+  const list = document.getElementById('badge-list');
+  area.style.display = 'block';
+  list.innerHTML = earned.map(b => 
+    '<div style="background:var(--nv8);border:1px solid var(--gold);border-radius:8px;padding:6px 10px;text-align:center;">' +
+    '<div style="font-size:20px;">'+b.icon+'</div>' +
+    '<div style="font-size:10px;color:var(--gL);font-weight:500;">'+b.label+'</div>' +
+    '</div>'
+  ).join('');
+}
+
 // ============================================================
 // ログ記録
 // ============================================================
 async function loadUserStats() {
   if(!currentUser) return;
   try {
-    // 累計問題数
     const logs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&select=count,created_at');
-    if(!logs||!logs.length) return;
-    
-    const total = logs.reduce((s,l) => s+(l.count||0), 0);
+    const total = logs ? logs.reduce((s,l) => s+(l.count||0), 0) : 0;
     
     // ストリーク計算
-    const dates = [...new Set(logs.map(l => l.created_at.split('T')[0]))].sort().reverse();
+    const dates = logs ? [...new Set(logs.map(l => l.created_at.split('T')[0]))].sort().reverse() : [];
     let streak = 0;
     const today = new Date().toISOString().split('T')[0];
     let check = today;
@@ -1232,9 +1307,15 @@ async function loadUserStats() {
       } else break;
     }
     
+    // ヘッダー更新
     const el = document.getElementById('user-stats');
-    el.style.display = '';
-    el.textContent = '🔥'+streak+'日連続　累計'+total+'問';
+    el.style.display = 'flex';
+    document.getElementById('stat-streak').textContent = '🔥'+streak;
+    document.getElementById('stat-total').textContent = total+'問';
+    
+    // グローバルに保存
+    window._userStreak = streak;
+    window._userTotal = total;
   } catch(e) { console.log('stats error', e); }
 }
 
