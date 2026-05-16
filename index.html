@@ -284,14 +284,15 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div class="card-type" id="p-type"></div>
     <div class="card-q" id="p-q"></div>
     <div class="card-a" id="p-ans"></div>
+    <div id="p-pron" style="font-size:14px;color:#888;margin-top:6px;opacity:0;visibility:hidden;transition:opacity .3s;min-height:20px;"></div>
   </div>
   <div class="p-ctrl">
     <button class="chip" id="btn-pause" onclick="togglePause()">⏸ 一時停止</button>
     <button class="chip" onclick="skipPassive()">→ 次へ</button>
   </div>
-  <div id="p-judge-row" style="display:none;justify-content:center;gap:12px;margin-top:8px;">
-    <button class="btn-ng" onclick="judgePassive(false)">✕</button>
-    <button class="btn-ok" onclick="judgePassive(true)">○</button>
+  <div id="p-judge-row" style="display:none;justify-content:center;gap:12px;margin-top:12px;">
+    <button class="btn-ng" onclick="judgePassive(false)">✕ もう一度</button>
+    <button class="btn-ok" onclick="judgePassive(true)">○ 正解</button>
   </div>
 </div>
 
@@ -659,6 +660,7 @@ async function renderPassiveCard(){
   document.getElementById('p-ans').textContent=item.a;
   document.getElementById('p-ans').classList.remove('show');
   document.getElementById('p-judge-row').style.display='none';
+  const pPron=document.getElementById('p-pron');if(pPron){pPron.innerHTML=item.pronunciation?item.pronunciation.replace(/\|([^|]+)\|/g,'<span style="color:transparent;font-size:0;">|</span><span style="color:var(--gL);font-weight:700;">$1</span><span style="color:transparent;font-size:0;">|</span>'):'';pPron.style.opacity='0';pPron.style.visibility='hidden';}
   document.getElementById('p-ctr').textContent=(idx+1)+' / '+queue.length;
   document.getElementById('p-timer').style.background='#378ADD';
   document.getElementById('p-timer').style.width='100%';
@@ -673,6 +675,7 @@ function tickPassive(now){
       phase='a'; phaseStart=now;
       document.getElementById('p-ans').classList.add('show');
       document.getElementById('p-judge-row').style.display='flex';
+      const pp=document.getElementById('p-pron');if(pp){pp.style.visibility='visible';pp.style.opacity='1';}
       document.getElementById('p-timer').style.background='#1D9E75';
       document.getElementById('p-timer').style.width='100%';
     } else {
