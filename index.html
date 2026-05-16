@@ -680,28 +680,11 @@ h1{font-size:11pt;font-weight:bold;text-align:center;margin:5mm 0 0.5mm;border-b
 .atxt{font-size:9pt;color:#1a4f8a;font-weight:bold;}.wbold{font-size:10pt;font-weight:bold;}.ans-line-w{display:block;width:90%;border-bottom:0.5pt solid #999;height:3.5mm;}
 </style>
 </head><body>
-<!-- ログイン画面 -->
-<div id="sec-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
-  <div style="background:var(--nv7);border:1px solid var(--nv5);border-radius:16px;padding:2.5rem 2rem;width:320px;text-align:center;">
-    <div style="font-size:22px;font-weight:700;color:var(--gL);margin-bottom:0.5rem;">KRONE Prep</div>
-    <div style="font-size:12px;color:var(--tmu);margin-bottom:2rem;">β版</div>
-    <input id="login-user" type="text" placeholder="ID" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;">
-    <input id="login-pass" type="password" placeholder="パスワード" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;" onkeydown="if(event.key==='Enter')login()">
-    <button onclick="login()" style="width:100%;padding:11px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">ログイン</button>
-    <div id="login-err" style="color:#F09595;font-size:13px;margin-top:10px;min-height:18px;"></div>
-  </div>
-</div>
-<!-- メイン画面 -->
-<div id="sec-main" style="display:none;">
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
 ${pages}
-
-</div>
-
-
 </body></html>`;
 
 
@@ -911,28 +894,11 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
 }
 </style>
 </head><body>
-<!-- ログイン画面 -->
-<div id="sec-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
-  <div style="background:var(--nv7);border:1px solid var(--nv5);border-radius:16px;padding:2.5rem 2rem;width:320px;text-align:center;">
-    <div style="font-size:22px;font-weight:700;color:var(--gL);margin-bottom:0.5rem;">KRONE Prep</div>
-    <div style="font-size:12px;color:var(--tmu);margin-bottom:2rem;">β版</div>
-    <input id="login-user" type="text" placeholder="ID" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;">
-    <input id="login-pass" type="password" placeholder="パスワード" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;" onkeydown="if(event.key==='Enter')login()">
-    <button onclick="login()" style="width:100%;padding:11px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">ログイン</button>
-    <div id="login-err" style="color:#F09595;font-size:13px;margin-top:10px;min-height:18px;"></div>
-  </div>
-</div>
-<!-- メイン画面 -->
-<div id="sec-main" style="display:none;">
 <div class="no-print">
   <button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button>
   <button onclick="window.close()">閉じる</button>
 </div>
 ${pages}
-
-</div>
-
-
 </body></html>`;
   }
 
