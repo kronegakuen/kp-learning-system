@@ -78,13 +78,61 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div id="login-err" style="color:#F09595;font-size:13px;margin-top:10px;min-height:18px;"></div>
   </div>
 </div>
+<!-- 管理画面 -->
+<div id="sec-admin" style="display:none;">
+<div class="wrap">
+  <div class="block">
+    <div class="block-title">ユーザー管理</div>
+    <div class="field">
+      <span class="field-label">新規ユーザー追加</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <input id="new-username" type="text" placeholder="ログインID" style="padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+        <input id="new-password" type="text" placeholder="パスワード" style="padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+        <input id="new-name" type="text" placeholder="名前" style="padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+        <input id="new-grade" type="text" placeholder="学年" style="padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+      </div>
+      <button onclick="addUser()" class="btn-action btn-train" style="margin-top:0;">ユーザー追加</button>
+      <div id="user-msg" style="font-size:12px;color:var(--tmu);margin-top:6px;min-height:16px;"></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">ユーザー一覧・アクセス権</div>
+    <div id="user-list" style="font-size:13px;color:var(--text-mid);">読み込み中...</div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">利用ログ</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <select id="log-user-filter" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+        <option value="">全ユーザー</option>
+      </select>
+      <select id="log-type-filter" style="padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;">
+        <option value="training">トレーニング</option>
+        <option value="pdf">PDF生成</option>
+      </select>
+    </div>
+    <button onclick="loadLogs()" class="btn-action btn-train" style="margin-top:0;margin-bottom:8px;">ログを表示</button>
+    <div id="log-list" style="font-size:12px;color:var(--tm);max-height:400px;overflow-y:auto;"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">学習状況</div>
+    <select id="chart-user" onchange="loadChart()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:13px;margin-bottom:8px;">
+      <option value="">ユーザーを選択</option>
+    </select>
+    <canvas id="log-chart" style="width:100%;background:#fff;border-radius:8px;"></canvas>
+  </div>
+</div>
+</div>
+
 <!-- メイン画面 -->
 <div id="sec-main" style="display:none;">
 <div class="wrap">
 
 <!-- 設定画面 -->
 <div class="sec on" id="sec-setup">
-  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.3</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
+  <div class="hd"><h1>KRONE Prep</h1><span class="badge">β版</span><span style="font-size:11px;color:var(--tmu);margin-left:auto">v0.3</span><span id="user-name" style="font-size:12px;color:var(--gL);margin-left:8px;"></span><button id="btn-admin" onclick="showAdmin()" style="display:none;font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--gold);background:transparent;color:var(--gL);cursor:pointer;margin-left:8px;">管理</button><button onclick="logout()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;margin-left:8px;">ログアウト</button></div>
 
   <div class="block">
     <div class="block-title">共通設定</div>
@@ -930,6 +978,230 @@ const SUPABASE_URL='https://ppuuyliaaregepathaur.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXV5bGlhYXJlZ2VwYXRoYXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzUyNjksImV4cCI6MjA5NDQ1MTI2OX0.h9YqsUuriSEeqyPBmyWShkN3kwP6x9h6RyOEtPIJisY';
 let currentUser = null;
 
+
+// ============================================================
+// 管理画面
+// ============================================================
+function showAdmin() {
+  document.getElementById('sec-main').style.display = 'none';
+  document.getElementById('sec-admin').style.display = '';
+  loadUserList();
+}
+
+function showMain() {
+  document.getElementById('sec-admin').style.display = 'none';
+  document.getElementById('sec-main').style.display = '';
+}
+
+async function addUser() {
+  const username = document.getElementById('new-username').value.trim();
+  const password = document.getElementById('new-password').value.trim();
+  const name     = document.getElementById('new-name').value.trim();
+  const grade    = document.getElementById('new-grade').value.trim();
+  const msg      = document.getElementById('user-msg');
+  if(!username||!password||!name) { msg.textContent='ID・パスワード・名前は必須です'; return; }
+  
+  const res = await sbFetch('users', {
+    method: 'POST',
+    headers: {'Prefer': 'return=representation'},
+    body: JSON.stringify({username, password, name, grade, role:'student'})
+  });
+  if(res && res[0] && res[0].id) {
+    msg.style.color = 'var(--gL)';
+    msg.textContent = name + ' を追加しました';
+    document.getElementById('new-username').value = '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-grade').value = '';
+    loadUserList();
+  } else {
+    msg.style.color = '#F09595';
+    msg.textContent = '追加に失敗しました（IDが重複している可能性があります）';
+  }
+}
+
+async function loadUserList() {
+  const el = document.getElementById('user-list');
+  const users = await sbFetch('users?role=eq.student&select=id,username,name,grade&order=created_at.asc');
+  if(!users||!users.length) { el.innerHTML = '<p style="color:var(--tmu)">生徒がいません</p>'; return; }
+  
+  // アクセス権を取得
+  const access = await sbFetch('access?select=user_id,textbook_key');
+  const accessMap = {};
+  access.forEach(a => {
+    if(!accessMap[a.user_id]) accessMap[a.user_id] = [];
+    accessMap[a.user_id].push(a.textbook_key);
+  });
+
+  // テキスト一覧
+  const tbKeys = Object.keys(TEXTBOOKS);
+  
+  let html = '<table style="width:100%;border-collapse:collapse;">';
+  html += '<tr style="font-size:11px;color:var(--tmu);border-bottom:1px solid var(--nv5);">';
+  html += '<th style="padding:6px;text-align:left;">名前</th><th style="padding:6px;text-align:left;">学年</th><th style="padding:6px;text-align:left;">ID</th><th style="padding:6px;text-align:left;">アクセス権</th><th></th>';
+  html += '</tr>';
+  
+  users.forEach(u => {
+    const userAccess = accessMap[u.id] || [];
+    const tbLabels = userAccess.map(k => TEXTBOOKS[k] ? TEXTBOOKS[k].label : k).join('、');
+    html += `<tr style="border-bottom:1px solid var(--nv6);">
+      <td style="padding:8px;color:var(--tb)">${u.name}</td>
+      <td style="padding:8px;color:var(--tm)">${u.grade||''}</td>
+      <td style="padding:8px;color:var(--tmu);font-size:11px">${u.username}</td>
+      <td style="padding:8px;font-size:11px;color:var(--gL)">${tbLabels||'なし'}</td>
+      <td style="padding:8px;"><button onclick="editAccess('${u.id}','${u.name}')" style="font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">編集</button></td>
+    </tr>`;
+  });
+  html += '</table>';
+  
+  // ユーザーフィルターとチャートセレクトも更新
+  const filterEl = document.getElementById('log-user-filter');
+  const chartEl  = document.getElementById('chart-user');
+  filterEl.innerHTML = '<option value="">全ユーザー</option>';
+  chartEl.innerHTML  = '<option value="">ユーザーを選択</option>';
+  users.forEach(u => {
+    filterEl.innerHTML += `<option value="${u.id}">${u.name}</option>`;
+    chartEl.innerHTML  += `<option value="${u.id}">${u.name}</option>`;
+  });
+  
+  el.innerHTML = html;
+}
+
+async function editAccess(userId, userName) {
+  const tbKeys = Object.keys(TEXTBOOKS);
+  if(!tbKeys.length) { alert('テキストが読み込まれていません'); return; }
+  
+  // 現在のアクセス権を取得
+  const current = await sbFetch('access?user_id=eq.'+userId+'&select=textbook_key');
+  const currentKeys = current.map(a => a.textbook_key);
+  
+  // チェックボックスダイアログ
+  let msg = userName + 'のアクセス権を選択:
+
+';
+  tbKeys.forEach(k => {
+    msg += (currentKeys.includes(k) ? '☑' : '☐') + ' ' + TEXTBOOKS[k].label + ' (' + k + ')
+';
+  });
+  
+  const input = prompt(msg + '
+
+許可するテキストキーをカンマ区切りで入力 (例: tb_1,tb_2)
+現在: ' + (currentKeys.join(',')||'なし'));
+  if(input === null) return;
+  
+  const newKeys = input.split(',').map(s=>s.trim()).filter(s=>s);
+  
+  // 既存を削除して新規追加
+  await sbFetch('access?user_id=eq.'+userId, {method:'DELETE'});
+  if(newKeys.length) {
+    const rows = newKeys.map(k => ({user_id: userId, textbook_key: k}));
+    await sbFetch('access', {
+      method: 'POST',
+      headers: {'Prefer': 'return=minimal'},
+      body: JSON.stringify(rows)
+    });
+  }
+  
+  document.getElementById('user-msg').style.color = 'var(--gL)';
+  document.getElementById('user-msg').textContent = userName + 'のアクセス権を更新しました';
+  loadUserList();
+}
+
+async function loadLogs() {
+  const userId = document.getElementById('log-user-filter').value;
+  const type   = document.getElementById('log-type-filter').value;
+  const el     = document.getElementById('log-list');
+  
+  const table = type === 'pdf' ? 'pdf_logs' : 'training_logs';
+  let query = table + '?order=created_at.desc&limit=50&select=*';
+  if(userId) query += '&user_id=eq.'+userId;
+  
+  const logs = await sbFetch(query);
+  if(!logs||!logs.length) { el.innerHTML = '<p style="color:var(--tmu)">ログがありません</p>'; return; }
+  
+  // ユーザー名マップ
+  const users = await sbFetch('users?select=id,name');
+  const userMap = {};
+  users.forEach(u => userMap[u.id] = u.name);
+  
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
+  html += '<tr style="color:var(--tmu);border-bottom:1px solid var(--nv5);"><th style="padding:4px;text-align:left;">日時</th><th style="padding:4px;text-align:left;">ユーザー</th><th style="padding:4px;text-align:left;">テキスト</th><th style="padding:4px;">問題数</th><th style="padding:4px;text-align:left;">モード</th></tr>';
+  
+  logs.forEach(log => {
+    const dt = new Date(log.created_at).toLocaleString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const mode = type === 'pdf' ? log.pdf_mode : (log.direction + '/' + log.mode);
+    html += `<tr style="border-bottom:1px solid var(--nv6);">
+      <td style="padding:4px;color:var(--tmu)">${dt}</td>
+      <td style="padding:4px;color:var(--tb)">${userMap[log.user_id]||'?'}</td>
+      <td style="padding:4px;color:var(--tm)">${log.textbook_name||''}</td>
+      <td style="padding:4px;text-align:center;color:var(--gL)">${log.count}</td>
+      <td style="padding:4px;color:var(--tmu)">${mode||''}</td>
+    </tr>`;
+  });
+  html += '</table>';
+  el.innerHTML = html;
+}
+
+async function loadChart() {
+  const userId = document.getElementById('chart-user').value;
+  if(!userId) return;
+  
+  const logs = await sbFetch('training_logs?user_id=eq.'+userId+'&order=created_at.asc&select=textbook_name,count,created_at');
+  if(!logs||!logs.length) return;
+  
+  // 日別集計
+  const daily = {};
+  logs.forEach(log => {
+    const date = log.created_at.split('T')[0];
+    daily[date] = (daily[date]||0) + log.count;
+  });
+  
+  const labels = Object.keys(daily).slice(-14); // 直近14日
+  const data   = labels.map(d => daily[d]);
+  
+  const canvas = document.getElementById('log-chart');
+  const ctx = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth || 600;
+  canvas.height = 200;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  if(!labels.length) return;
+  
+  const max = Math.max(...data, 1);
+  const W = canvas.width, H = canvas.height;
+  const barW = (W - 60) / labels.length;
+  
+  ctx.fillStyle = '#1A3260';
+  ctx.fillRect(0, 0, W, H);
+  
+  labels.forEach((label, i) => {
+    const barH = (data[i] / max) * (H - 40);
+    const x = 40 + i * barW + barW * 0.1;
+    const y = H - 20 - barH;
+    
+    ctx.fillStyle = '#BA7517';
+    ctx.fillRect(x, y, barW * 0.8, barH);
+    
+    ctx.fillStyle = '#7A9CC0';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(label.slice(5), x + barW*0.4, H - 5);
+    
+    if(data[i] > 0) {
+      ctx.fillStyle = '#EAF1FA';
+      ctx.fillText(data[i], x + barW*0.4, y - 3);
+    }
+  });
+  
+  // Y軸ラベル
+  ctx.fillStyle = '#7A9CC0';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(max, 35, 15);
+  ctx.fillText(0, 35, H - 20);
+}
+
 // ============================================================
 // ログ記録
 // ============================================================
@@ -1000,6 +1272,7 @@ async function login() {
   document.getElementById('sec-login').style.display = 'none';
   document.getElementById('sec-main').style.display = '';
   document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+  if(currentUser.role === 'teacher') document.getElementById('btn-admin').style.display = '';
   window.loadManageSheet();
 }
 function logout() {
