@@ -33,6 +33,16 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 .slider-row label{font-size:13px;color:var(--tmu);width:48px;}
 .slider-row input[type=range]{flex:1;accent-color:var(--gold);}
 .sval{font-size:13px;font-weight:500;color:var(--tb);min-width:34px;}
+.pm-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--nv8);border:1px solid var(--nv6);}
+.pm-row-label{font-size:13px;color:var(--tm);}
+.pm-row-sub{font-size:10px;color:var(--tmu);margin-top:2px;}
+.pm-sw{position:relative;width:40px;height:22px;flex-shrink:0;}
+.pm-sw input{opacity:0;width:0;height:0;position:absolute;}
+.pm-sl{position:absolute;inset:0;background:var(--nv6);border-radius:11px;border:1px solid var(--nv5);cursor:pointer;transition:.2s;}
+.pm-sl:before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:var(--tmu);border-radius:50%;transition:.2s;}
+.pm-sw input:checked + .pm-sl{border-color:var(--gL);}
+.pm-sw input:checked + .pm-sl:before{transform:translateX(18px);background:var(--gL);}
+.pm-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;background:var(--nv6);border:1px solid var(--nv5);color:#85B7EB;margin-bottom:10px;}
 .btn-action{width:100%;padding:11px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:.875rem;}
 .btn-action:disabled{opacity:.4;cursor:not-allowed;}
 .btn-train{background:var(--gold);color:#fff;}
@@ -237,6 +247,16 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
           <span class="sval" id="sv-a">4秒</span>
         </div>
       </div>
+    </div>
+    <div class="pm-row">
+      <div>
+        <div class="pm-row-label">📝 れんしゅうモード</div>
+        <div class="pm-row-sub">記録・スタンプ・連続日数に反映されません</div>
+      </div>
+      <label class="pm-sw">
+        <input type="checkbox" id="chk-practice">
+        <span class="pm-sl"></span>
+      </label>
     </div>
     <button onclick="showReviewSection()" style="width:100%;padding:10px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:13px;cursor:pointer;margin-bottom:8px;" id="btn-review">📋 要復習リスト</button>
     <button class="btn-action btn-train" id="btn-start" onclick="startTraining()" disabled>
@@ -650,6 +670,7 @@ function buildQueueForPDF(countGroup){
 // ============================================================
 function startTraining(){
   if(!curSheet) return;
+  window._practiceMode = !!(document.getElementById('chk-practice') && document.getElementById('chk-practice').checked);
   queue=buildQueue('g-count'); idx=0;
   sessionCorrect=0; sessionTotal=0;
   sessionTimes=[]; sessionFastCount=0; sessionSlowCount=0;
@@ -1499,13 +1520,17 @@ function getResultConfig(rate) {
 
 function showResultCard(rate, correct, total, streak, cumTotal, avgTime, fastCount, slowCount) {
   avgTime = avgTime || 0; fastCount = fastCount || 0; slowCount = slowCount || 0;
-  const cfg = getResultConfig(rate);
+  const isPractice = !!window._practiceMode;
+  const cfg = isPractice
+    ? { color: '#85B7EB', border: '2px solid #3A5E9A', label: getResultConfig(rate).label, comment: getResultConfig(rate).comment }
+    : getResultConfig(rate);
   const card = document.getElementById('result-card');
   card.style.display = 'block';
   card.style.border = cfg.border;
   const stampData = window._stampData || {stamps:0};
   const grade = currentUser ? currentUser.grade||'' : '';
   card.innerHTML =
+    (isPractice ? '<div class="pm-badge">📝 れんしゅうモード（記録なし）</div>' : '') +
     '<div style="font-size:20px;font-weight:500;color:'+cfg.color+';margin-bottom:2px;">'+cfg.label+'</div>' +
     '<div style="font-size:56px;font-weight:500;color:'+cfg.color+';line-height:1.0;">'+rate+'%</div>' +
     '<div style="font-size:16px;color:#B0C4DE;margin-bottom:14px;">'+correct+' / '+total+'問正解</div>' +
@@ -1537,14 +1562,15 @@ function showResultCard(rate, correct, total, streak, cumTotal, avgTime, fastCou
         '</div>' +
       '</div>' +
     '</div>' : '') +
-    renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '') +
+    (isPractice ? '' : renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '')) +
     ((sessionWrongItems.length + sessionSlowItems.length) > 0 ?
       '<div style="margin-top:12px;background:#0C1B33;border-radius:8px;padding:12px;">' +
       '<div style="font-size:12px;font-weight:500;color:#F09595;margin-bottom:8px;">要復習リスト（'+( sessionWrongItems.length + sessionSlowItems.length )+'問）</div>' +
       renderReviewList(sessionWrongItems.concat(sessionSlowItems.filter(function(s){return !sessionWrongItems.find(function(w){return w.word===s.word;});}))) +
-      '<button onclick="startReviewTraining()" style="width:100%;padding:10px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:13px;cursor:pointer;margin-top:10px;">要復習問題だけ再挑戦</button>' +
+      (isPractice ? '' : '<button onclick="startReviewTraining()" style="width:100%;padding:10px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:13px;cursor:pointer;margin-top:10px;">要復習問題だけ再挑戦</button>') +
       '</div>'
-    : '');
+    : '') +
+    (isPractice ? '<button onclick="document.getElementById(\'chk-practice\').checked=false;window._practiceMode=false;startTraining();" style="width:100%;padding:11px;background:transparent;border:1.5px solid #EF9F27;border-radius:8px;color:#EF9F27;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px;">▶ 記録ありで再挑戦</button>' : '');
 }
 
 
@@ -1653,7 +1679,7 @@ function renderStampCard(stamps, grade) {
 // 要復習システム
 // ============================================================
 async function saveReviewItems(wrongItems, slowItems) {
-  if(!currentUser || !curSheet) return;
+  if(!currentUser || !curSheet || window._practiceMode) return;
   const tb = TEXTBOOKS[curSheet];
   if(!tb) return;
   
@@ -2149,7 +2175,7 @@ async function loadUserStats() {
 }
 
 async function logTrainingResult(count, correct, total) {
-  if(!currentUser || !curSheet) return;
+  if(!currentUser || !curSheet || window._practiceMode) return;
   try {
     const logId = window._currentLogId;
     if(logId) {
@@ -2164,7 +2190,7 @@ async function logTrainingResult(count, correct, total) {
 }
 
 async function logTraining() {
-  if(!currentUser) return;
+  if(!currentUser || window._practiceMode) return;
   const tb = TEXTBOOKS[curSheet];
   if(!tb) return;
   try {
