@@ -186,20 +186,20 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   <div id="stats-card" style="display:none;background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px;margin:0 0 1rem;">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;margin-bottom:12px;">
       <div>
-        <div id="sc-streak" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">日</span></div>
-        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">連続学習</div>
+        <div id="sc-streak" style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">日</span></div>
+        <div style="font-size:13px;color:var(--tmu);margin-top:3px;">連続学習</div>
       </div>
       <div>
-        <div id="sc-total" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">問</span></div>
-        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計問題</div>
+        <div id="sc-total" style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">問</span></div>
+        <div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計問題</div>
       </div>
       <div>
-        <div id="sc-correct" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">問</span></div>
-        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計正解</div>
+        <div id="sc-correct" style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">0<span style="font-size:13px;">問</span></div>
+        <div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計正解</div>
       </div>
       <div>
-        <div id="sc-rate" style="font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);">--<span style="font-size:13px;">%</span></div>
-        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計正答率</div>
+        <div id="sc-rate" style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">--<span style="font-size:13px;">%</span></div>
+        <div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計正答率</div>
       </div>
     </div>
     <div id="sc-stamp-card"></div>
@@ -1673,8 +1673,8 @@ function renderStampCard(stamps, grade, tbLabel) {
     var textColor = (isDone || isNow) ? '#fff' : 'var(--tmu)';
     var label = isNow ? 'Now' : 'Lv'+(i+1);
     roadmap += '<div style="text-align:center;flex-shrink:0;opacity:'+opacity+';">';
-    roadmap += '<div style="width:'+(isNow?'34':'28')+'px;height:'+(isNow?'34':'28')+'px;background:'+bg+';border-radius:50%;'+border+'display:flex;align-items:center;justify-content:center;font-size:8px;color:'+textColor+';font-weight:700;margin:0 auto 3px;">'+label+'</div>';
-    roadmap += '<div style="font-size:7px;color:'+(isNow?'var(--gL)':'var(--tmu)')+';font-weight:'+(isNow?'700':'400')+';">'+t.name+'</div>';
+    roadmap += '<div style="width:'+(isNow?'36':'30')+'px;height:'+(isNow?'36':'30')+'px;background:'+bg+';border-radius:50%;'+border+'display:flex;align-items:center;justify-content:center;font-size:9px;color:'+textColor+';font-weight:700;margin:0 auto 4px;">'+label+'</div>';
+    roadmap += '<div style="font-size:9px;color:'+(isNow?'var(--gL)':'var(--tmu)')+';font-weight:'+(isNow?'700':'400')+';">'+t.name+'</div>';
     roadmap += '</div>';
   });
   roadmap += '</div>';
@@ -1694,11 +1694,11 @@ function renderStampCard(stamps, grade, tbLabel) {
   if(tbLabel) html += '<div style="font-size:14px;color:var(--gL);font-weight:500;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--nv6);">📚 '+tbLabel+'</div>';
   html += roadmap;
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
-  html += '<div style="font-size:10px;color:var(--tmu);">次の称号まで</div>';
-  html += '<div style="font-size:10px;color:var(--gL);">'+cardStamps+' / '+STAMPS_PER_CARD+'枚</div>';
+  html += '<div style="font-size:12px;color:var(--tmu);">次の称号まで</div>';
+  html += '<div style="font-size:12px;color:var(--gL);">'+cardStamps+' / '+STAMPS_PER_CARD+'枚</div>';
   html += '</div>';
   html += stampGrid;
-  html += '<div style="font-size:10px;color:var(--tmu);text-align:center;">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>';
+  html += '<div style="font-size:12px;color:var(--tmu);text-align:center;">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>';
   html += '</div>';
   return html;
 }
