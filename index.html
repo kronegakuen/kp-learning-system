@@ -2158,6 +2158,7 @@ function showBadges(total, streak) {
 // ============================================================
 async function loadUserStats() {
   if(!currentUser) return;
+  if(currentUser.role === 'teacher') return;
   try {
     const logs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&select=count,created_at');
     const total = logs ? logs.reduce((s,l) => s+(l.count||0), 0) : 0;
