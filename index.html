@@ -575,7 +575,7 @@ async function pickSheet(){
     const tbStampData = await loadStampData(curSheet);
     window._stampData = tbStampData;
     const scStamp = document.getElementById('sc-stamp-card');
-    if(scStamp) scStamp.innerHTML = renderStampCard(tbStampData.stamps, currentUser ? currentUser.grade||'' : '');
+    if(scStamp) scStamp.innerHTML = renderStampCard(tbStampData.stamps, currentUser ? currentUser.grade||'' : '', TEXTBOOKS[curSheet] ? TEXTBOOKS[curSheet].label : '');
 
   } catch(e){
     document.getElementById('rng-hint').textContent='読み込みに失敗しました';
@@ -1566,7 +1566,7 @@ function showResultCard(rate, correct, total, streak, cumTotal, avgTime, fastCou
         '</div>' +
       '</div>' +
     '</div>' : '') +
-    (isPractice ? '' : renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '')) +
+    (isPractice ? '' : renderStampCard(window._stampData ? window._stampData.stamps : 0, currentUser ? currentUser.grade||'' : '', TEXTBOOKS[curSheet] ? TEXTBOOKS[curSheet].label : '')) +
     ((sessionWrongItems.length + sessionSlowItems.length) > 0 ?
       '<div style="margin-top:12px;background:var(--nv8);border-radius:8px;padding:12px;">' +
       '<div style="font-size:12px;font-weight:500;color:#F09595;margin-bottom:8px;">要復習リスト（'+( sessionWrongItems.length + sessionSlowItems.length )+'問）</div>' +
@@ -1625,7 +1625,7 @@ async function loadStampData(tbKey) {
   } catch(e) { return {stamps:0, totalCorrect:0}; }
 }
 
-function renderStampCard(stamps, grade) {
+function renderStampCard(stamps, grade, tbLabel) {
   const cardStamps = stamps % STAMPS_PER_CARD;
   const title = getCurrentTitle(stamps, grade);
   const set = getTitleSet(grade);
@@ -1666,6 +1666,7 @@ function renderStampCard(stamps, grade) {
   stampGrid += '</div>';
 
   var html = '<div style="background:var(--nv8);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-top:12px;">';
+  if(tbLabel) html += '<div style="font-size:11px;color:var(--tmu);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--nv6);">📚 '+tbLabel+'</div>';
   html += roadmap;
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
   html += '<div style="font-size:10px;color:var(--tmu);">次の称号まで</div>';
@@ -2173,7 +2174,7 @@ async function loadUserStats() {
     window._stampData = await loadStampData(curSheet);
     const scStamp = document.getElementById('sc-stamp-card');
     if(scStamp && window._stampData) {
-      scStamp.innerHTML = renderStampCard(window._stampData.stamps, currentUser.grade||'');
+      scStamp.innerHTML = renderStampCard(window._stampData.stamps, currentUser.grade||'', TEXTBOOKS[curSheet] ? TEXTBOOKS[curSheet].label : '');
     }
   } catch(e) { console.log('stats error', e); }
 }
