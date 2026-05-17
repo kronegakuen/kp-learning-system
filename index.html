@@ -6,7 +6,7 @@
 <title>クローネらぼ</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
-<script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);if(localStorage.getItem('kp_uid'))document.documentElement.setAttribute('data-autologin','1');})();</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{--nv9:#131E30;--nv8:#172540;--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tm:#BCCEDE;--tmu:#82A0BF;--font-title:'Kaisei Opti',serif;}
@@ -15,7 +15,7 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:var(--nv9);color
 .wrap{max-width:680px;margin:0 auto;padding:1.5rem 1rem;}
 .sec{display:none;}.sec.on{display:block;}
 .hd{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;}
-.hd h1{font-size:18px;font-weight:500;flex:1;color:var(--tb);}@media(max-width:600px){.hd{flex-wrap:wrap;gap:6px;}.hd-right{flex:0 0 100%;margin-left:0!important;justify-content:center;gap:6px;}}
+.hd h1{font-size:18px;font-weight:500;flex:1;color:var(--tb);}@media(max-width:600px){.hd{flex-wrap:wrap;gap:6px;}.hd-right{flex:0 0 100%;margin-left:0!important;justify-content:center;gap:6px;}}[data-autologin="1"] #sec-login{display:none!important;}
 .badge{font-size:12px;padding:3px 10px;border-radius:8px;background:var(--gold);color:#fff;}
 .block{background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
 .block-title{font-size:16px;font-weight:700;color:var(--gL);letter-spacing:.08em;margin-bottom:.875rem;border-left:3px solid var(--gold);padding-left:8px;font-family:'Kaisei Opti',serif;}
@@ -2282,6 +2282,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     } else {
       localStorage.removeItem('kp_uid');
     }
+    document.documentElement.removeAttribute('data-autologin');
   }
 });
 
