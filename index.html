@@ -2260,12 +2260,29 @@ function setLoginTheme(t) {
     b.classList.toggle('active', b.textContent.trim().startsWith(t === 'dark' ? '🌙' : '☀'));
   });
 }
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   const t = document.documentElement.getAttribute('data-theme') || 'dark';
   document.querySelectorAll('.theme-toggle-btn').forEach(b => b.textContent = t === 'light' ? '🌙' : '☀');
   document.querySelectorAll('.login-theme-btn').forEach(b => {
     b.classList.toggle('active', b.textContent.trim().startsWith(t === 'dark' ? '🌙' : '☀'));
   });
+  const savedId = localStorage.getItem('kp_uid');
+  if(savedId) {
+    const data = await sbFetch('users?id=eq.'+savedId+'&select=*');
+    if(data && data.length) {
+      currentUser = data[0];
+      const access = await sbFetch('access?user_id=eq.'+currentUser.id+'&select=textbook_key');
+      currentUser.accessKeys = access.map(a => a.textbook_key);
+      document.getElementById('sec-login').style.display = 'none';
+      document.getElementById('sec-main').style.display = '';
+      document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+      if(currentUser.role === 'teacher') document.getElementById('btn-admin').style.display = '';
+      loadUserStats();
+      window.loadManageSheet();
+    } else {
+      localStorage.removeItem('kp_uid');
+    }
+  }
 });
 
 async function sbFetch(path, opts) {
@@ -2288,6 +2305,7 @@ async function login() {
     return;
   }
   currentUser = data[0];
+  localStorage.setItem('kp_uid', currentUser.id);
   const access = await sbFetch('access?user_id=eq.'+currentUser.id+'&select=textbook_key');
   currentUser.accessKeys = access.map(function(a){return a.textbook_key;});
   document.getElementById('sec-login').style.display = 'none';
@@ -2299,6 +2317,7 @@ async function login() {
 }
 function logout() {
   currentUser = null;
+  localStorage.removeItem('kp_uid');
   document.getElementById('sec-login').style.display = 'flex';
   document.getElementById('sec-main').style.display = 'none';
   document.getElementById('sec-admin').style.display = 'none';
