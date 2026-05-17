@@ -521,6 +521,12 @@ async function pickSheet(){
     document.getElementById('field-latex-mode').style.display = tb.subject === 'kokugo' ? '' : 'none';
     document.getElementById('field-eigo-mode').style.display = tb.subject === 'eigo' ? '' : 'none';
 
+    // テキスト切替時にスタンプカードを更新
+    const tbStampData = await loadStampData(curSheet);
+    window._stampData = tbStampData;
+    const scStamp = document.getElementById('sc-stamp-card');
+    if(scStamp) scStamp.innerHTML = renderStampCard(tbStampData.stamps, currentUser ? currentUser.grade||'' : '');
+
   } catch(e){
     document.getElementById('rng-hint').textContent='読み込みに失敗しました';
   }
@@ -1553,10 +1559,10 @@ function getCurrentTitle(stamps, grade) {
   return set[idx];
 }
 
-async function loadStampData() {
-  if(!currentUser) return {stamps:0, totalCorrect:0};
+async function loadStampData(tbKey) {
+  if(!currentUser || !tbKey) return {stamps:0, totalCorrect:0};
   try {
-    const trainLogs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&select=correct');
+    const trainLogs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&textbook_key=eq.'+encodeURIComponent(tbKey)+'&select=correct');
     const totalCorrect = trainLogs ? trainLogs.reduce(function(s,l){return s+(l.correct||0);},0) : 0;
     const stamps = calcStamps(totalCorrect, 0);
     return {stamps, totalCorrect};
@@ -1610,7 +1616,7 @@ function renderStampCard(stamps, grade) {
   html += '<div style="font-size:10px;color:var(--gL);">'+cardStamps+' / '+STAMPS_PER_CARD+'枚</div>';
   html += '</div>';
   html += stampGrid;
-  html += '<div style="font-size:10px;color:var(--tmu);text-align:center;">正解100問でスタンプ1枚・10枚で称号アップ！</div>';
+  html += '<div style="font-size:10px;color:var(--tmu);text-align:center;">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>';
   html += '</div>';
   return html;
 }
@@ -1835,7 +1841,7 @@ async function loadUserStats() {
     window._userStreak = streak;
     window._userTotal = total;
     // スタンプデータ保存
-    window._stampData = await loadStampData();
+    window._stampData = await loadStampData(curSheet);
     const scStamp = document.getElementById('sc-stamp-card');
     if(scStamp && window._stampData) {
       scStamp.innerHTML = renderStampCard(window._stampData.stamps, currentUser.grade||'');
