@@ -1648,11 +1648,11 @@ function renderStampCard(stamps, grade, tbLabel) {
   const nextTitle = set[nextIdx];
 
   // ロードマップ
-  var roadmap = '<div style="display:flex;align-items:center;gap:3px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;">';
+  var roadmap = '<div style="display:flex;align-items:center;gap:2px;margin-bottom:14px;">';
   set.forEach(function(t, i) {
     if(i > 0) {
       var lineColor = i <= curIdx ? 'linear-gradient(90deg,var(--gold),var(--gL))' : 'var(--nv5)';
-      roadmap += '<div style="flex:1;height:2px;background:'+lineColor+';min-width:10px;"></div>';
+      roadmap += '<div style="flex:1;height:2px;background:'+lineColor+';min-width:6px;"></div>';
     }
     var isNow = i === curIdx;
     var isDone = i < curIdx;
@@ -1662,8 +1662,8 @@ function renderStampCard(stamps, grade, tbLabel) {
     var textColor = (isDone || isNow) ? '#fff' : 'var(--tmu)';
     var label = isNow ? 'Now' : 'Lv'+(i+1);
     roadmap += '<div style="text-align:center;flex-shrink:0;opacity:'+opacity+';">';
-    roadmap += '<div style="width:'+(isNow?'38':'32')+'px;height:'+(isNow?'38':'32')+'px;background:'+bg+';border-radius:50%;'+border+'display:flex;align-items:center;justify-content:center;font-size:9px;color:'+textColor+';font-weight:700;margin:0 auto 3px;">'+label+'</div>';
-    roadmap += '<div style="font-size:8px;color:'+(isNow?'var(--gL)':'var(--tmu)')+';font-weight:'+(isNow?'700':'400')+';">'+t.name+'</div>';
+    roadmap += '<div style="width:'+(isNow?'34':'28')+'px;height:'+(isNow?'34':'28')+'px;background:'+bg+';border-radius:50%;'+border+'display:flex;align-items:center;justify-content:center;font-size:8px;color:'+textColor+';font-weight:700;margin:0 auto 3px;">'+label+'</div>';
+    roadmap += '<div style="font-size:7px;color:'+(isNow?'var(--gL)':'var(--tmu)')+';font-weight:'+(isNow?'700':'400')+';">'+t.name+'</div>';
     roadmap += '</div>';
   });
   roadmap += '</div>';
