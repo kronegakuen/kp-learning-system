@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタッツカード フォントサイズ比較</title>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Opti&family=BIZ+UDPGothic:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#131E30;padding:28px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-direction:column;gap:28px;align-items:center;}
+:root{--nv9:#131E30;--nv8:#172540;--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tmu:#82A0BF;}
+.col{display:flex;flex-direction:column;gap:6px;width:420px;}
+.lbl{font-size:11px;color:#666;border-bottom:1px solid #1a2a40;padding-bottom:5px;}
+.lbl b{font-size:12px;color:#bbb;}
+.card{background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;margin-bottom:12px;}
+.num{font-family:'BIZ UDPGothic',sans-serif;font-size:26px;font-weight:700;color:var(--gL);}
+.num span{font-size:13px;}
+
+/* ---- スタンプカード ---- */
+.stamp-inner{background:var(--nv8);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-top:0;}
+.roadmap{display:flex;align-items:center;gap:2px;margin-bottom:14px;}
+.rm-item{text-align:center;flex-shrink:0;}
+.rm-line{flex:1;height:2px;background:var(--nv5);min-width:6px;}
+.stamp-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:8px;}
+.stamp-filled{aspect-ratio:1;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;}
+.stamp-empty{aspect-ratio:1;background:var(--nv9);border-radius:4px;border:1px dashed var(--nv5);}
+</style>
+</head>
+<body>
+
+<!-- ===== 現在 ===== -->
+<div class="col">
+  <div class="lbl"><b>現在</b>　統計ラベル10px／称号名7px／バッジ内8px</div>
+  <div class="card">
+    <div class="stats-grid">
+      <div><div class="num">2<span>日</span></div><div style="font-size:10px;color:var(--tmu);margin-top:2px;">連続学習</div></div>
+      <div><div class="num">280<span>問</span></div><div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計問題</div></div>
+      <div><div class="num">30<span>問</span></div><div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計正解</div></div>
+      <div><div class="num">100<span>%</span></div><div style="font-size:10px;color:var(--tmu);margin-top:2px;">累計正答率</div></div>
+    </div>
+    <div class="stamp-inner">
+      <div style="font-size:14px;color:var(--gL);font-weight:500;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--nv6);">📚 数学Ⅰ・A</div>
+      <div class="roadmap">
+        <div class="rm-item">
+          <div style="width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gL));border-radius:50%;border:2px solid var(--gL);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700;margin:0 auto 3px;">Now</div>
+          <div style="font-size:7px;color:var(--gL);font-weight:700;">ノーマル</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv2</div>
+          <div style="font-size:7px;color:var(--tmu);">アドバンス</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv3</div>
+          <div style="font-size:7px;color:var(--tmu);">エキスパート</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv4</div>
+          <div style="font-size:7px;color:var(--tmu);">プレミアム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv5</div>
+          <div style="font-size:7px;color:var(--tmu);">プライム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv6</div>
+          <div style="font-size:7px;color:var(--tmu);">クローネマスター</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--tmu);">次の称号まで</div>
+        <div style="font-size:10px;color:var(--gL);">0 / 10枚</div>
+      </div>
+      <div class="stamp-grid">
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+      </div>
+      <div style="font-size:10px;color:var(--tmu);text-align:center;">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 案A: 小幅アップ ===== -->
+<div class="col">
+  <div class="lbl"><b>案A　小幅アップ</b>　統計ラベル12px／称号名8px／バッジ内9px</div>
+  <div class="card">
+    <div class="stats-grid">
+      <div><div class="num">2<span>日</span></div><div style="font-size:12px;color:var(--tmu);margin-top:3px;">連続学習</div></div>
+      <div><div class="num">280<span>問</span></div><div style="font-size:12px;color:var(--tmu);margin-top:3px;">累計問題</div></div>
+      <div><div class="num">30<span>問</span></div><div style="font-size:12px;color:var(--tmu);margin-top:3px;">累計正解</div></div>
+      <div><div class="num">100<span>%</span></div><div style="font-size:12px;color:var(--tmu);margin-top:3px;">累計正答率</div></div>
+    </div>
+    <div class="stamp-inner">
+      <div style="font-size:14px;color:var(--gL);font-weight:500;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--nv6);">📚 数学Ⅰ・A</div>
+      <div class="roadmap">
+        <div class="rm-item">
+          <div style="width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gL));border-radius:50%;border:2px solid var(--gL);display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;margin:0 auto 3px;">Now</div>
+          <div style="font-size:8px;color:var(--gL);font-weight:700;">ノーマル</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv2</div>
+          <div style="font-size:8px;color:var(--tmu);">アドバンス</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv3</div>
+          <div style="font-size:8px;color:var(--tmu);">エキスパート</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv4</div>
+          <div style="font-size:8px;color:var(--tmu);">プレミアム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv5</div>
+          <div style="font-size:8px;color:var(--tmu);">プライム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:28px;height:28px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 3px;">Lv6</div>
+          <div style="font-size:8px;color:var(--tmu);">クローネマスター</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:12px;color:var(--tmu);">次の称号まで</div>
+        <div style="font-size:12px;color:var(--gL);">0 / 10枚</div>
+      </div>
+      <div class="stamp-grid">
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+      </div>
+      <div style="font-size:12px;color:var(--tmu);text-align:center;">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 案B: 中程度アップ ===== -->
+<div class="col">
+  <div class="lbl"><b>案B　中程度アップ</b>　統計ラベル13px／称号名9px／バッジ内9px</div>
+  <div class="card">
+    <div class="stats-grid">
+      <div><div class="num">2<span>日</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">連続学習</div></div>
+      <div><div class="num">280<span>問</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計問題</div></div>
+      <div><div class="num">30<span>問</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計正解</div></div>
+      <div><div class="num">100<span>%</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計正答率</div></div>
+    </div>
+    <div class="stamp-inner">
+      <div style="font-size:14px;color:var(--gL);font-weight:500;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--nv6);">📚 数学Ⅰ・A</div>
+      <div class="roadmap">
+        <div class="rm-item">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gL));border-radius:50%;border:2px solid var(--gL);display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;margin:0 auto 4px;">Now</div>
+          <div style="font-size:9px;color:var(--gL);font-weight:700;">ノーマル</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv2</div>
+          <div style="font-size:9px;color:var(--tmu);">アドバンス</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv3</div>
+          <div style="font-size:9px;color:var(--tmu);">エキスパート</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv4</div>
+          <div style="font-size:9px;color:var(--tmu);">プレミアム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv5</div>
+          <div style="font-size:9px;color:var(--tmu);">プライム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv6</div>
+          <div style="font-size:9px;color:var(--tmu);">クローネマスター</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:12px;color:var(--tmu);">次の称号まで</div>
+        <div style="font-size:12px;color:var(--gL);">0 / 10枚</div>
+      </div>
+      <div class="stamp-grid">
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+      </div>
+      <div style="font-size:12px;color:var(--tmu);text-align:center;">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 案C: 数字も小さく・バランス重視 ===== -->
+<div class="col">
+  <div class="lbl"><b>案C　バランス重視</b>　数字22px・ラベル13px／称号名9px（数字とラベルの差を縮小）</div>
+  <div class="card">
+    <div class="stats-grid">
+      <div><div style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">2<span style="font-size:13px;">日</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">連続学習</div></div>
+      <div><div style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">280<span style="font-size:13px;">問</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計問題</div></div>
+      <div><div style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">30<span style="font-size:13px;">問</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計正解</div></div>
+      <div><div style="font-family:'BIZ UDPGothic',sans-serif;font-size:22px;font-weight:700;color:var(--gL);">100<span style="font-size:13px;">%</span></div><div style="font-size:13px;color:var(--tmu);margin-top:3px;">累計正答率</div></div>
+    </div>
+    <div class="stamp-inner">
+      <div style="font-size:14px;color:var(--gL);font-weight:500;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--nv6);">📚 数学Ⅰ・A</div>
+      <div class="roadmap">
+        <div class="rm-item">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gL));border-radius:50%;border:2px solid var(--gL);display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;margin:0 auto 4px;">Now</div>
+          <div style="font-size:9px;color:var(--gL);font-weight:700;">ノーマル</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv2</div>
+          <div style="font-size:9px;color:var(--tmu);">アドバンス</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv3</div>
+          <div style="font-size:9px;color:var(--tmu);">エキスパート</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv4</div>
+          <div style="font-size:9px;color:var(--tmu);">プレミアム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv5</div>
+          <div style="font-size:9px;color:var(--tmu);">プライム</div>
+        </div>
+        <div class="rm-line"></div>
+        <div class="rm-item" style="opacity:.4;">
+          <div style="width:30px;height:30px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 4px;">Lv6</div>
+          <div style="font-size:9px;color:var(--tmu);">クローネマスター</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:12px;color:var(--tmu);">次の称号まで</div>
+        <div style="font-size:12px;color:var(--gL);">0 / 10枚</div>
+      </div>
+      <div class="stamp-grid">
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+        <div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div><div class="stamp-empty"></div>
+      </div>
+      <div style="font-size:12px;color:var(--tmu);text-align:center;">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

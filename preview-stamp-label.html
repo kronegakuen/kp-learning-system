@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタンプカード テキスト名サイズ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#131E30;padding:24px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#EDF3FA;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:flex-start;}
+:root{--nv9:#131E30;--nv8:#172540;--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tm:#BCCEDE;--tmu:#82A0BF;}
+.col{width:300px;}
+.size-label{font-size:11px;color:var(--tmu);text-align:center;margin-bottom:8px;border-bottom:1px solid var(--nv6);padding-bottom:4px;}
+
+/* スタンプカード共通 */
+.stamp-card{background:var(--nv8);border:1px solid var(--gold);border-radius:12px;padding:14px;}
+.tb-label{color:var(--tmu);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--nv6);}
+.roadmap{display:flex;align-items:center;gap:3px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;}
+.node{text-align:center;flex-shrink:0;}
+.node-circle{width:32px;height:32px;background:var(--nv5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tmu);font-weight:700;margin:0 auto 3px;}
+.node-circle.now{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gL));border:2px solid var(--gL);color:#fff;font-size:10px;}
+.node-name{font-size:8px;color:var(--tmu);}
+.node-name.now{color:var(--gL);font-weight:700;}
+.line{flex:1;height:2px;background:var(--nv5);min-width:10px;}
+.stamp-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.stamp-info-l{font-size:10px;color:var(--tmu);}
+.stamp-info-r{font-size:10px;color:var(--gL);}
+.stamp-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:8px;}
+.stamp{aspect-ratio:1;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;}
+.stamp.empty{background:var(--nv9);border:1px dashed var(--nv5);}
+.stamp-hint{font-size:10px;color:var(--tmu);text-align:center;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- 現在: 11px -->
+<div class="col">
+  <div class="size-label">▼ 現在（11px・薄い）</div>
+  <div class="stamp-card">
+    <div class="tb-label" style="font-size:11px;">📚 小２わくわくパワードリル</div>
+    <div class="roadmap">
+      <div class="node"><div class="node-circle now">Now</div><div class="node-name now">ノーマル</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv2</div><div class="node-name" style="opacity:.4">アドバンス</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv3</div><div class="node-name" style="opacity:.4">エキスパート</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv4</div><div class="node-name" style="opacity:.4">プレミアム</div></div>
+    </div>
+    <div class="stamp-info"><div class="stamp-info-l">次の称号まで</div><div class="stamp-info-r">3 / 10枚</div></div>
+    <div class="stamp-grid">
+      <div class="stamp">★</div><div class="stamp">★</div><div class="stamp">★</div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+    </div>
+    <div class="stamp-hint">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+  </div>
+</div>
+
+<!-- 案A: 13px・やや強調 -->
+<div class="col">
+  <div class="size-label">▼ 案A（13px・標準サイズ）</div>
+  <div class="stamp-card">
+    <div class="tb-label" style="font-size:13px;">📚 小２わくわくパワードリル</div>
+    <div class="roadmap">
+      <div class="node"><div class="node-circle now">Now</div><div class="node-name now">ノーマル</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv2</div><div class="node-name" style="opacity:.4">アドバンス</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv3</div><div class="node-name" style="opacity:.4">エキスパート</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv4</div><div class="node-name" style="opacity:.4">プレミアム</div></div>
+    </div>
+    <div class="stamp-info"><div class="stamp-info-l">次の称号まで</div><div class="stamp-info-r">3 / 10枚</div></div>
+    <div class="stamp-grid">
+      <div class="stamp">★</div><div class="stamp">★</div><div class="stamp">★</div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+    </div>
+    <div class="stamp-hint">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+  </div>
+</div>
+
+<!-- 案B: 14px・ゴールド色 -->
+<div class="col">
+  <div class="size-label">▼ 案B（14px・ゴールド色）</div>
+  <div class="stamp-card">
+    <div class="tb-label" style="font-size:14px;color:var(--gL);font-weight:500;">📚 小２わくわくパワードリル</div>
+    <div class="roadmap">
+      <div class="node"><div class="node-circle now">Now</div><div class="node-name now">ノーマル</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv2</div><div class="node-name" style="opacity:.4">アドバンス</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv3</div><div class="node-name" style="opacity:.4">エキスパート</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv4</div><div class="node-name" style="opacity:.4">プレミアム</div></div>
+    </div>
+    <div class="stamp-info"><div class="stamp-info-l">次の称号まで</div><div class="stamp-info-r">3 / 10枚</div></div>
+    <div class="stamp-grid">
+      <div class="stamp">★</div><div class="stamp">★</div><div class="stamp">★</div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+    </div>
+    <div class="stamp-hint">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+  </div>
+</div>
+
+<!-- 案C: 14px・明るいテキスト色・太字 -->
+<div class="col">
+  <div class="size-label">▼ 案C（14px・明るい・太字）</div>
+  <div class="stamp-card">
+    <div class="tb-label" style="font-size:14px;color:var(--tm);font-weight:600;">📚 小２わくわくパワードリル</div>
+    <div class="roadmap">
+      <div class="node"><div class="node-circle now">Now</div><div class="node-name now">ノーマル</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv2</div><div class="node-name" style="opacity:.4">アドバンス</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv3</div><div class="node-name" style="opacity:.4">エキスパート</div></div>
+      <div class="line"></div>
+      <div class="node"><div class="node-circle" style="opacity:.4">Lv4</div><div class="node-name" style="opacity:.4">プレミアム</div></div>
+    </div>
+    <div class="stamp-info"><div class="stamp-info-l">次の称号まで</div><div class="stamp-info-r">3 / 10枚</div></div>
+    <div class="stamp-grid">
+      <div class="stamp">★</div><div class="stamp">★</div><div class="stamp">★</div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+      <div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div><div class="stamp empty"></div>
+    </div>
+    <div class="stamp-hint">このテキストで正解100問でスタンプ1枚・10枚で称号アップ！</div>
+  </div>
+</div>
+
+</body>
+</html>

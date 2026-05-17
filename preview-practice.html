@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>れんしゅうモード プレビュー</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#060D1A;padding:24px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#EAF1FA;display:flex;flex-wrap:wrap;gap:24px;justify-content:center;align-items:flex-start;}
+:root{--nv9:#060D1A;--nv8:#0C1B33;--nv7:#0F2240;--nv6:#1A3260;--nv5:#2A4A80;--gold:#BA7517;--gL:#EF9F27;}
+.col{width:320px;}
+.label{font-size:11px;color:#7A9CC0;margin-bottom:8px;border-bottom:1px solid #1A3260;padding-bottom:4px;}
+
+/* 設定ブロック模擬 */
+.block{background:#0F2240;border-radius:14px;padding:16px;margin-bottom:16px;}
+.block-title{font-size:11px;font-weight:700;color:#EF9F27;letter-spacing:.08em;margin-bottom:12px;}
+.field-label{font-size:11px;color:#7A9CC0;display:block;margin-bottom:6px;}
+.chip-group{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{font-size:12px;padding:5px 12px;border-radius:20px;border:1.5px solid #2A4A80;background:transparent;color:#B0C4DE;cursor:pointer;}
+.chip.on{background:#1A3260;border-color:#3A5E9A;color:#EAF1FA;}
+.ck{margin-right:4px;color:#EF9F27;}
+.btn-train{width:100%;padding:12px;background:#1A3260;border:1.5px solid #3A5E9A;border-radius:10px;color:#EAF1FA;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+
+/* 案A: トグルスイッチ */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 10px;border-radius:8px;background:#0C1B33;border:1px solid #1A3260;}
+.toggle-label{font-size:12px;color:#B0C4DE;}
+.toggle-sub{font-size:10px;color:#7A9CC0;margin-top:2px;}
+.toggle-sw{position:relative;width:40px;height:22px;flex-shrink:0;}
+.toggle-sw input{opacity:0;width:0;height:0;}
+.slider-t{position:absolute;inset:0;background:#1A3260;border-radius:11px;transition:.2s;cursor:pointer;border:1px solid #2A4A80;}
+.slider-t:before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:#7A9CC0;border-radius:50%;transition:.2s;}
+input:checked + .slider-t{background:#1A3260;border-color:#EF9F27;}
+input:checked + .slider-t:before{transform:translateX(18px);background:#EF9F27;}
+
+/* 案B: チップ（ONバナー付き） */
+.pmode-chip{font-size:12px;padding:5px 14px;border-radius:20px;border:1.5px solid #2A4A80;background:transparent;color:#7A9CC0;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+.pmode-chip.on{border-color:#EF9F27;color:#EF9F27;background:#0C1B33;}
+.pmode-banner{display:none;margin-top:8px;padding:7px 10px;border-radius:8px;background:#0C1B33;border:1px solid #BA7517;font-size:11px;color:#EF9F27;}
+.pmode-banner.show{display:block;}
+
+/* 案C: まとめてブロック */
+.pmode-block{border:1.5px dashed #2A4A80;border-radius:10px;padding:10px 12px;margin-top:10px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.pmode-block.on{border-color:#EF9F27;background:#0C1B33;}
+.pmode-icon{font-size:20px;}
+.pmode-text{}
+.pmode-text b{font-size:12px;color:#B0C4DE;display:block;}
+.pmode-block.on .pmode-text b{color:#EF9F27;}
+.pmode-text small{font-size:10px;color:#7A9CC0;}
+.pmode-check{margin-left:auto;width:18px;height:18px;border:1.5px solid #2A4A80;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;}
+.pmode-block.on .pmode-check{border-color:#EF9F27;color:#EF9F27;background:#1A3260;}
+
+/* 結果カード */
+.result-card{background:#0F2240;border-radius:16px;padding:20px;}
+.result-card.normal{border:2px solid #EF9F27;}
+.result-card.practice{border:2px solid #3A5E9A;}
+.practice-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;background:#1A3260;border:1px solid #3A5E9A;color:#85B7EB;margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<!-- ===== 設定画面 ===== -->
+<div class="col">
+  <div class="label">▼ 設定画面（トレーニング設定ブロック内）</div>
+  <div class="block">
+    <div class="block-title">トレーニング設定</div>
+    <span class="field-label">出題数</span>
+    <div class="chip-group" style="margin-bottom:10px;">
+      <button class="chip on"><span class="ck">✓</span>10問</button>
+      <button class="chip">20問</button>
+      <button class="chip">30問</button>
+    </div>
+    <span class="field-label">モード</span>
+    <div class="chip-group" style="margin-bottom:10px;">
+      <button class="chip on"><span class="ck">✓</span>じぶんでモード</button>
+      <button class="chip">おまかせモード</button>
+    </div>
+
+    <!-- 案A：トグルスイッチ -->
+    <div style="margin-bottom:6px;font-size:10px;color:#7A9CC0;margin-top:4px;">── 案A：トグルスイッチ ──</div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">📝 れんしゅうモード</div>
+        <div class="toggle-sub">記録・スタンプに反映されません</div>
+      </div>
+      <label class="toggle-sw">
+        <input type="checkbox" onchange="this.parentElement.parentElement.classList.toggle('active',this.checked)">
+        <span class="slider-t"></span>
+      </label>
+    </div>
+
+    <button class="btn-train" style="margin-top:12px;">▶ トレーニング開始</button>
+  </div>
+
+  <div class="block">
+    <div class="block-title">トレーニング設定</div>
+    <span class="field-label">出題数</span>
+    <div class="chip-group" style="margin-bottom:10px;">
+      <button class="chip on"><span class="ck">✓</span>10問</button>
+      <button class="chip">20問</button>
+    </div>
+    <span class="field-label">モード</span>
+    <div class="chip-group" style="margin-bottom:10px;">
+      <button class="chip on"><span class="ck">✓</span>じぶんでモード</button>
+      <button class="chip">おまかせモード</button>
+    </div>
+
+    <!-- 案B：チップ（バナー） -->
+    <div style="margin-bottom:6px;font-size:10px;color:#7A9CC0;margin-top:4px;">── 案B：チップ（ONで説明バナー） ──</div>
+    <button class="pmode-chip" id="pm-chip-b" onclick="
+      this.classList.toggle('on');
+      document.getElementById('pm-banner').classList.toggle('show',this.classList.contains('on'));
+      this.innerHTML = this.classList.contains('on') ? '📝 れんしゅうモード ON' : '📝 れんしゅうモード';
+    ">📝 れんしゅうモード</button>
+    <div class="pmode-banner" id="pm-banner">記録・スタンプ・連続日数に反映されません</div>
+
+    <button class="btn-train" style="margin-top:12px;">▶ トレーニング開始</button>
+  </div>
+
+  <div class="block">
+    <div class="block-title">トレーニング設定</div>
+    <span class="field-label">出題数</span>
+    <div class="chip-group" style="margin-bottom:10px;">
+      <button class="chip on"><span class="ck">✓</span>10問</button>
+      <button class="chip">20問</button>
+    </div>
+    <span class="field-label">モード</span>
+    <div class="chip-group" style="margin-bottom:10px;">
+      <button class="chip on"><span class="ck">✓</span>じぶんでモード</button>
+      <button class="chip">おまかせモード</button>
+    </div>
+
+    <!-- 案C：まとめてブロック -->
+    <div style="margin-bottom:6px;font-size:10px;color:#7A9CC0;margin-top:4px;">── 案C：クリックブロック ──</div>
+    <div class="pmode-block" id="pm-block-c" onclick="this.classList.toggle('on');this.querySelector('.pmode-check').textContent=this.classList.contains('on')?'✓':'';">
+      <div class="pmode-icon">📝</div>
+      <div class="pmode-text">
+        <b>れんしゅうモード</b>
+        <small>記録・スタンプに反映されません</small>
+      </div>
+      <div class="pmode-check"></div>
+    </div>
+
+    <button class="btn-train" style="margin-top:12px;">▶ トレーニング開始</button>
+  </div>
+</div>
+
+<!-- ===== 結果カード ===== -->
+<div class="col">
+  <div class="label">▼ 結果カード（れんしゅうモード時）</div>
+
+  <!-- 通常モードの結果（参考） -->
+  <div style="font-size:10px;color:#7A9CC0;margin-bottom:6px;">通常モード（参考）</div>
+  <div class="result-card normal" style="margin-bottom:20px;">
+    <div style="font-size:20px;font-weight:500;color:#EF9F27;margin-bottom:2px;">🏆 パーフェクト！</div>
+    <div style="font-size:52px;font-weight:700;color:#EF9F27;line-height:1.0;font-family:'BIZ UDPGothic',sans-serif;">100%</div>
+    <div style="font-size:15px;color:#B0C4DE;margin-bottom:12px;">10 / 10問正解</div>
+    <div style="font-size:13px;color:#EF9F27;margin-bottom:12px;">完璧！この調子で次のテキストも制覇しよう！</div>
+    <div style="display:flex;gap:8px;">
+      <div style="background:#0C1B33;border-radius:8px;padding:8px 14px;text-align:center;flex:1;">
+        <div style="font-size:16px;font-weight:700;color:#EF9F27;">5日</div>
+        <div style="font-size:10px;color:#7A9CC0;">連続学習</div>
+      </div>
+      <div style="background:#0C1B33;border-radius:8px;padding:8px 14px;text-align:center;flex:1;">
+        <div style="font-size:16px;font-weight:700;color:#EF9F27;">120問</div>
+        <div style="font-size:10px;color:#7A9CC0;">累計達成</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- れんしゅうモードの結果 -->
+  <div style="font-size:10px;color:#7A9CC0;margin-bottom:6px;">れんしゅうモード（記録なし）</div>
+  <div class="result-card practice" style="margin-bottom:8px;">
+    <div class="practice-badge">📝 れんしゅうモード（記録なし）</div>
+    <div style="font-size:20px;font-weight:500;color:#85B7EB;margin-bottom:2px;">🏆 パーフェクト！</div>
+    <div style="font-size:52px;font-weight:700;color:#85B7EB;line-height:1.0;font-family:'BIZ UDPGothic',sans-serif;">100%</div>
+    <div style="font-size:15px;color:#B0C4DE;margin-bottom:12px;">10 / 10問正解</div>
+    <div style="font-size:13px;color:#85B7EB;margin-bottom:12px;">完璧！この調子で次のテキストも制覇しよう！</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="this.closest('.result-card').style.display='none';document.getElementById('card-normal').style.display=''" style="flex:1;padding:10px;background:transparent;border:1.5px solid #EF9F27;border-radius:8px;color:#EF9F27;font-size:13px;font-weight:700;cursor:pointer;">▶ 記録ありで再挑戦</button>
+      <button style="flex:1;padding:10px;background:transparent;border:1px solid #2A4A80;border-radius:8px;color:#B0C4DE;font-size:13px;cursor:pointer;">← 設定に戻る</button>
+    </div>
+  </div>
+  <div style="font-size:10px;color:#7A9CC0;">↑ 色が青系になり「記録なし」バッジが付く。「記録ありで再挑戦」ボタンも追加。</div>
+
+  <br>
+
+  <!-- 低スコアのれんしゅうモード -->
+  <div style="font-size:10px;color:#7A9CC0;margin-bottom:6px;">れんしゅうモード（低スコア）</div>
+  <div class="result-card practice">
+    <div class="practice-badge">📝 れんしゅうモード（記録なし）</div>
+    <div style="font-size:20px;font-weight:500;color:#85B7EB;margin-bottom:2px;">もう一歩！</div>
+    <div style="font-size:52px;font-weight:700;color:#85B7EB;line-height:1.0;font-family:'BIZ UDPGothic',sans-serif;">60%</div>
+    <div style="font-size:15px;color:#B0C4DE;margin-bottom:12px;">6 / 10問正解</div>
+    <div style="font-size:13px;color:#85B7EB;margin-bottom:12px;">もう一度挑戦して、80%を目指そう！</div>
+    <div style="display:flex;gap:8px;">
+      <button style="flex:1;padding:10px;background:transparent;border:1.5px solid #EF9F27;border-radius:8px;color:#EF9F27;font-size:13px;font-weight:700;cursor:pointer;">▶ 記録ありで再挑戦</button>
+      <button style="flex:1;padding:10px;background:transparent;border:1px solid #2A4A80;border-radius:8px;color:#B0C4DE;font-size:13px;cursor:pointer;">← 設定に戻る</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

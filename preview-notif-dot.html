@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通知バッジ デザイン案</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#131E30;padding:32px 20px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-direction:column;gap:28px;align-items:center;}
+:root{--nv9:#131E30;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tmu:#82A0BF;}
+
+.row{display:flex;flex-direction:column;gap:8px;width:480px;}
+.lbl{font-size:11px;color:#666;border-bottom:1px solid #1a2a40;padding-bottom:5px;}
+.lbl b{font-size:12px;color:#bbb;}
+.toolbar{border-top:2px solid var(--gold);padding:10px 16px;display:flex;align-items:center;gap:8px;background:#131E30;}
+.btn-gold{font-size:12px;padding:5px 13px;border-radius:7px;border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-sm{font-size:12px;padding:5px 13px;border-radius:7px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;white-space:nowrap;}
+.user{display:flex;align-items:center;gap:7px;margin-right:auto;}
+.user-ic{width:26px;height:26px;border-radius:50%;background:var(--nv6);display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+/* アニメーション */
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:.6;}}
+@keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(239,159,39,.5);}70%{box-shadow:0 0 0 6px rgba(239,159,39,0);}}
+@keyframes ringRed{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,.5);}70%{box-shadow:0 0 0 6px rgba(255,80,80,0);}}
+@keyframes shake{0%,100%{transform:rotate(0);}25%{transform:rotate(-8deg);}75%{transform:rotate(8deg);}}
+</style>
+</head>
+<body>
+
+<!-- 現在 -->
+<div class="row">
+  <div class="lbl"><b>現在</b>　ゴールドの小さい丸（7px・静的）</div>
+  <div class="toolbar">
+    <div class="user"><div class="user-ic">👤</div><span style="font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);">よこたさん</span></div>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn-gold">学習記録</button>
+      <span style="position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:var(--gL);border-radius:50%;border:1.5px solid var(--nv9);"></span>
+    </div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案A: 大きめの赤丸 -->
+<div class="row">
+  <div class="lbl"><b>案A</b>　赤い丸・大きめ（10px）</div>
+  <div class="toolbar">
+    <div class="user"><div class="user-ic">👤</div><span style="font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);">よこたさん</span></div>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn-gold">学習記録</button>
+      <span style="position:absolute;top:-5px;right:-5px;width:10px;height:10px;background:#FF5050;border-radius:50%;border:2px solid var(--nv9);"></span>
+    </div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案B: 赤丸 + パルスアニメーション -->
+<div class="row">
+  <div class="lbl"><b>案B</b>　赤い丸 + 点滅アニメーション</div>
+  <div class="toolbar">
+    <div class="user"><div class="user-ic">👤</div><span style="font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);">よこたさん</span></div>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn-gold">学習記録</button>
+      <span style="position:absolute;top:-5px;right:-5px;width:10px;height:10px;background:#FF5050;border-radius:50%;border:2px solid var(--nv9);animation:pulse 1.8s ease-in-out infinite;"></span>
+    </div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案C: リング波紋アニメーション -->
+<div class="row">
+  <div class="lbl"><b>案C</b>　赤い丸 + 波紋アニメーション</div>
+  <div class="toolbar">
+    <div class="user"><div class="user-ic">👤</div><span style="font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);">よこたさん</span></div>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn-gold">学習記録</button>
+      <span style="position:absolute;top:-5px;right:-5px;width:10px;height:10px;background:#FF5050;border-radius:50%;border:2px solid var(--nv9);animation:ringRed 2s ease-out infinite;"></span>
+    </div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案D: 「NEW」テキストバッジ -->
+<div class="row">
+  <div class="lbl"><b>案D</b>　「NEW」テキストバッジ</div>
+  <div class="toolbar">
+    <div class="user"><div class="user-ic">👤</div><span style="font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);">よこたさん</span></div>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn-gold">学習記録</button>
+      <span style="position:absolute;top:-8px;right:-10px;background:#FF5050;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;border:1.5px solid var(--nv9);letter-spacing:.5px;">NEW</span>
+    </div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案E: ゴールド波紋（テーマカラー統一） -->
+<div class="row">
+  <div class="lbl"><b>案E</b>　ゴールド波紋（テーマカラー統一）</div>
+  <div class="toolbar">
+    <div class="user"><div class="user-ic">👤</div><span style="font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);">よこたさん</span></div>
+    <div style="position:relative;display:inline-block;">
+      <button class="btn-gold">学習記録</button>
+      <span style="position:absolute;top:-5px;right:-5px;width:10px;height:10px;background:var(--gL);border-radius:50%;border:2px solid var(--nv9);animation:ring 2s ease-out infinite;"></span>
+    </div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+</body>
+</html>

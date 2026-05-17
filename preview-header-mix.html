@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヘッダー 案2×4 ミックス 5案</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#080f1c;padding:32px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-direction:column;gap:36px;align-items:center;}
+:root{--nv9:#131E30;--nv8:#172540;--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tmu:#82A0BF;}
+
+.row{width:720px;display:flex;flex-direction:column;gap:8px;}
+.lbl{font-size:11px;color:#666;border-bottom:1px solid #1a1a2e;padding-bottom:5px;}
+.lbl b{font-size:12px;color:#bbb;}
+.frame{width:720px;background:var(--nv9);border-radius:12px;border:1px solid #1e2a40;overflow:hidden;}
+.logo{flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#BA7517,#EF9F27);color:#fff;font-weight:900;}
+.dot{position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:var(--gL);border-radius:50%;border:1.5px solid var(--nv9);}
+button{cursor:pointer;font-family:inherit;}
+
+/* ===== ミックス1: グラデーション上段 + ゴールドライン + ツールバー下段（ユーザー左） ===== */
+.m1-top{padding:14px 24px;display:flex;align-items:center;gap:14px;background:linear-gradient(to right,#0F2240,#1C3560);}
+.m1-top .logo{width:42px;height:42px;font-size:17px;border-radius:9px;}
+.m1-top h1{font-family:serif;font-size:20px;color:#EDF3FA;flex:1;letter-spacing:.02em;}
+.m1-top .bdg{font-size:11px;padding:2px 10px;border-radius:10px;border:1px solid var(--gold);color:var(--gL);background:rgba(186,117,23,.15);}
+.m1-top .ver{font-size:10px;color:var(--tmu);}
+.m1-bot{padding:9px 24px;display:flex;align-items:center;gap:10px;background:var(--nv9);border-top:2px solid var(--gold);}
+.m1-bot .user{display:flex;align-items:center;gap:7px;margin-right:auto;}
+.m1-bot .user-ic{width:26px;height:26px;border-radius:50%;background:var(--nv6);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.m1-bot .user-nm{font-family:serif;font-size:14px;color:var(--gL);}
+.m1-bot button{font-size:12px;padding:5px 13px;border-radius:7px;}
+
+/* ===== ミックス2: グラデーション上段 + ゴールドライン + ツールバー中央寄せ ===== */
+.m2-top{padding:14px 24px;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#0F2240,#1C3560);}
+.m2-top .logo{width:44px;height:44px;font-size:17px;border-radius:10px;}
+.m2-top h1{font-family:serif;font-size:20px;color:#EDF3FA;flex:1;}
+.m2-top .bdg{font-size:11px;padding:2px 10px;border-radius:10px;border:1px solid var(--gold);color:var(--gL);background:rgba(186,117,23,.15);}
+.m2-top .ver{font-size:10px;color:var(--tmu);}
+.m2-bot{padding:9px 24px;display:flex;align-items:center;justify-content:space-between;background:var(--nv9);border-top:2px solid var(--gold);}
+.m2-bot .user-pill{font-family:serif;font-size:13px;color:var(--gL);background:var(--nv7);border:1px solid var(--nv5);border-radius:20px;padding:4px 14px;}
+.m2-bot .actions{display:flex;align-items:center;gap:8px;}
+.m2-bot button{font-size:12px;padding:5px 13px;border-radius:7px;}
+
+/* ===== ミックス3: 淡いグラデーション + ゴールド左縦線 + 2段 ===== */
+.m3-top{padding:16px 24px 16px 22px;display:flex;align-items:center;gap:14px;background:linear-gradient(to right,#0F2240,#172540);border-left:4px solid var(--gold);}
+.m3-top .logo{width:42px;height:42px;font-size:17px;border-radius:9px;}
+.m3-top-text h1{font-family:serif;font-size:19px;color:#EDF3FA;line-height:1.2;}
+.m3-top-text small{font-size:10px;color:var(--tmu);}
+.m3-bot{padding:9px 24px 9px 26px;display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.25);border-left:4px solid rgba(186,117,23,.35);}
+.m3-bot .user{display:flex;align-items:center;gap:7px;margin-right:auto;}
+.m3-bot .user-nm{font-family:serif;font-size:14px;color:var(--gL);}
+.m3-bot button{font-size:12px;padding:5px 13px;border-radius:7px;}
+
+/* ===== ミックス4: ダークグラデーション + 細ゴールドライン + アイコンボタン ===== */
+.m4-top{padding:15px 24px;display:flex;align-items:center;gap:14px;background:linear-gradient(to right,#091828,#0F2240);}
+.m4-top .logo{width:46px;height:46px;font-size:18px;border-radius:10px;}
+.m4-top h1{font-family:serif;font-size:21px;color:#EDF3FA;flex:1;letter-spacing:.03em;}
+.m4-top .bdg{font-size:11px;padding:3px 10px;border-radius:10px;border:1px solid var(--gold);color:var(--gL);background:rgba(186,117,23,.12);}
+.m4-bot{padding:8px 24px;display:flex;align-items:center;gap:10px;background:var(--nv9);border-top:1px solid var(--gold);}
+.m4-bot .user{font-family:serif;font-size:14px;color:var(--gL);margin-right:auto;display:flex;align-items:center;gap:8px;}
+.m4-bot .user-dot{width:8px;height:8px;border-radius:50%;background:var(--gL);opacity:.7;}
+.m4-bot .icon-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);font-size:15px;display:flex;align-items:center;justify-content:center;}
+.m4-bot .rec-btn{font-size:12px;padding:5px 14px;border-radius:8px;border:1.5px solid var(--gL);background:rgba(239,159,39,.08);color:var(--gL);font-weight:600;position:relative;}
+
+/* ===== ミックス5: グラデーション + ゴールドライン + ユーザー右端まとめ ===== */
+.m5-top{padding:14px 24px;display:flex;align-items:center;gap:14px;background:linear-gradient(to right,#0D1E38,#162244);}
+.m5-top .logo{width:40px;height:40px;font-size:16px;border-radius:9px;}
+.m5-top h1{font-family:serif;font-size:19px;color:#EDF3FA;flex:1;}
+.m5-top .bdg-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.m5-top .bdg{font-size:10px;padding:2px 9px;border-radius:8px;border:1px solid var(--gold);color:var(--gL);background:rgba(186,117,23,.15);}
+.m5-top .ver{font-size:10px;color:var(--tmu);}
+.m5-bot{padding:9px 24px;display:flex;align-items:center;gap:12px;background:var(--nv9);border-top:2px solid var(--gold);}
+.m5-user-card{display:flex;align-items:center;gap:8px;background:var(--nv7);border:1px solid var(--nv5);border-radius:8px;padding:5px 14px;margin-right:auto;}
+.m5-user-card span{font-family:serif;font-size:14px;color:var(--gL);}
+.m5-bot button{font-size:12px;padding:6px 14px;border-radius:8px;}
+</style>
+</head>
+<body>
+
+<!-- ミックス1 -->
+<div class="row">
+  <div class="lbl"><b>ミックス1</b>　グラデーション上段 ＋ ゴールドライン ＋ ユーザーアイコン左寄せ</div>
+  <div class="frame">
+    <div class="m1-top">
+      <div class="logo" style="width:42px;height:42px;font-size:17px;border-radius:9px;">K</div>
+      <h1>クローネらぼ</h1>
+      <span class="bdg">β版</span>
+      <span class="ver">v0.13</span>
+    </div>
+    <div class="m1-bot">
+      <div class="user">
+        <div class="user-ic">👤</div>
+        <span class="user-nm">よこたさん</span>
+      </div>
+      <button style="border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;position:relative;">学習記録<span class="dot" style="border-color:var(--nv9);"></span></button>
+      <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">☀</button>
+      <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">ログアウト</button>
+    </div>
+  </div>
+</div>
+
+<!-- ミックス2 -->
+<div class="row">
+  <div class="lbl"><b>ミックス2</b>　グラデーション上段 ＋ ゴールドライン ＋ ユーザーピル左・ボタン右</div>
+  <div class="frame">
+    <div class="m2-top">
+      <div class="logo" style="width:44px;height:44px;font-size:17px;border-radius:10px;">K</div>
+      <h1>クローネらぼ</h1>
+      <span class="bdg">β版</span>
+      <span class="ver">v0.13</span>
+    </div>
+    <div class="m2-bot">
+      <span class="user-pill">よこたさん</span>
+      <div class="actions">
+        <button style="border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;position:relative;">学習記録<span class="dot" style="border-color:var(--nv9);"></span></button>
+        <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">☀</button>
+        <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">ログアウト</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ミックス3 -->
+<div class="row">
+  <div class="lbl"><b>ミックス3</b>　グラデーション ＋ ゴールド左縦ライン ＋ タイトル縦積み</div>
+  <div class="frame">
+    <div class="m3-top">
+      <div class="logo" style="width:42px;height:42px;font-size:17px;border-radius:9px;">K</div>
+      <div class="m3-top-text">
+        <h1>クローネらぼ</h1>
+        <small>β版 v0.13</small>
+      </div>
+    </div>
+    <div class="m3-bot">
+      <div class="user">
+        <span class="user-nm">よこたさん</span>
+      </div>
+      <button style="border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;position:relative;">学習記録<span class="dot" style="border-color:var(--nv9);"></span></button>
+      <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">☀</button>
+      <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">ログアウト</button>
+    </div>
+  </div>
+</div>
+
+<!-- ミックス4 -->
+<div class="row">
+  <div class="lbl"><b>ミックス4</b>　ダークグラデーション ＋ 細ゴールドライン ＋ アイコンボタン</div>
+  <div class="frame">
+    <div class="m4-top">
+      <div class="logo" style="width:46px;height:46px;font-size:18px;border-radius:10px;">K</div>
+      <h1>クローネらぼ</h1>
+      <span class="bdg">β版 v0.13</span>
+    </div>
+    <div class="m4-bot">
+      <div class="user">
+        <div class="user-dot"></div>
+        <span>よこたさん</span>
+      </div>
+      <button class="rec-btn" style="position:relative;">📊 学習記録<span class="dot" style="border-color:var(--nv9);"></span></button>
+      <div class="icon-btn">☀</div>
+      <div class="icon-btn" style="font-size:11px;color:var(--tmu);border-radius:8px;border:1px solid var(--nv5);width:auto;padding:0 10px;font-family:inherit;">ログアウト</div>
+    </div>
+  </div>
+</div>
+
+<!-- ミックス5 -->
+<div class="row">
+  <div class="lbl"><b>ミックス5</b>　グラデーション ＋ ゴールドライン ＋ ユーザーをカード型に</div>
+  <div class="frame">
+    <div class="m5-top">
+      <div class="logo" style="width:40px;height:40px;font-size:16px;border-radius:9px;">K</div>
+      <h1>クローネらぼ</h1>
+      <div class="bdg-wrap">
+        <span class="bdg">β版</span>
+        <span class="ver">v0.13</span>
+      </div>
+    </div>
+    <div class="m5-bot">
+      <div class="m5-user-card">
+        <span>よこたさん</span>
+      </div>
+      <button style="border:1.5px solid var(--gL);background:rgba(239,159,39,.08);color:var(--gL);font-weight:600;position:relative;">学習記録<span class="dot" style="border-color:var(--nv9);"></span></button>
+      <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">☀</button>
+      <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">ログアウト</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

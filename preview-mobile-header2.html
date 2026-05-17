@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヘッダー行2 センタリング比較</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a1020;padding:24px 12px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;gap:32px;justify-content:center;flex-wrap:wrap;}
+:root{--nv8:#172540;--nv9:#131E30;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tmu:#82A0BF;}
+
+.col{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.col-label{font-size:11px;color:#666;text-align:center;border-bottom:1px solid #222;padding-bottom:6px;width:375px;}
+.col-label b{color:#bbb;}
+
+.phone{width:375px;background:#131E30;border-radius:12px;border:2px solid #333;overflow:hidden;}
+.phone-inner{padding:14px 12px 18px;}
+
+/* 共通ヘッダー */
+.hd{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0;}
+.hd-top{display:flex;align-items:center;gap:10px;flex:0 0 100%;}
+.logo{width:40px;height:40px;background:linear-gradient(135deg,#BA7517,#EF9F27);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;}
+.title{font-family:serif;font-size:18px;color:#EDF3FA;}
+.badge{font-size:12px;padding:3px 10px;border-radius:8px;background:#BA7517;color:#fff;}
+.ver{font-size:11px;color:#82A0BF;margin-left:4px;}
+
+.hd-bottom{flex:0 0 100%;display:flex;align-items:center;gap:8px;}
+.user-box{background:#172540;border-radius:8px;padding:4px 12px;}
+.user-name{font-family:serif;font-size:14px;color:#EF9F27;}
+.btn{font-size:11px;padding:3px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.btn-rec{border:1.5px solid #EF9F27;background:#172540;color:#EF9F27;font-weight:600;position:relative;}
+.btn-theme{border:1px solid #3A5A90;background:transparent;color:#82A0BF;font-size:13px;padding:3px 7px;}
+.btn-logout{border:1px solid #3A5A90;background:transparent;color:#82A0BF;}
+.dot{position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:#EF9F27;border-radius:50%;border:1.5px solid #131E30;}
+
+/* 右寄せ */
+.right{justify-content:flex-end;}
+/* センタリング */
+.center{justify-content:center;}
+</style>
+</head>
+<body>
+
+<!-- 現在：右寄せ -->
+<div class="col">
+  <div class="col-label"><b>▼ 現在（右寄せ）</b></div>
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="hd">
+        <div class="hd-top">
+          <div class="logo">K</div>
+          <div class="title">クローネらぼ</div>
+          <span class="badge">β版</span>
+          <span class="ver">v0.11</span>
+        </div>
+        <div class="hd-bottom right">
+          <div class="user-box"><span class="user-name">よこたさん</span></div>
+          <button class="btn btn-rec" style="position:relative;">学習記録<span class="dot"></span></button>
+          <button class="btn btn-theme">☀</button>
+          <button class="btn btn-logout">ログアウト</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- センタリング -->
+<div class="col">
+  <div class="col-label"><b>▼ 案：センタリング</b></div>
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="hd">
+        <div class="hd-top">
+          <div class="logo">K</div>
+          <div class="title">クローネらぼ</div>
+          <span class="badge">β版</span>
+          <span class="ver">v0.11</span>
+        </div>
+        <div class="hd-bottom center">
+          <div class="user-box"><span class="user-name">よこたさん</span></div>
+          <button class="btn btn-rec" style="position:relative;">学習記録<span class="dot"></span></button>
+          <button class="btn btn-theme">☀</button>
+          <button class="btn btn-logout">ログアウト</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

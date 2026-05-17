@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>説明文フォントサイズ比較</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#131E30;padding:28px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-direction:column;gap:28px;align-items:center;}
+:root{--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tm:#BCCEDE;--tmu:#82A0BF;}
+.col{display:flex;flex-direction:column;gap:6px;width:360px;}
+.lbl{font-size:11px;color:#666;border-bottom:1px solid #1a2a40;padding-bottom:5px;}
+.lbl b{font-size:12px;color:#bbb;}
+.block{background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:8px;}
+
+/* れんしゅうモード行 */
+.pm-row{display:flex;align-items:center;justify-content:space-between;margin-top:4px;padding:8px 10px;border:1px solid var(--nv5);border-radius:8px;background:rgba(130,160,191,.06);}
+.pm-row-label{font-size:13px;color:var(--tm);}
+.pm-sw{position:relative;display:inline-block;width:38px;height:20px;flex-shrink:0;}
+.pm-sw input{opacity:0;width:0;height:0;}
+.pm-sl{position:absolute;cursor:pointer;inset:0;background:var(--nv5);border-radius:20px;transition:.2s;}
+.pm-sl:before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
+
+/* 要復習カード */
+.review-card{width:100%;padding:12px 14px;background:var(--nv7);border:1px solid rgba(240,149,149,.35);border-radius:10px;display:flex;align-items:center;gap:12px;text-align:left;}
+.review-icon{width:36px;height:36px;border-radius:8px;background:rgba(240,149,149,.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.review-cnt{margin-left:auto;font-size:20px;font-weight:700;color:#F09595;flex-shrink:0;}
+.review-cnt span{font-size:11px;font-weight:400;color:var(--tmu);}
+</style>
+</head>
+<body>
+
+<!-- 現在 -->
+<div class="col">
+  <div class="lbl"><b>現在</b>　れんしゅうモード説明 10px ／ 要復習説明 11px</div>
+  <div class="block">
+    <div class="pm-row">
+      <div>
+        <div class="pm-row-label">📝 れんしゅうモード</div>
+        <div style="font-size:10px;color:var(--tmu);margin-top:2px;">記録・スタンプ・連続日数に反映されません</div>
+      </div>
+      <label class="pm-sw"><input type="checkbox"><span class="pm-sl"></span></label>
+    </div>
+    <div class="review-card">
+      <div class="review-icon">📋</div>
+      <div>
+        <div style="font-size:13px;color:#F09595;font-weight:600;line-height:1.3;">要復習リスト</div>
+        <div style="font-size:11px;color:var(--tmu);margin-top:2px;">まだ克服できていない問題</div>
+      </div>
+      <div class="review-cnt">12<span>問</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 案A: 12px -->
+<div class="col">
+  <div class="lbl"><b>案A</b>　両方 12px</div>
+  <div class="block">
+    <div class="pm-row">
+      <div>
+        <div class="pm-row-label">📝 れんしゅうモード</div>
+        <div style="font-size:12px;color:var(--tmu);margin-top:2px;">記録・スタンプ・連続日数に反映されません</div>
+      </div>
+      <label class="pm-sw"><input type="checkbox"><span class="pm-sl"></span></label>
+    </div>
+    <div class="review-card">
+      <div class="review-icon">📋</div>
+      <div>
+        <div style="font-size:13px;color:#F09595;font-weight:600;line-height:1.3;">要復習リスト</div>
+        <div style="font-size:12px;color:var(--tmu);margin-top:2px;">まだ克服できていない問題</div>
+      </div>
+      <div class="review-cnt">12<span>問</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 案B: 13px -->
+<div class="col">
+  <div class="lbl"><b>案B</b>　両方 13px（タイトルと同サイズ）</div>
+  <div class="block">
+    <div class="pm-row">
+      <div>
+        <div class="pm-row-label">📝 れんしゅうモード</div>
+        <div style="font-size:13px;color:var(--tmu);margin-top:2px;">記録・スタンプ・連続日数に反映されません</div>
+      </div>
+      <label class="pm-sw"><input type="checkbox"><span class="pm-sl"></span></label>
+    </div>
+    <div class="review-card">
+      <div class="review-icon">📋</div>
+      <div>
+        <div style="font-size:13px;color:#F09595;font-weight:600;line-height:1.3;">要復習リスト</div>
+        <div style="font-size:13px;color:var(--tmu);margin-top:2px;">まだ克服できていない問題</div>
+      </div>
+      <div class="review-cnt">12<span>問</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 案C: れんしゅう12・要復習13 -->
+<div class="col">
+  <div class="lbl"><b>案C</b>　れんしゅうモード説明 12px ／ 要復習説明 13px</div>
+  <div class="block">
+    <div class="pm-row">
+      <div>
+        <div class="pm-row-label">📝 れんしゅうモード</div>
+        <div style="font-size:12px;color:var(--tmu);margin-top:2px;">記録・スタンプ・連続日数に反映されません</div>
+      </div>
+      <label class="pm-sw"><input type="checkbox"><span class="pm-sl"></span></label>
+    </div>
+    <div class="review-card">
+      <div class="review-icon">📋</div>
+      <div>
+        <div style="font-size:13px;color:#F09595;font-weight:600;line-height:1.3;">要復習リスト</div>
+        <div style="font-size:13px;color:var(--tmu);margin-top:2px;">まだ克服できていない問題</div>
+      </div>
+      <div class="review-cnt">12<span>問</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

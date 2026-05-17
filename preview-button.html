@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サンプル</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#060D1A;padding:32px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#EAF1FA;}
+:root{--nv9:#060D1A;--nv8:#0C1B33;--nv7:#0F2240;--nv6:#1A3260;--nv5:#2A4A80;--gold:#BA7517;--gL:#EF9F27;}
+section{margin-bottom:40px;}
+h2{font-size:13px;color:#7A9CC0;margin-bottom:16px;border-bottom:1px solid #1A3260;padding-bottom:6px;}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.label{font-size:11px;color:#7A9CC0;min-width:60px;}
+
+/* ===== ヘッダー模擬 ===== */
+.hd-mock{background:#0F2240;border:1px solid #2A4A80;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.hd-mock span{font-size:14px;color:#EF9F27;font-weight:500;flex:1;}
+
+/* ボタン共通 */
+.btn-base{font-size:11px;border-radius:6px;cursor:pointer;border:none;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============================
+  1. ダッシュボードボタン案
+============================= -->
+<section>
+  <h2>▼ ダッシュボードボタン（ヘッダー内）</h2>
+
+  <!-- 案A: アイコン＋テキスト・ゴールドボーダー -->
+  <div class="hd-mock">
+    <span>クローネ 太郎</span>
+    <button style="font-size:11px;padding:4px 12px;border-radius:6px;border:1.5px solid #EF9F27;background:transparent;color:#EF9F27;cursor:pointer;font-weight:600;">📊 学習記録</button>
+    <button style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2A4A80;background:transparent;color:#B0C4DE;cursor:pointer;">ログアウト</button>
+  </div>
+  <div class="label" style="margin-bottom:4px;">案A：ゴールドボーダー＋「学習記録」</div>
+
+  <!-- 案B: 背景ゴールド -->
+  <div class="hd-mock" style="margin-top:12px;">
+    <span>クローネ 太郎</span>
+    <button style="font-size:11px;padding:4px 12px;border-radius:6px;border:none;background:#BA7517;color:#fff;cursor:pointer;font-weight:600;">📈 記録</button>
+    <button style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2A4A80;background:transparent;color:#B0C4DE;cursor:pointer;">ログアウト</button>
+  </div>
+  <div class="label" style="margin-bottom:4px;">案B：背景ゴールド＋「記録」</div>
+
+  <!-- 案C: テキストのみ・下線 -->
+  <div class="hd-mock" style="margin-top:12px;">
+    <span>クローネ 太郎</span>
+    <button style="font-size:12px;padding:4px 10px;border-radius:6px;border:none;background:transparent;color:#EF9F27;cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:3px;">ダッシュ ▶</button>
+    <button style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2A4A80;background:transparent;color:#B0C4DE;cursor:pointer;">ログアウト</button>
+  </div>
+  <div class="label" style="margin-bottom:4px;">案C：下線テキスト「ダッシュ ▶」</div>
+
+  <!-- 案D: バッジ風（通知ドット付き） -->
+  <div class="hd-mock" style="margin-top:12px;">
+    <span>クローネ 太郎</span>
+    <div style="position:relative;display:inline-block;">
+      <button style="font-size:11px;padding:4px 12px;border-radius:6px;border:1.5px solid #EF9F27;background:#0C1B33;color:#EF9F27;cursor:pointer;font-weight:600;">学習記録</button>
+      <span style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:#EF9F27;border-radius:50%;border:2px solid #060D1A;"></span>
+    </div>
+    <button style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid #2A4A80;background:transparent;color:#B0C4DE;cursor:pointer;">ログアウト</button>
+  </div>
+  <div class="label" style="margin-bottom:4px;">案D：バッジ風（通知ドット付き）</div>
+</section>
+
+<!-- ============================
+  2. 連続学習バッジのアイコン案
+============================= -->
+<section>
+  <h2>▼ 連続学習バッジのアイコン（🔥以外）</h2>
+
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:400px;">
+
+    <!-- 現在 -->
+    <div style="background:#0C1B33;border:1px solid #2A4A80;border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+      <span style="font-size:11px;color:#7A9CC0;width:80px;flex-shrink:0;">現在（🔥）</span>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">🔥</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">3日連続</div>
+        </div>
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">🔥🔥</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">7日連続</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 案1: ⚡ -->
+    <div style="background:#0C1B33;border:1px solid #2A4A80;border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+      <span style="font-size:11px;color:#7A9CC0;width:80px;flex-shrink:0;">案1：⚡</span>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">⚡</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">3日連続</div>
+        </div>
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">⚡⚡</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">7日連続</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 案2: 🌟 -->
+    <div style="background:#0C1B33;border:1px solid #2A4A80;border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+      <span style="font-size:11px;color:#7A9CC0;width:80px;flex-shrink:0;">案2：🌟</span>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">🌟</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">3日連続</div>
+        </div>
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">🌟🌟</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">7日連続</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 案3: 📅 カレンダー×日数テキスト -->
+    <div style="background:#0C1B33;border:1px solid #2A4A80;border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+      <span style="font-size:11px;color:#7A9CC0;width:80px;flex-shrink:0;">案3：📅＋日数</span>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:14px;">📅 3日</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">連続学習</div>
+        </div>
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:14px;">📅 7日</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">連続学習</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 案4: 数字だけ（大きく） -->
+    <div style="background:#0C1B33;border:1px solid #2A4A80;border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+      <span style="font-size:11px;color:#7A9CC0;width:80px;flex-shrink:0;">案4：数字大</span>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 14px;text-align:center;">
+          <div style="font-size:22px;font-weight:700;color:#EF9F27;font-family:'BIZ UDPGothic',sans-serif;">3</div>
+          <div style="font-size:10px;color:#7A9CC0;">日連続</div>
+        </div>
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 14px;text-align:center;">
+          <div style="font-size:22px;font-weight:700;color:#EF9F27;font-family:'BIZ UDPGothic',sans-serif;">7</div>
+          <div style="font-size:10px;color:#7A9CC0;">日連続</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 案5: 🔗 チェーン -->
+    <div style="background:#0C1B33;border:1px solid #2A4A80;border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+      <span style="font-size:11px;color:#7A9CC0;width:80px;flex-shrink:0;">案5：🔗</span>
+      <div style="display:flex;gap:8px;">
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">🔗</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">3日連続</div>
+        </div>
+        <div style="background:#0F2240;border:1px solid #BA7517;border-radius:8px;padding:6px 10px;text-align:center;">
+          <div style="font-size:18px;">🔗🔗</div>
+          <div style="font-size:10px;color:#EF9F27;font-weight:500;">7日連続</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログイン画面 テーマ切り替え サンプル</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#1a1a2e;padding:32px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start;}
+
+/* 比較ラベル */
+.col{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.col-label{font-size:11px;color:#888;text-align:center;border-bottom:1px solid #333;padding-bottom:6px;width:340px;}
+
+/* ===== 共通ログイン画面フレーム ===== */
+.login-frame{width:340px;height:480px;display:flex;align-items:center;justify-content:center;border-radius:16px;position:relative;}
+
+/* ダークモード */
+.login-frame.dark{background:#131E30;}
+.dark .card{background:#1C2E48;border:1px solid #3A5A90;border-radius:16px;padding:2.5rem 2rem;width:300px;text-align:center;}
+.dark .beta{font-size:12px;color:#82A0BF;margin-bottom:1.8rem;}
+.dark .inp{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #3A5A90;background:#2A4070;color:#EDF3FA;font-size:14px;}
+.dark .inp-last{margin-bottom:16px;}
+.dark .btn-login{width:100%;padding:11px;background:#BA7517;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;}
+.dark .theme-row{margin-top:14px;display:flex;justify-content:center;gap:8px;}
+
+/* ライトモード */
+.login-frame.light{background:#EEF3FA;}
+.light .card{background:#FFFFFF;border:1px solid #BACBE0;border-radius:16px;padding:2.5rem 2rem;width:300px;text-align:center;}
+.light .beta{font-size:12px;color:#5A7A9A;margin-bottom:1.8rem;}
+.light .inp{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #BACBE0;background:#EEF3FA;color:#0F2240;font-size:14px;}
+.light .inp-last{margin-bottom:16px;}
+.light .btn-login{width:100%;padding:11px;background:#C47F10;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;}
+.light .theme-row{margin-top:14px;display:flex;justify-content:center;gap:8px;}
+
+/* ===== 案A: テキストボタン ===== */
+.tg-text-btn{font-size:12px;padding:4px 12px;border-radius:16px;border:1px solid;cursor:pointer;background:transparent;}
+.dark .tg-text-btn{border-color:#3A5A90;color:#82A0BF;}
+.dark .tg-text-btn.active{background:#2A4070;border-color:#EF9F27;color:#EF9F27;}
+.light .tg-text-btn{border-color:#BACBE0;color:#5A7A9A;}
+.light .tg-text-btn.active{background:#D0DFF0;border-color:#C47F10;color:#C47F10;}
+
+/* ===== 案B: トグルスイッチ ===== */
+.tg-sw-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.dark .tg-sw-row{color:#82A0BF;}
+.light .tg-sw-row{color:#5A7A9A;}
+.tg-sw{position:relative;width:44px;height:24px;}
+.tg-sw input{opacity:0;width:0;height:0;position:absolute;}
+.tg-sl{position:absolute;inset:0;border-radius:12px;cursor:pointer;transition:.2s;display:flex;align-items:center;}
+.dark .tg-sl{background:#2A4070;border:1px solid #3A5A90;}
+.light .tg-sl{background:#D0DFF0;border:1px solid #BACBE0;}
+.tg-sl:before{content:'🌙';position:absolute;left:3px;font-size:13px;line-height:1;transition:.2s;}
+.tg-sw input:checked + .tg-sl:before{transform:translateX(20px);content:'☀';}
+.dark .tg-sw input:checked + .tg-sl{background:#1A3260;border-color:#EF9F27;}
+.light .tg-sw input:checked + .tg-sl{background:#BACBE0;border-color:#C47F10;}
+
+/* ===== 案C: アイコンのみボタン（右上配置） ===== */
+.tg-icon-btn{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid;cursor:pointer;background:transparent;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.dark .tg-icon-btn{border-color:#3A5A90;color:#82A0BF;background:#1C2E48;}
+.light .tg-icon-btn{border-color:#BACBE0;color:#5A7A9A;background:#EEF3FA;}
+
+/* ロゴダミー */
+.logo-dummy{width:80px;height:80px;background:linear-gradient(135deg,#BA7517,#EF9F27);border-radius:16px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:900;}
+</style>
+</head>
+<body>
+
+<!-- 案A: テキストボタン（ダーク→ライト） -->
+<div class="col">
+  <div class="col-label">▼ 案A：ダーク/ライト テキストボタン</div>
+
+  <!-- ダーク -->
+  <div class="login-frame dark">
+    <div class="card">
+      <div class="logo-dummy">K</div>
+      <div class="beta">β版</div>
+      <input class="inp" type="text" placeholder="ID" readonly>
+      <input class="inp inp-last" type="password" placeholder="パスワード" readonly>
+      <button class="btn-login">ログイン</button>
+      <div class="theme-row">
+        <button class="tg-text-btn active">🌙 ダーク</button>
+        <button class="tg-text-btn">☀ ライト</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ライト -->
+  <div class="login-frame light">
+    <div class="card">
+      <div class="logo-dummy">K</div>
+      <div class="beta">β版</div>
+      <input class="inp" type="text" placeholder="ID" readonly>
+      <input class="inp inp-last" type="password" placeholder="パスワード" readonly>
+      <button class="btn-login">ログイン</button>
+      <div class="theme-row">
+        <button class="tg-text-btn">🌙 ダーク</button>
+        <button class="tg-text-btn active">☀ ライト</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案B: トグルスイッチ -->
+<div class="col">
+  <div class="col-label">▼ 案B：トグルスイッチ（スライド）</div>
+
+  <!-- ダーク -->
+  <div class="login-frame dark">
+    <div class="card">
+      <div class="logo-dummy">K</div>
+      <div class="beta">β版</div>
+      <input class="inp" type="text" placeholder="ID" readonly>
+      <input class="inp inp-last" type="password" placeholder="パスワード" readonly>
+      <button class="btn-login">ログイン</button>
+      <div class="theme-row">
+        <div class="tg-sw-row">
+          <span>🌙</span>
+          <label class="tg-sw">
+            <input type="checkbox">
+            <span class="tg-sl"></span>
+          </label>
+          <span>☀</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ライト（スイッチON） -->
+  <div class="login-frame light">
+    <div class="card">
+      <div class="logo-dummy">K</div>
+      <div class="beta">β版</div>
+      <input class="inp" type="text" placeholder="ID" readonly>
+      <input class="inp inp-last" type="password" placeholder="パスワード" readonly>
+      <button class="btn-login">ログイン</button>
+      <div class="theme-row">
+        <div class="tg-sw-row">
+          <span>🌙</span>
+          <label class="tg-sw">
+            <input type="checkbox" checked>
+            <span class="tg-sl"></span>
+          </label>
+          <span>☀</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案C: アイコンのみ（右上角） -->
+<div class="col">
+  <div class="col-label">▼ 案C：右上 アイコンボタン（シンプル）</div>
+
+  <!-- ダーク -->
+  <div class="login-frame dark">
+    <button class="tg-icon-btn" title="ライト/ダーク切替">☀</button>
+    <div class="card">
+      <div class="logo-dummy">K</div>
+      <div class="beta">β版</div>
+      <input class="inp" type="text" placeholder="ID" readonly>
+      <input class="inp inp-last" type="password" placeholder="パスワード" readonly>
+      <button class="btn-login">ログイン</button>
+    </div>
+  </div>
+
+  <!-- ライト -->
+  <div class="login-frame light">
+    <button class="tg-icon-btn" title="ライト/ダーク切替">🌙</button>
+    <div class="card">
+      <div class="logo-dummy">K</div>
+      <div class="beta">β版</div>
+      <input class="inp" type="text" placeholder="ID" readonly>
+      <input class="inp inp-last" type="password" placeholder="パスワード" readonly>
+      <button class="btn-login">ログイン</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 案Aのクリックデモ
+document.querySelectorAll('.tg-text-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const row = btn.closest('.theme-row');
+    row.querySelectorAll('.tg-text-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

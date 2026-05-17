@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>タイトルフォントサイズ比較2</title>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Opti&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#131E30;padding:32px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-direction:column;gap:24px;align-items:center;}
+:root{--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tmu:#82A0BF;}
+.row{width:680px;display:flex;flex-direction:column;gap:6px;}
+.lbl{font-size:11px;color:#666;border-bottom:1px solid #1a2a40;padding-bottom:5px;}
+.lbl b{font-size:12px;color:#bbb;}
+.hd-wrap{display:flex;align-items:center;gap:14px;padding:14px 4px;}
+.badge{font-size:11px;padding:3px 10px;border-radius:10px;border:1px solid var(--gold);color:var(--gL);background:rgba(186,117,23,.12);white-space:nowrap;}
+.gold-line{border-top:2px solid var(--gold);padding:9px 4px;display:flex;align-items:center;gap:10px;}
+.user{display:flex;align-items:center;gap:7px;margin-right:auto;}
+.user-ic{width:26px;height:26px;border-radius:50%;background:var(--nv6);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.user-nm{font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);}
+.btn{font-size:12px;padding:5px 13px;border-radius:7px;cursor:pointer;border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;}
+.btn-sm{font-size:12px;padding:5px 13px;border-radius:7px;cursor:pointer;border:1px solid var(--nv5);background:transparent;color:var(--tmu);}
+.logo{width:46px;height:46px;background:linear-gradient(135deg,#BA7517,#EF9F27);border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;}
+</style>
+</head>
+<body>
+
+<!-- 現在: 30px -->
+<div class="row">
+  <div class="lbl"><b>現在　30px</b>（比較用）</div>
+  <div class="hd-wrap">
+    <div class="logo">K</div>
+    <h1 style="font-family:'Kaisei Opti',serif;font-size:30px;color:var(--tb);flex:1;margin:0;">クローネらぼ</h1>
+    <span class="badge">β版 v0.16</span>
+  </div>
+  <div class="gold-line">
+    <div class="user"><div class="user-ic">👤</div><span class="user-nm">よこたさん</span></div>
+    <button class="btn">学習記録</button>
+    <button class="btn-sm">☀</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案A: 36px -->
+<div class="row">
+  <div class="lbl"><b>案A　36px</b></div>
+  <div class="hd-wrap">
+    <div class="logo" style="width:50px;height:50px;font-size:22px;">K</div>
+    <h1 style="font-family:'Kaisei Opti',serif;font-size:36px;color:var(--tb);flex:1;margin:0;">クローネらぼ</h1>
+    <span class="badge">β版 v0.16</span>
+  </div>
+  <div class="gold-line">
+    <div class="user"><div class="user-ic">👤</div><span class="user-nm">よこたさん</span></div>
+    <button class="btn">学習記録</button>
+    <button class="btn-sm">☀</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案B: 40px -->
+<div class="row">
+  <div class="lbl"><b>案B　40px</b></div>
+  <div class="hd-wrap">
+    <div class="logo" style="width:52px;height:52px;font-size:23px;">K</div>
+    <h1 style="font-family:'Kaisei Opti',serif;font-size:40px;color:var(--tb);flex:1;margin:0;">クローネらぼ</h1>
+    <span class="badge">β版 v0.16</span>
+  </div>
+  <div class="gold-line">
+    <div class="user"><div class="user-ic">👤</div><span class="user-nm">よこたさん</span></div>
+    <button class="btn">学習記録</button>
+    <button class="btn-sm">☀</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案C: 46px -->
+<div class="row">
+  <div class="lbl"><b>案C　46px</b></div>
+  <div class="hd-wrap">
+    <div class="logo" style="width:56px;height:56px;font-size:25px;">K</div>
+    <h1 style="font-family:'Kaisei Opti',serif;font-size:46px;color:var(--tb);flex:1;margin:0;">クローネらぼ</h1>
+    <span class="badge">β版 v0.16</span>
+  </div>
+  <div class="gold-line">
+    <div class="user"><div class="user-ic">👤</div><span class="user-nm">よこたさん</span></div>
+    <button class="btn">学習記録</button>
+    <button class="btn-sm">☀</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+</body>
+</html>

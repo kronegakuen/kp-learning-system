@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中学数学 計算問題 自動生成</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#131E30;padding:20px 14px 40px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;min-height:100vh;}
+:root{--nv9:#131E30;--nv8:#172540;--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tm:#BCCEDE;--tmu:#82A0BF;}
+.wrap{max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:14px;}
+h1{font-size:19px;color:var(--tb);font-weight:500;border-bottom:2px solid var(--gold);padding-bottom:10px;}
+.control{background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+.grade-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.grade-btn{padding:5px 14px;border-radius:7px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;font-size:13px;}
+.grade-btn.active{border-color:var(--gL);color:var(--gL);background:rgba(239,159,39,.08);font-weight:600;}
+.ctrl-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.ctrl-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px;}
+.ctrl-group label{font-size:11px;color:var(--tmu);}
+select{width:100%;background:var(--nv6);border:1px solid var(--nv5);border-radius:7px;color:var(--tb);padding:7px 10px;font-size:13px;cursor:pointer;outline:none;}
+.count-row{display:flex;gap:6px;align-items:center;}
+.c-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;font-size:16px;line-height:1;}
+.c-btn:hover{border-color:var(--gL);color:var(--gL);}
+.c-val{font-size:15px;color:var(--tb);font-weight:600;min-width:22px;text-align:center;}
+.btn-gen{padding:8px 22px;border-radius:8px;border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;align-self:flex-end;}
+.btn-gen:hover{background:rgba(239,159,39,.1);}
+.top-bar{display:flex;justify-content:flex-end;}
+.btn-all{font-size:11px;padding:5px 14px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;}
+.btn-all:hover{border-color:var(--gL);color:var(--gL);}
+.problems{display:flex;flex-direction:column;gap:8px;}
+.pcard{background:var(--nv7);border:1px solid var(--nv5);border-radius:10px;padding:13px 15px;}
+.ptags{display:flex;gap:5px;margin-bottom:7px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;}
+.tag-type{background:var(--nv6);color:var(--tmu);}
+.tag-g1{background:rgba(100,180,255,.12);color:#7AB8FF;}
+.tag-g2{background:rgba(120,200,140,.12);color:#7ACC8A;}
+.tag-g3{background:rgba(239,159,39,.12);color:var(--gL);}
+.pq{font-size:17px;color:var(--tb);margin-bottom:10px;line-height:1.8;}
+.system-eq{display:flex;flex-direction:column;gap:3px;padding:8px 14px;background:var(--nv8);border-radius:6px;border-left:2px solid var(--nv5);margin-bottom:10px;}
+.system-eq div{font-size:16px;color:var(--tb);}
+.btn-ans{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;}
+.btn-ans:hover{border-color:var(--gL);color:var(--gL);}
+.answer{display:none;margin-top:9px;padding-top:9px;border-top:1px solid var(--nv6);}
+.ans-label{font-size:10px;color:var(--tmu);margin-bottom:3px;}
+.ans-val{font-size:17px;color:var(--gL);font-weight:600;}
+.empty{color:var(--tmu);text-align:center;padding:40px;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📐 中学数学　計算問題　自動生成サンプル</h1>
+  <div class="control">
+    <div class="grade-tabs">
+      <button class="grade-btn active" onclick="setGrade('all',this)">全学年</button>
+      <button class="grade-btn" onclick="setGrade('1',this)">中学1年</button>
+      <button class="grade-btn" onclick="setGrade('2',this)">中学2年</button>
+      <button class="grade-btn" onclick="setGrade('3',this)">中学3年</button>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-group">
+        <label>単元</label>
+        <select id="sel-unit"></select>
+      </div>
+      <div class="ctrl-group" style="flex:0;min-width:auto;">
+        <label>問題数</label>
+        <div class="count-row">
+          <button class="c-btn" onclick="chgCnt(-1)">-</button>
+          <span class="c-val" id="cnt">5</span>
+          <button class="c-btn" onclick="chgCnt(1)">+</button>
+        </div>
+      </div>
+      <button class="btn-gen" onclick="generate()">生成する</button>
+    </div>
+  </div>
+  <div class="top-bar" id="top-bar" style="display:none;">
+    <button class="btn-all" onclick="toggleAll()">答えを全て表示</button>
+  </div>
+  <div class="problems" id="problems">
+    <div class="empty">学年・単元を選んで「生成する」を押してください</div>
+  </div>
+</div>
+
+<script>
+var cnt = 5;
+var allShown = false;
+
+/* ---- util ---- */
+function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function nz(a, b, ex) {
+  ex = ex || [];
+  var v, t = 0;
+  do { v = rnd(a, b); t++; } while ((v === 0 || ex.indexOf(v) >= 0) && t < 60);
+  return v;
+}
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+
+// 括弧付き符号表示（負数のみ括弧）
+function fN(n) { return n < 0 ? '(' + n + ')' : '' + n; }
+
+// 一次式 ax + b
+function fEx(a, b, v) {
+  v = v || 'x';
+  var s = '';
+  if (a === 1) s = v;
+  else if (a === -1) s = '-' + v;
+  else if (a !== 0) s = a + v;
+  if (b > 0 && s) s += '+' + b;
+  else if (b > 0) s = '' + b;
+  else if (b < 0) s += b;
+  return s || '0';
+}
+
+// 符号付き項（先頭以外）
+function st(n, unit) {
+  if (n === 0) return '';
+  unit = unit || '';
+  if (unit) {
+    if (n === 1) return '+' + unit;
+    if (n === -1) return '-' + unit;
+    return (n > 0 ? '+' : '') + n + unit;
+  }
+  return (n > 0 ? '+' : '') + n;
+}
+
+// 平方根を簡略化
+function simpSq(n) {
+  var c = 1, r = n;
+  for (var i = 2; i * i <= n; i++) while (r % (i * i) === 0) { c *= i; r /= i * i; }
+  return { c: c, r: r };
+}
+function fSq(n) {
+  var s = simpSq(n);
+  if (s.r === 1) return '' + s.c;
+  if (s.c === 1) return 'sqrt' + s.r;
+  return s.c + 'sqrt' + s.r;
+}
+
+// ^2 ^3 → <sup> 変換、sqrtN → √N
+function fmt(s) {
+  s = s.replace(/\^2/g, '<sup>2</sup>').replace(/\^3/g, '<sup>3</sup>');
+  s = s.replace(/sqrt(\d+)/g, '√$1');
+  return s;
+}
+
+/* ==============================================================
+   generators
+============================================================== */
+var G = {
+
+  /* 中1: 正負の数・加減 */
+  pm_add: function () {
+    var a = nz(-15, 15), b = nz(-15, 15);
+    var op = pick(['+', '-']);
+    var ans = op === '+' ? a + b : a - b;
+    return { q: fN(a) + ' ' + op + ' ' + fN(b), a: '' + ans, type: '正負の数・加減', grade: '1' };
+  },
+
+  /* 中1: 正負の数・乗除 */
+  pm_mul: function () {
+    if (pick([0, 1])) {
+      var a = nz(-9, 9), b = nz(-9, 9);
+      return { q: fN(a) + ' x ' + fN(b), a: '' + (a * b), type: '正負の数・乗除', grade: '1' };
+    } else {
+      var b2 = nz(2, 9) * pick([-1, 1]), res = nz(-9, 9), a2 = b2 * res;
+      return { q: fN(a2) + ' / ' + fN(b2), a: '' + res, type: '正負の数・乗除', grade: '1' };
+    }
+  },
+
+  /* 中1: 四則混合 */
+  pm_mixed: function () {
+    var ps = [
+      function () { var a=nz(-10,10),b=nz(-5,5),c=nz(-5,5); return { q:fN(a)+' + '+fN(b)+' x '+fN(c), a:''+(a+b*c) }; },
+      function () { var a=nz(-10,10),b=nz(-5,5),c=nz(-5,5); return { q:fN(a)+' - '+fN(b)+' x '+fN(c), a:''+(a-b*c) }; },
+      function () { var a=nz(-6,6),b=nz(-6,6),c=nz(-4,4,[0]); return { q:'('+fN(a)+' + '+fN(b)+') x '+fN(c), a:''+((a+b)*c) }; },
+      function () { var a=nz(-6,6),b=nz(-6,6),c=nz(-4,4,[0]); return { q:'('+fN(a)+' - '+fN(b)+') x '+fN(c), a:''+((a-b)*c) }; },
+      function () { var m=pick([2,3,4,5]),r=nz(-6,6),a=m*r,c=nz(-6,6); return { q:fN(a)+' / '+fN(m)+' + '+fN(c), a:''+(r+c) }; },
+      function () { var a=nz(-5,5),b=nz(-4,4,[0]),c=nz(-5,5),d=nz(-4,4,[0]); return { q:fN(a)+' x '+fN(b)+' + '+fN(c)+' x '+fN(d), a:''+(a*b+c*d) }; }
+    ];
+    var p = pick(ps)();
+    return { q: p.q, a: p.a, type: '四則混合', grade: '1' };
+  },
+
+  /* 中1: 文字式・代入 */
+  dainyuu: function () {
+    var x = nz(-5, 5), a = nz(-4, 4), b = rnd(-5, 5);
+    if (pick([0, 1])) {
+      return { q: 'x = ' + x + ' のとき　' + fEx(a, b, 'x'), a: '' + (a * x + b), type: '文字式・代入', grade: '1' };
+    } else {
+      var aStr = (a === 1 ? '' : a === -1 ? '-' : '' + a) + 'x^2' + (b >= 0 ? '+' + b : '' + b);
+      return { q: 'x = ' + x + ' のとき　' + aStr, a: '' + (a * x * x + b), type: '文字式・代入', grade: '1' };
+    }
+  },
+
+  /* 中1: 一次式の加減 */
+  lin_add: function () {
+    var a=nz(-5,5), b=rnd(-6,6), c=nz(-5,5), d=rnd(-6,6);
+    var op = pick(['+', '-']);
+    var ra = op === '+' ? a+c : a-c, rb = op === '+' ? b+d : b-d;
+    return { q: '(' + fEx(a,b,'x') + ') ' + op + ' (' + fEx(c,d,'x') + ')', a: fEx(ra,rb,'x'), type: '一次式の加減', grade: '1' };
+  },
+
+  /* 中1: 一次式の乗除 */
+  lin_mul: function () {
+    if (pick([0, 1])) {
+      var m=nz(-5,5), a=nz(-4,4), b=rnd(-6,6);
+      return { q: fN(m) + '(' + fEx(a,b,'x') + ')', a: fEx(m*a, m*b, 'x'), type: '一次式の乗除', grade: '1' };
+    } else {
+      var m2=pick([2,3,4,6]), a2=nz(-3,3)*m2, b2=rnd(-3,3)*m2;
+      return { q: '(' + fEx(a2,b2,'x') + ') / ' + m2, a: fEx(a2/m2, b2/m2, 'x'), type: '一次式の乗除', grade: '1' };
+    }
+  },
+
+  /* 中1: 一次方程式 */
+  lin_eq: function () {
+    var sol = rnd(-8, 8);
+    var type = pick(['simple', 'both', 'paren']);
+    if (type === 'simple') {
+      var a=nz(2,7), b=rnd(-10,10), rhs=a*sol+b;
+      return { q: a+'x' + st(b,'') + ' = ' + rhs, a: 'x = '+sol, type: '一次方程式', grade: '1' };
+    } else if (type === 'both') {
+      var a=nz(3,6), c=nz(1,2), b=rnd(-8,8), d=(a-c)*sol+b;
+      return { q: a+'x'+st(b,'')+' = '+c+'x'+st(d,''), a: 'x = '+sol, type: '一次方程式', grade: '1' };
+    } else {
+      var m=pick([2,3,4]), a=nz(1,3), b=rnd(-5,5), rhs=m*(a*sol+b);
+      var inner = (a===1?'x':a+'x') + (b>=0?'+'+b:''+b);
+      return { q: m+'('+inner+') = '+rhs, a: 'x = '+sol, type: '一次方程式', grade: '1' };
+    }
+  },
+
+  /* 中2: 単項式の乗除 */
+  mono_mul: function () {
+    var v = pick(['a','x','m','n']);
+    var a=nz(2,5), b=nz(2,5), p=rnd(1,3), q=rnd(1,3);
+    if (pick([0, 1])) {
+      var lhs = (a===1?'':a) + v + (p===1?'':'^'+p);
+      var rhs = (b===1?'':b) + v + (q===1?'':'^'+q);
+      var res = (a*b) + v + ((p+q)===1?'':'^'+(p+q));
+      return { q: lhs+' x '+rhs, a: res, type: '単項式の乗除', grade: '2' };
+    } else {
+      var num = (a*b)+v+((p+q)===1?'':'^'+(p+q));
+      var den = (a===1?'':a)+v+(p===1?'':'^'+p);
+      var res = (b===1?'':b)+v+(q===1?'':'^'+q);
+      return { q: num+' / '+den, a: res, type: '単項式の乗除', grade: '2' };
+    }
+  },
+
+  /* 中2: 多項式の加減 */
+  poly_add: function () {
+    var a=nz(-5,5), b=rnd(-5,5), c=nz(-5,5), d=rnd(-5,5);
+    var op = pick(['+', '-']);
+    var ra = op==='+'?a+c:a-c, rb = op==='+'?b+d:b-d;
+    function f2(a, b) { var s=fEx(a,0,'x'); if(b>0)s+='+'+b+'y'; else if(b<0)s+=b+'y'; return s; }
+    return { q: '('+f2(a,b)+') '+op+' ('+f2(c,d)+')', a: f2(ra,rb), type: '多項式の加減', grade: '2' };
+  },
+
+  /* 中2: 多項式と単項式の乗除 */
+  poly_mono: function () {
+    if (pick([0, 1])) {
+      var m=nz(-5,5), a=nz(-4,4), b=rnd(-5,5);
+      return { q: '('+fEx(a,b,'x')+') x '+fN(m), a: fEx(a*m,b*m,'x'), type: '多項式と単項式の乗除', grade: '2' };
+    } else {
+      var m=pick([2,3,4,6]), a=nz(-3,3)*m, b=rnd(-3,3)*m;
+      return { q: '('+fEx(a,b,'x')+') / '+m, a: fEx(a/m,b/m,'x'), type: '多項式と単項式の乗除', grade: '2' };
+    }
+  },
+
+  /* 中2: 連立方程式 */
+  simul: function () {
+    var x=rnd(-5,5), y=rnd(-5,5);
+    var a1=nz(1,3), b1=nz(1,3), a2=nz(1,3), b2=nz(1,3);
+    var t=0; while(a1*b2===a2*b1 && t<15){b2=nz(1,4);t++;}
+    var c1=a1*x+b1*y, c2=a2*x+b2*y;
+    function fEq(a,b){ var s=(a===1?'':a)+'x'; if(b===1)s+='+y'; else if(b===-1)s+='-y'; else if(b>0)s+='+'+b+'y'; else s+=b+'y'; return s; }
+    return { q:[fEq(a1,b1)+' = '+c1, fEq(a2,b2)+' = '+c2], a:'x = '+x+'，y = '+y, type:'連立方程式', grade:'2', isSystem:true };
+  },
+
+  /* 中3: 式の展開 */
+  expand: function () {
+    var type = pick(['basic','coeff']);
+    if (type === 'basic') {
+      var a=nz(-7,7), b=nz(-7,7);
+      var p=a+b, q=a*b;
+      var f1='(x'+(a>=0?'+':'')+a+')', f2='(x'+(b>=0?'+':'')+b+')';
+      return { q: f1+f2, a: 'x^2'+st(p,'x')+st(q,''), type: '式の展開', grade: '3' };
+    } else {
+      var a=pick([2,3]), b=nz(-5,5), c=nz(-5,5);
+      var A=a, B=a*c+b, C=b*c;
+      var f1='('+fEx(a,b,'x')+')', f2='(x'+(c>=0?'+':'')+c+')';
+      var ans=(A===1?'':A)+'x^2'+st(B,'x')+st(C,'');
+      return { q: f1+f2, a: ans, type: '式の展開', grade: '3' };
+    }
+  },
+
+  /* 中3: 展開公式 */
+  expand_f: function () {
+    var a = rnd(2,8), type=pick(['sq_p','sq_m','diff']);
+    if (type==='sq_p') return { q:'(x+'+a+')^2', a:'x^2+'+2*a+'x+'+a*a, type:'展開公式', grade:'3' };
+    if (type==='sq_m') return { q:'(x-'+a+')^2', a:'x^2-'+2*a+'x+'+a*a, type:'展開公式', grade:'3' };
+    return { q:'(x+'+a+')(x-'+a+')', a:'x^2-'+a*a, type:'展開公式', grade:'3' };
+  },
+
+  /* 中3: 因数分解 */
+  factor: function () {
+    var type = pick(['basic','diff','sq_p','sq_m','common']);
+    function ff(n) { return n>=0?'(x+'+n+')':'(x'+n+')'; }
+    if (type==='basic') {
+      var a=nz(-7,7), b=nz(-7,7,[a]); var p=a+b,q=a*b;
+      return { q:'x^2'+st(p,'x')+st(q,''), a:ff(a)+ff(b), type:'因数分解', grade:'3' };
+    } else if (type==='diff') {
+      var a=rnd(2,9);
+      return { q:'x^2-'+a*a, a:'(x+'+a+')(x-'+a+')', type:'因数分解', grade:'3' };
+    } else if (type==='sq_p') {
+      var a=rnd(2,7);
+      return { q:'x^2+'+2*a+'x+'+a*a, a:'(x+'+a+')^2', type:'因数分解', grade:'3' };
+    } else if (type==='sq_m') {
+      var a=rnd(2,7);
+      return { q:'x^2-'+2*a+'x+'+a*a, a:'(x-'+a+')^2', type:'因数分解', grade:'3' };
+    } else {
+      var m=pick([2,3,4,5]),a=nz(-4,4),b=rnd(-4,4);
+      return { q:fEx(m*a,m*b,'x'), a:m+'('+fEx(a,b,'x')+')', type:'因数分解', grade:'3' };
+    }
+  },
+
+  /* 中3: 平方根の計算 */
+  sqrt_basic: function () {
+    var type = pick(['simplify','add','mul','div']);
+    if (type==='simplify') {
+      var a=rnd(2,5), b=pick([2,3,5,6,7,10,11]);
+      return { q:'sqrt'+(a*a*b), a:a+'sqrt'+b, type:'平方根の計算', grade:'3' };
+    } else if (type==='add') {
+      var b=pick([2,3,5,6,7]), p=rnd(1,5), q=rnd(1,5), op=pick(['+','-']);
+      var res=op==='+'?p+q:p-q;
+      var aStr=res===0?'0':(Math.abs(res)===1?(res<0?'-':'')+'sqrt'+b:res+'sqrt'+b);
+      return { q:p+'sqrt'+b+' '+op+' '+q+'sqrt'+b, a:aStr, type:'平方根の計算', grade:'3' };
+    } else if (type==='mul') {
+      var p=pick([2,3,5,6,7,10]), q=pick([2,3,5,6,7,10]);
+      return { q:'sqrt'+p+' x sqrt'+q, a:fSq(p*q), type:'平方根の計算', grade:'3' };
+    } else {
+      var a=pick([2,3,5,6]), b=rnd(2,4);
+      return { q:'sqrt'+(a*b*b)+' / sqrt'+a, a:''+b, type:'平方根の計算', grade:'3' };
+    }
+  },
+
+  /* 中3: 有理化 */
+  sqrt_rat: function () {
+    var b=pick([2,3,5,6,7]), a=rnd(1,8);
+    var g=gcd(a,b), nc=a/g, dc=b/g;
+    var nStr=(nc===1?'':''+nc)+'sqrt'+b;
+    var aStr=dc===1?nStr:nStr+'/'+dc;
+    return { q:a+'/sqrt'+b, a:aStr, type:'有理化', grade:'3' };
+  },
+
+  /* 中3: 根号を含む展開 */
+  sqrt_exp: function () {
+    var type = pick(['sq_p','sq_m','conj']);
+    if (type==='sq_p') {
+      var a=pick([2,3,5,6,7]), b=rnd(1,5);
+      return { q:'(sqrt'+a+' + '+b+')^2', a:(a+b*b)+'+'+2*b+'sqrt'+a, type:'根号を含む展開', grade:'3' };
+    } else if (type==='sq_m') {
+      var a=pick([2,3,5,6,7]), b=rnd(1,5);
+      return { q:'(sqrt'+a+' - '+b+')^2', a:(a+b*b)+'-'+2*b+'sqrt'+a, type:'根号を含む展開', grade:'3' };
+    } else {
+      var p=pick([2,3,5,6,7]), q=pick([2,3,5,7]);
+      var t=0; while(p===q&&t<10){q=pick([2,3,5,7]);t++;}
+      return { q:'(sqrt'+p+' + sqrt'+q+')(sqrt'+p+' - sqrt'+q+')', a:''+(p-q), type:'根号を含む展開', grade:'3' };
+    }
+  },
+
+  /* 中3: 二次方程式 */
+  quad_eq: function () {
+    var type = pick(['factor','complete']);
+    if (type==='factor') {
+      var p=nz(-6,6), q=nz(-6,6,[p]);
+      var bv=-(p+q), cv=p*q;
+      return { q:'x^2'+st(bv,'x')+st(cv,'')+' = 0', a:'x = '+p+'，x = '+q, type:'二次方程式', grade:'3' };
+    } else {
+      var a=rnd(-4,4), b=pick([4,9,16,25]);
+      var sq=Math.round(Math.sqrt(b));
+      return { q:'(x'+(a>=0?'+':'')+a+')^2 = '+b, a:'x = '+(sq-a)+'，x = '+(-sq-a), type:'二次方程式', grade:'3' };
+    }
+  },
+
+  /* ランダム */
+  g1_rand: function(){return pick([G.pm_add,G.pm_mul,G.pm_mixed,G.dainyuu,G.lin_add,G.lin_mul,G.lin_eq])();},
+  g2_rand: function(){return pick([G.mono_mul,G.poly_add,G.poly_mono,G.simul])();},
+  g3_rand: function(){return pick([G.expand,G.expand_f,G.factor,G.sqrt_basic,G.sqrt_rat,G.sqrt_exp,G.quad_eq])();},
+  all_rand:function(){return pick([G.g1_rand,G.g2_rand,G.g3_rand])();}
+};
+
+/* ==============================================================
+   単元リスト
+============================================================== */
+var UNITS = {
+  all: [{key:'all_rand',label:'ランダム（全単元）'}],
+  '1': [
+    {key:'g1_rand',  label:'ランダム（1年全体）'},
+    {key:'pm_add',   label:'正負の数・加減'},
+    {key:'pm_mul',   label:'正負の数・乗除'},
+    {key:'pm_mixed', label:'正負の数・四則混合'},
+    {key:'dainyuu',  label:'文字式・代入'},
+    {key:'lin_add',  label:'一次式の加減'},
+    {key:'lin_mul',  label:'一次式の乗除'},
+    {key:'lin_eq',   label:'一次方程式'}
+  ],
+  '2': [
+    {key:'g2_rand',   label:'ランダム（2年全体）'},
+    {key:'mono_mul',  label:'単項式の乗除'},
+    {key:'poly_add',  label:'多項式の加減'},
+    {key:'poly_mono', label:'多項式と単項式の乗除'},
+    {key:'simul',     label:'連立方程式'}
+  ],
+  '3': [
+    {key:'g3_rand',    label:'ランダム（3年全体）'},
+    {key:'expand',     label:'式の展開'},
+    {key:'expand_f',   label:'展開公式'},
+    {key:'factor',     label:'因数分解'},
+    {key:'sqrt_basic', label:'平方根の計算'},
+    {key:'sqrt_rat',   label:'有理化'},
+    {key:'sqrt_exp',   label:'根号を含む展開'},
+    {key:'quad_eq',    label:'二次方程式'}
+  ]
+};
+
+/* ==============================================================
+   UI
+============================================================== */
+function setGrade(g, btn) {
+  document.querySelectorAll('.grade-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var sel = document.getElementById('sel-unit');
+  sel.innerHTML = '';
+  (UNITS[g] || UNITS.all).forEach(function(u){
+    var o = document.createElement('option');
+    o.value = u.key; o.textContent = u.label; sel.appendChild(o);
+  });
+}
+
+function chgCnt(d){ cnt = Math.min(20, Math.max(1, cnt+d)); document.getElementById('cnt').textContent = cnt; }
+
+var gradeTag  = {'1':'tag-g1','2':'tag-g2','3':'tag-g3'};
+var gradeName = {'1':'1年','2':'2年','3':'3年'};
+
+function generate() {
+  var key = document.getElementById('sel-unit').value;
+  var gen = G[key]; if (!gen) return;
+  allShown = false;
+  document.getElementById('top-bar').style.display = '';
+  document.querySelector('.btn-all').textContent = '答えを全て表示';
+  var html = '';
+  for (var i = 0; i < cnt; i++) {
+    var p = null, t = 0;
+    while (!p && t < 20) { try { p = gen(); } catch(e){ p=null; } t++; }
+    if (!p) continue;
+    var gtag  = gradeTag[p.grade]  || 'tag-type';
+    var gname = gradeName[p.grade] || '';
+    html += '<div class="pcard">';
+    html += '<div class="ptags"><span class="tag tag-type">'+p.type+'</span>';
+    if (gname) html += '<span class="tag '+gtag+'">中'+gname+'</span>';
+    html += '</div>';
+    if (p.isSystem) {
+      html += '<div class="system-eq">';
+      p.q.forEach(function(eq){ html += '<div>'+fmt(eq)+'</div>'; });
+      html += '</div>';
+    } else {
+      html += '<div class="pq">（'+(i+1)+'）　'+fmt(p.q)+'</div>';
+    }
+    html += '<button class="btn-ans" onclick="togAns(this)">答えを見る</button>';
+    html += '<div class="answer"><div class="ans-label">答え</div>';
+    html += '<div class="ans-val">'+fmt(p.a)+'</div></div></div>';
+  }
+  document.getElementById('problems').innerHTML = html || '<div class="empty">生成できませんでした。もう一度お試しください。</div>';
+}
+
+function togAns(btn) {
+  var ans = btn.nextElementSibling;
+  var shown = ans.style.display === 'block';
+  ans.style.display = shown ? 'none' : 'block';
+  btn.textContent = shown ? '答えを見る' : '答えを隠す';
+}
+
+function toggleAll() {
+  allShown = !allShown;
+  document.querySelectorAll('.answer').forEach(function(el){ el.style.display = allShown ? 'block' : 'none'; });
+  document.querySelectorAll('.btn-ans').forEach(function(b){ b.textContent = allShown ? '答えを隠す' : '答えを見る'; });
+  document.querySelector('.btn-all').textContent = allShown ? '答えを全て隠す' : '答えを全て表示';
+}
+
+setGrade('all', document.querySelector('.grade-btn'));
+</script>
+</body>
+</html>

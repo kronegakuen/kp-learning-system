@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スマホヘッダー レイアウト比較</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a1020;padding:24px 12px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-wrap:wrap;gap:32px;justify-content:center;}
+:root{--nv9:#131E30;--nv8:#172540;--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tm:#BCCEDE;--tmu:#82A0BF;}
+
+.col{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.col-label{font-size:11px;color:#666;text-align:center;border-bottom:1px solid #222;padding-bottom:6px;width:380px;}
+.col-label b{color:#aaa;}
+
+/* スマホフレーム */
+.phone{width:375px;background:var(--nv9);border-radius:12px;overflow:hidden;border:2px solid #333;}
+.phone-inner{padding:14px 12px 20px;}
+
+/* ===== 現在の状態（崩れ） ===== */
+.hd-current{display:flex;align-items:center;gap:12px;margin-bottom:0;}
+.hd-left{display:flex;align-items:center;gap:10px;}
+.logo-box{width:40px;height:40px;background:linear-gradient(135deg,#BA7517,#EF9F27);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;}
+.hd-title{font-family:serif;font-size:18px;color:#EDF3FA;white-space:nowrap;}
+.badge{font-size:12px;padding:3px 10px;border-radius:8px;background:#BA7517;color:#fff;white-space:nowrap;}
+.ver{font-size:11px;color:#82A0BF;margin-left:6px;white-space:nowrap;}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.user-box{background:#172540;border-radius:8px;padding:4px 12px;white-space:nowrap;}
+.user-name{font-size:15px;color:#EF9F27;}
+.hd-btn{font-size:11px;padding:3px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.btn-rec{border:1.5px solid #EF9F27;background:#172540;color:#EF9F27;}
+.btn-theme{border:1px solid #3A5A90;background:transparent;color:#82A0BF;}
+.btn-logout{border:1px solid #3A5A90;background:transparent;color:#82A0BF;}
+.overflow-warn{font-size:10px;color:#f66;margin-top:6px;text-align:center;}
+
+/* ===== 案A: 2行レイアウト ===== */
+.hd-a{display:flex;flex-direction:column;gap:8px;margin-bottom:0;}
+.hd-a-top{display:flex;align-items:center;gap:10px;}
+.hd-a-bottom{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+.hd-a .user-box{padding:3px 10px;}
+.hd-a .user-name{font-size:14px;}
+.hd-a .hd-btn{font-size:11px;padding:3px 8px;}
+
+/* ===== 案B: アイコン＋短縮 ===== */
+.hd-b{display:flex;align-items:center;gap:8px;margin-bottom:0;}
+.hd-b .logo-box{width:34px;height:34px;font-size:14px;}
+.hd-b .hd-title{font-size:15px;}
+.hd-b .badge{font-size:10px;padding:2px 7px;}
+.hd-b .user-box{padding:3px 8px;}
+.hd-b .user-name{font-size:13px;}
+.hd-b-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.icon-btn{width:30px;height:30px;border-radius:6px;border:1px solid #3A5A90;background:transparent;color:#82A0BF;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.icon-btn.gold{border-color:#EF9F27;color:#EF9F27;}
+.dot-wrap{position:relative;display:inline-flex;}
+.dot{position:absolute;top:-2px;right:-2px;width:7px;height:7px;background:#EF9F27;border-radius:50%;border:1.5px solid var(--nv9);}
+
+/* ===== 案C: ユーザー名を小さく＋ボタン整理 ===== */
+.hd-c{display:flex;align-items:center;gap:8px;margin-bottom:0;}
+.hd-c .logo-box{width:36px;height:36px;font-size:14px;flex-shrink:0;}
+.hd-c .hd-title{font-size:16px;}
+.hd-c-right{margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.user-chip{font-size:12px;color:#EF9F27;background:#1C2E48;border:1px solid #3A5A90;border-radius:16px;padding:3px 10px;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis;}
+.mini-btn{font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.mini-rec{border:1.5px solid #EF9F27;background:transparent;color:#EF9F27;}
+.mini-logout{border:1px solid #3A5A90;background:transparent;color:#82A0BF;}
+.mini-theme{border:1px solid #3A5A90;background:transparent;color:#82A0BF;font-size:13px;padding:4px 8px;}
+</style>
+</head>
+<body>
+
+<!-- 現在の状態 -->
+<div class="col">
+  <div class="col-label"><b>▼ 現在（崩れる）</b></div>
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="hd-current">
+        <div class="hd-left">
+          <div class="logo-box">K</div>
+          <div class="hd-title">クローネらぼ</div>
+        </div>
+        <span class="badge">β版</span>
+        <span class="ver">v0.11</span>
+        <div class="hd-right">
+          <div class="user-box"><span class="user-name">よこたさん</span></div>
+          <button class="hd-btn btn-rec">学習記録</button>
+          <button class="hd-btn btn-theme">☀</button>
+          <button class="hd-btn btn-logout">ログアウト</button>
+        </div>
+      </div>
+      <div class="overflow-warn">⚠ 右側がはみ出す / 折りたたまれて崩れる</div>
+    </div>
+  </div>
+</div>
+
+<!-- 案A: 2行レイアウト -->
+<div class="col">
+  <div class="col-label"><b>▼ 案A：2行レイアウト</b><br>上：ロゴ＋タイトル　下：ユーザー情報＋ボタン</div>
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="hd-a">
+        <div class="hd-a-top">
+          <div class="logo-box">K</div>
+          <div class="hd-title">クローネらぼ</div>
+          <span class="badge">β版</span>
+          <span class="ver">v0.11</span>
+        </div>
+        <div class="hd-a-bottom">
+          <div class="user-box"><span class="user-name">よこたさん</span></div>
+          <button class="hd-btn btn-rec">学習記録</button>
+          <button class="hd-btn btn-theme">☀</button>
+          <button class="hd-btn btn-logout">ログアウト</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案B: アイコンボタン化 -->
+<div class="col">
+  <div class="col-label"><b>▼ 案B：アイコンボタン化</b><br>テキストを省いてアイコンのみで省スペース</div>
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="hd-b" style="display:flex;align-items:center;">
+        <div class="logo-box" style="width:34px;height:34px;font-size:14px;border-radius:7px;">K</div>
+        <div class="hd-title" style="font-size:15px;margin-left:8px;">クローネらぼ</div>
+        <span class="badge" style="font-size:10px;padding:2px 7px;margin-left:8px;">β版</span>
+        <div class="hd-b-right">
+          <div class="user-box" style="padding:3px 8px;margin-right:2px;"><span class="user-name" style="font-size:13px;">よこたさん</span></div>
+          <div class="dot-wrap">
+            <button class="icon-btn gold" title="学習記録">📊</button>
+            <span class="dot"></span>
+          </div>
+          <button class="icon-btn" title="テーマ切替">☀</button>
+          <button class="icon-btn" title="ログアウト">⏻</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案C: ユーザー名チップ＋コンパクトボタン -->
+<div class="col">
+  <div class="col-label"><b>▼ 案C：コンパクト整理</b><br>ロゴ縮小＋ユーザー名チップ＋ボタンを整理</div>
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="hd-c">
+        <div class="logo-box" style="width:36px;height:36px;font-size:14px;border-radius:7px;">K</div>
+        <div style="margin-left:8px;">
+          <div class="hd-title" style="font-size:16px;line-height:1.1;">クローネらぼ</div>
+          <div style="font-size:10px;color:#82A0BF;">β版 v0.11</div>
+        </div>
+        <div class="hd-c-right">
+          <div class="user-chip">よこたさん</div>
+          <div class="dot-wrap">
+            <button class="mini-btn mini-rec">記録</button>
+            <span class="dot"></span>
+          </div>
+          <button class="mini-theme">☀</button>
+          <button class="mini-btn mini-logout">出る</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

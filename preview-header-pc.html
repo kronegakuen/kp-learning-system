@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCヘッダー 5案</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#080f1c;padding:32px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-direction:column;gap:32px;align-items:center;}
+:root{--nv9:#131E30;--nv8:#172540;--nv7:#1C2E48;--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tm:#BCCEDE;--tmu:#82A0BF;}
+
+.row{width:720px;display:flex;flex-direction:column;gap:8px;}
+.row-label{font-size:11px;color:#666;border-bottom:1px solid #1a1a2e;padding-bottom:5px;}
+.row-label b{font-size:12px;color:#bbb;}
+
+.frame{width:720px;background:var(--nv9);border-radius:12px;border:1px solid #1e2a40;overflow:hidden;}
+
+.logo{flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#BA7517,#EF9F27);color:#fff;font-weight:900;border-radius:8px;}
+.badge{font-size:11px;padding:2px 9px;border-radius:6px;background:var(--gold);color:#fff;}
+.dot{position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:var(--gL);border-radius:50%;border:1.5px solid var(--nv9);}
+
+/* ===== 案1: ロゴ+タイトル大きく、右側スッキリ ===== */
+.hd1{padding:16px 24px;display:flex;align-items:center;gap:14px;background:var(--nv8);border-bottom:1px solid var(--nv6);}
+.hd1 .logo{width:42px;height:42px;font-size:17px;border-radius:9px;}
+.hd1 h1{font-family:serif;font-size:20px;color:#EDF3FA;letter-spacing:.02em;}
+.hd1 .badge{margin-left:2px;}
+.hd1 .ver{font-size:11px;color:var(--tmu);}
+.hd1-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.hd1-user{font-family:serif;font-size:15px;color:var(--gL);background:var(--nv7);border-radius:20px;padding:5px 16px;border:1px solid var(--nv5);}
+.hd1 .btn-rec{font-size:12px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;cursor:pointer;position:relative;}
+.hd1 .btn-sm{font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;}
+
+/* ===== 案2: 上下分離・タイトルバー+ツールバー ===== */
+.hd2-title{padding:14px 24px;display:flex;align-items:center;gap:12px;background:var(--nv8);}
+.hd2-title .logo{width:38px;height:38px;font-size:15px;border-radius:8px;}
+.hd2-title h1{font-family:serif;font-size:19px;color:#EDF3FA;flex:1;}
+.hd2-title .badge{font-size:10px;}
+.hd2-title .ver{font-size:11px;color:var(--tmu);}
+.hd2-bar{padding:8px 24px;display:flex;align-items:center;justify-content:flex-end;gap:10px;background:var(--nv9);border-bottom:1px solid var(--nv6);}
+.hd2-bar .user-pill{font-family:serif;font-size:13px;color:var(--gL);display:flex;align-items:center;gap:6px;margin-right:auto;}
+.hd2-bar .user-icon{width:24px;height:24px;border-radius:50%;background:var(--nv6);display:flex;align-items:center;justify-content:center;font-size:11px;}
+.hd2 button{font-size:12px;padding:5px 12px;border-radius:7px;cursor:pointer;}
+
+/* ===== 案3: 左にロゴ+タイトル縦積み、右にボタン ===== */
+.hd3{padding:14px 24px;display:flex;align-items:center;gap:16px;background:var(--nv8);border-bottom:1px solid var(--nv6);}
+.hd3-left{display:flex;align-items:center;gap:12px;}
+.hd3-left .logo{width:46px;height:46px;font-size:18px;border-radius:10px;}
+.hd3-left-text h1{font-family:serif;font-size:18px;color:#EDF3FA;line-height:1.2;}
+.hd3-left-text small{font-size:10px;color:var(--tmu);}
+.hd3-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.hd3-user{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--nv7);border-radius:8px;border:1px solid var(--nv5);}
+.hd3-user span{font-family:serif;font-size:14px;color:var(--gL);}
+.hd3 .btn-rec{font-size:12px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--gL);background:var(--nv7);color:var(--gL);font-weight:600;cursor:pointer;position:relative;}
+.hd3 .icon-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+
+/* ===== 案4: ゴールドラインアクセント ===== */
+.hd4{display:flex;flex-direction:column;}
+.hd4-main{padding:16px 24px;display:flex;align-items:center;gap:14px;background:linear-gradient(to right,#0F2240,#172540);}
+.hd4-main .logo{width:44px;height:44px;font-size:17px;border-radius:9px;}
+.hd4-main h1{font-family:serif;font-size:20px;color:#EDF3FA;flex:1;}
+.hd4-main .badge-outline{font-size:11px;padding:2px 10px;border-radius:10px;border:1px solid var(--gold);color:var(--gL);background:rgba(186,117,23,.15);}
+.hd4-main .ver{font-size:10px;color:var(--tmu);}
+.hd4-sub{padding:8px 24px;display:flex;align-items:center;gap:10px;background:var(--nv9);border-top:2px solid var(--gold);}
+.hd4-sub .user-name{font-family:serif;font-size:14px;color:var(--gL);flex:1;}
+.hd4 button{font-size:12px;padding:5px 12px;border-radius:7px;cursor:pointer;}
+
+/* ===== 案5: ミニマル・シンプル1行 ===== */
+.hd5{padding:12px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--nv6);}
+.hd5 .logo{width:34px;height:34px;font-size:13px;border-radius:7px;}
+.hd5 h1{font-family:serif;font-size:17px;color:#EDF3FA;}
+.hd5 .sep{color:var(--nv5);margin:0 4px;}
+.hd5 .user-name{font-family:serif;font-size:14px;color:var(--gL);}
+.hd5-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.hd5 .chip{font-size:11px;padding:4px 12px;border-radius:16px;cursor:pointer;}
+.hd5 .badge-s{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--gold);color:#fff;}
+.hd5 .ver{font-size:10px;color:var(--tmu);}
+</style>
+</head>
+<body>
+
+<!-- 案1 -->
+<div class="row">
+  <div class="row-label"><b>案1</b>　ロゴ＋タイトル大きく・右側をラウンドピル＋ボタン</div>
+  <div class="frame">
+    <div class="hd1">
+      <div class="logo" style="width:42px;height:42px;font-size:17px;">K</div>
+      <h1>クローネらぼ</h1>
+      <span class="badge">β版</span>
+      <span class="ver">v0.13</span>
+      <div class="hd1-right">
+        <span class="hd1-user">よこたさん</span>
+        <button class="btn-rec" style="position:relative;">学習記録<span class="dot"></span></button>
+        <button class="btn-sm">☀</button>
+        <button class="btn-sm">ログアウト</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案2 -->
+<div class="row">
+  <div class="row-label"><b>案2</b>　タイトルバー＋ツールバーの2段構造</div>
+  <div class="frame">
+    <div class="hd2">
+      <div class="hd2-title">
+        <div class="logo" style="width:38px;height:38px;font-size:15px;">K</div>
+        <h1>クローネらぼ</h1>
+        <span class="badge" style="font-size:10px;">β版</span>
+        <span class="ver">v0.13</span>
+      </div>
+      <div class="hd2-bar">
+        <div class="user-pill">
+          <div class="user-icon">👤</div>
+          <span style="font-family:serif;font-size:13px;color:var(--gL);">よこたさん</span>
+        </div>
+        <button style="border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;position:relative;">学習記録<span class="dot" style="border-color:var(--nv9);"></span></button>
+        <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">☀</button>
+        <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">ログアウト</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案3 -->
+<div class="row">
+  <div class="row-label"><b>案3</b>　ロゴ縦積みテキスト＋右側ユーザーカード</div>
+  <div class="frame">
+    <div class="hd3">
+      <div class="hd3-left">
+        <div class="logo" style="width:46px;height:46px;font-size:18px;">K</div>
+        <div class="hd3-left-text">
+          <h1>クローネらぼ</h1>
+          <small>β版 v0.13</small>
+        </div>
+      </div>
+      <div class="hd3-right">
+        <div class="hd3-user">
+          <span>よこたさん</span>
+        </div>
+        <button class="btn-rec" style="position:relative;">学習記録<span class="dot"></span></button>
+        <div class="icon-btn">☀</div>
+        <div class="icon-btn" style="font-size:11px;color:var(--tmu);">出る</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案4 -->
+<div class="row">
+  <div class="row-label"><b>案4</b>　グラデーション＋ゴールドライン区切り</div>
+  <div class="frame">
+    <div class="hd4">
+      <div class="hd4-main">
+        <div class="logo" style="width:44px;height:44px;font-size:17px;">K</div>
+        <h1>クローネらぼ</h1>
+        <span class="badge-outline">β版</span>
+        <span class="ver">v0.13</span>
+      </div>
+      <div class="hd4-sub">
+        <span class="user-name">👤 よこたさん</span>
+        <button style="border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;position:relative;">学習記録<span class="dot" style="border-color:var(--nv9);"></span></button>
+        <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">☀</button>
+        <button style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">ログアウト</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 案5 -->
+<div class="row">
+  <div class="row-label"><b>案5</b>　ミニマル1行・ロゴ小さく情報整理</div>
+  <div class="frame">
+    <div class="hd5">
+      <div class="logo" style="width:34px;height:34px;font-size:13px;">K</div>
+      <h1>クローネらぼ</h1>
+      <span class="badge-s">β版</span>
+      <span class="ver">v0.13</span>
+      <span class="sep">|</span>
+      <span class="user-name">よこたさん</span>
+      <div class="hd5-right">
+        <button class="chip" style="border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;position:relative;">📊 学習記録<span class="dot"></span></button>
+        <button class="chip" style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">☀</button>
+        <button class="chip" style="border:1px solid var(--nv5);background:transparent;color:var(--tmu);">ログアウト</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

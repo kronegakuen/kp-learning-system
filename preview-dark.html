@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダークモード案</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;}
+
+/* 現在 */
+.dk-current{
+  --bg:#060D1A; --card:#0F2240; --card2:#0C1B33;
+  --bdr:#2A4A80; --bdr2:#1A3260;
+  --gold:#BA7517; --gL:#EF9F27;
+  --tb:#EAF1FA; --tm:#B0C4DE; --tmu:#7A9CC0;
+}
+/* 案D ミッドナイトブルー（少し明るく） */
+.dk-d{
+  --bg:#0A1525; --card:#162340; --card2:#102030;
+  --bdr:#2E5090; --bdr2:#1E3A6E;
+  --gold:#BA7517; --gL:#EF9F27;
+  --tb:#EAF1FA; --tm:#B8CADF; --tmu:#7A9CC0;
+}
+/* 案E スレートブルー（かなり明るく） */
+.dk-e{
+  --bg:#131E30; --card:#1C2E48; --card2:#172540;
+  --bdr:#3A5A90; --bdr2:#2A4070;
+  --gold:#BA7517; --gL:#EF9F27;
+  --tb:#EDF3FA; --tm:#BCCEDE; --tmu:#82A0BF;
+}
+/* 案F インディゴ（青みが強い） */
+.dk-f{
+  --bg:#0E1830; --card:#192742; --card2:#142038;
+  --bdr:#3250A0; --bdr2:#223080;
+  --gold:#BA7517; --gL:#EF9F27;
+  --tb:#EAF0FF; --tm:#B5C5E8; --tmu:#7890CC;
+}
+
+/* 共通UI */
+.page{background:var(--bg);padding:16px;min-height:100vh;}
+.block{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+.block-title{font-size:14px;font-weight:700;color:var(--gL);border-left:3px solid var(--gold);padding-left:8px;margin-bottom:12px;}
+.field-label{font-size:12px;color:var(--tmu);display:block;margin-bottom:5px;}
+.chip-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.chip{font-size:12px;padding:4px 12px;border-radius:8px;border:1.5px solid var(--bdr);background:var(--bdr2);color:var(--tmu);cursor:pointer;}
+.chip.on{border-color:var(--gold);color:var(--gL);font-weight:600;background:var(--card2);}
+.ck{margin-right:3px;}
+.btn-train{width:100%;padding:11px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+.pm-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;background:var(--card2);border:1px solid var(--bdr2);margin-bottom:8px;}
+.pm-label{font-size:12px;color:var(--tm);}
+.pm-sub{font-size:10px;color:var(--tmu);}
+.btn-review{width:100%;padding:9px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:12px;cursor:pointer;margin-bottom:8px;}
+.hd{background:var(--card);border-bottom:1px solid var(--bdr);padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.hd-name{font-size:14px;color:var(--tb);font-weight:500;flex:1;}
+.hd-badge{position:relative;display:inline-block;}
+.hd-badge button{font-size:11px;padding:3px 10px;border-radius:6px;border:1.5px solid var(--gL);background:var(--card2);color:var(--gL);cursor:pointer;font-weight:600;}
+.hd-badge .dot{position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--gL);border-radius:50%;border:2px solid var(--bg);}
+.hd-logout{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--bdr);background:transparent;color:var(--tmu);cursor:pointer;}
+.stats{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:12px;margin-bottom:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;}
+.stat-val{font-size:22px;font-weight:700;color:var(--gL);}
+.stat-val span{font-size:11px;}
+.stat-lbl{font-size:10px;color:var(--tmu);}
+.sel{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--bdr);border-radius:8px;background:var(--card2);color:var(--tb);margin-bottom:10px;}
+.sw{position:relative;width:40px;height:22px;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;position:absolute;}
+.sw-sl{position:absolute;inset:0;background:var(--bdr2);border-radius:11px;border:1px solid var(--bdr);cursor:pointer;}
+.sw-sl:before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:var(--tmu);border-radius:50%;}
+
+.preview-wrap{display:flex;flex-wrap:wrap;gap:0;justify-content:center;}
+.preview-col{width:300px;flex-shrink:0;}
+.preview-label{font-size:11px;font-weight:700;text-align:center;padding:8px;background:#111;color:#bbb;}
+
+/* 差分説明バー */
+.diff-bar{font-size:10px;text-align:center;padding:4px 8px;margin-bottom:4px;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div style="background:#000;padding:6px 16px;display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">
+  <span style="font-size:10px;color:#888;">背景色の比較：</span>
+  <span style="font-size:10px;color:#aaa;">現在 <span style="background:#060D1A;padding:2px 10px;border-radius:3px;">&nbsp;</span> #060D1A</span>
+  <span style="font-size:10px;color:#aaa;">案D <span style="background:#0A1525;padding:2px 10px;border-radius:3px;">&nbsp;</span> #0A1525</span>
+  <span style="font-size:10px;color:#aaa;">案E <span style="background:#131E30;padding:2px 10px;border-radius:3px;">&nbsp;</span> #131E30</span>
+  <span style="font-size:10px;color:#aaa;">案F <span style="background:#0E1830;padding:2px 10px;border-radius:3px;">&nbsp;</span> #0E1830</span>
+</div>
+
+<div class="preview-wrap">
+
+  <!-- 現在 -->
+  <div class="preview-col">
+    <div class="preview-label">▼ 現在（最も暗い）</div>
+    <div class="dk-current page">
+      <div class="hd">
+        <div class="hd-name">山田 太郎</div>
+        <div class="hd-badge"><button>学習記録</button><span class="dot"></span></div>
+        <button class="hd-logout">☀</button>
+        <button class="hd-logout">ログアウト</button>
+      </div>
+      <div class="stats">
+        <div><div class="stat-val">5<span>日</span></div><div class="stat-lbl">連続学習</div></div>
+        <div><div class="stat-val">93<span>問</span></div><div class="stat-lbl">累計問題</div></div>
+        <div><div class="stat-val">61<span>問</span></div><div class="stat-lbl">累計正解</div></div>
+        <div><div class="stat-val">97<span>%</span></div><div class="stat-lbl">正答率</div></div>
+      </div>
+      <div class="block">
+        <div class="block-title">共通設定</div>
+        <span class="field-label">テキスト</span>
+        <select class="sel"><option>小２わくわくパワードリル</option></select>
+      </div>
+      <div class="block">
+        <div class="block-title">トレーニング設定</div>
+        <span class="field-label">出題数</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>10問</button>
+          <button class="chip">20問</button><button class="chip">30問</button>
+        </div>
+        <span class="field-label">モード</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>じぶんで</button>
+          <button class="chip">おまかせ</button>
+        </div>
+        <div class="pm-row">
+          <div><div class="pm-label">📝 れんしゅうモード</div><div class="pm-sub">記録に反映されません</div></div>
+          <label class="sw"><input type="checkbox"><span class="sw-sl"></span></label>
+        </div>
+        <button class="btn-review">📋 要復習リスト</button>
+        <button class="btn-train">▶ トレーニング開始</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 案D -->
+  <div class="preview-col">
+    <div class="preview-label">▼ 案D（ミッドナイトブルー）</div>
+    <div class="dk-d page">
+      <div class="hd">
+        <div class="hd-name">山田 太郎</div>
+        <div class="hd-badge"><button>学習記録</button><span class="dot"></span></div>
+        <button class="hd-logout">☀</button>
+        <button class="hd-logout">ログアウト</button>
+      </div>
+      <div class="stats">
+        <div><div class="stat-val">5<span>日</span></div><div class="stat-lbl">連続学習</div></div>
+        <div><div class="stat-val">93<span>問</span></div><div class="stat-lbl">累計問題</div></div>
+        <div><div class="stat-val">61<span>問</span></div><div class="stat-lbl">累計正解</div></div>
+        <div><div class="stat-val">97<span>%</span></div><div class="stat-lbl">正答率</div></div>
+      </div>
+      <div class="block">
+        <div class="block-title">共通設定</div>
+        <span class="field-label">テキスト</span>
+        <select class="sel"><option>小２わくわくパワードリル</option></select>
+      </div>
+      <div class="block">
+        <div class="block-title">トレーニング設定</div>
+        <span class="field-label">出題数</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>10問</button>
+          <button class="chip">20問</button><button class="chip">30問</button>
+        </div>
+        <span class="field-label">モード</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>じぶんで</button>
+          <button class="chip">おまかせ</button>
+        </div>
+        <div class="pm-row">
+          <div><div class="pm-label">📝 れんしゅうモード</div><div class="pm-sub">記録に反映されません</div></div>
+          <label class="sw"><input type="checkbox"><span class="sw-sl"></span></label>
+        </div>
+        <button class="btn-review">📋 要復習リスト</button>
+        <button class="btn-train">▶ トレーニング開始</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 案E -->
+  <div class="preview-col">
+    <div class="preview-label">▼ 案E（スレートブルー）</div>
+    <div class="dk-e page">
+      <div class="hd">
+        <div class="hd-name">山田 太郎</div>
+        <div class="hd-badge"><button>学習記録</button><span class="dot"></span></div>
+        <button class="hd-logout">☀</button>
+        <button class="hd-logout">ログアウト</button>
+      </div>
+      <div class="stats">
+        <div><div class="stat-val">5<span>日</span></div><div class="stat-lbl">連続学習</div></div>
+        <div><div class="stat-val">93<span>問</span></div><div class="stat-lbl">累計問題</div></div>
+        <div><div class="stat-val">61<span>問</span></div><div class="stat-lbl">累計正解</div></div>
+        <div><div class="stat-val">97<span>%</span></div><div class="stat-lbl">正答率</div></div>
+      </div>
+      <div class="block">
+        <div class="block-title">共通設定</div>
+        <span class="field-label">テキスト</span>
+        <select class="sel"><option>小２わくわくパワードリル</option></select>
+      </div>
+      <div class="block">
+        <div class="block-title">トレーニング設定</div>
+        <span class="field-label">出題数</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>10問</button>
+          <button class="chip">20問</button><button class="chip">30問</button>
+        </div>
+        <span class="field-label">モード</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>じぶんで</button>
+          <button class="chip">おまかせ</button>
+        </div>
+        <div class="pm-row">
+          <div><div class="pm-label">📝 れんしゅうモード</div><div class="pm-sub">記録に反映されません</div></div>
+          <label class="sw"><input type="checkbox"><span class="sw-sl"></span></label>
+        </div>
+        <button class="btn-review">📋 要復習リスト</button>
+        <button class="btn-train">▶ トレーニング開始</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 案F -->
+  <div class="preview-col">
+    <div class="preview-label">▼ 案F（インディゴ）</div>
+    <div class="dk-f page">
+      <div class="hd">
+        <div class="hd-name">山田 太郎</div>
+        <div class="hd-badge"><button>学習記録</button><span class="dot"></span></div>
+        <button class="hd-logout">☀</button>
+        <button class="hd-logout">ログアウト</button>
+      </div>
+      <div class="stats">
+        <div><div class="stat-val">5<span>日</span></div><div class="stat-lbl">連続学習</div></div>
+        <div><div class="stat-val">93<span>問</span></div><div class="stat-lbl">累計問題</div></div>
+        <div><div class="stat-val">61<span>問</span></div><div class="stat-lbl">累計正解</div></div>
+        <div><div class="stat-val">97<span>%</span></div><div class="stat-lbl">正答率</div></div>
+      </div>
+      <div class="block">
+        <div class="block-title">共通設定</div>
+        <span class="field-label">テキスト</span>
+        <select class="sel"><option>小２わくわくパワードリル</option></select>
+      </div>
+      <div class="block">
+        <div class="block-title">トレーニング設定</div>
+        <span class="field-label">出題数</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>10問</button>
+          <button class="chip">20問</button><button class="chip">30問</button>
+        </div>
+        <span class="field-label">モード</span>
+        <div class="chip-group">
+          <button class="chip on"><span class="ck">✓</span>じぶんで</button>
+          <button class="chip">おまかせ</button>
+        </div>
+        <div class="pm-row">
+          <div><div class="pm-label">📝 れんしゅうモード</div><div class="pm-sub">記録に反映されません</div></div>
+          <label class="sw"><input type="checkbox"><span class="sw-sl"></span></label>
+        </div>
+        <button class="btn-review">📋 要復習リスト</button>
+        <button class="btn-train">▶ トレーニング開始</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

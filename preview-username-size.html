@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログイン名フォントサイズ比較（PC）</title>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Opti&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#131E30;padding:32px 16px;font-family:'Hiragino Sans','Meiryo',sans-serif;color:#eee;display:flex;flex-direction:column;gap:24px;align-items:center;}
+:root{--nv6:#2A4070;--nv5:#3A5A90;--gold:#BA7517;--gL:#EF9F27;--tb:#EDF3FA;--tmu:#82A0BF;}
+.row{width:680px;display:flex;flex-direction:column;gap:6px;}
+.lbl{font-size:11px;color:#666;border-bottom:1px solid #1a2a40;padding-bottom:5px;}
+.lbl b{font-size:12px;color:#bbb;}
+.toolbar{border-top:2px solid var(--gold);padding:9px 4px;display:flex;align-items:center;gap:10px;}
+.user{display:flex;align-items:center;gap:7px;margin-right:auto;}
+.user-ic{width:26px;height:26px;border-radius:50%;background:var(--nv6);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.btn-gold{font-size:12px;padding:5px 13px;border-radius:7px;border:1.5px solid var(--gL);background:transparent;color:var(--gL);font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-sm{font-size:12px;padding:5px 13px;border-radius:7px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;white-space:nowrap;}
+.dot-wrap{position:relative;display:inline-block;}
+.dot{position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:var(--gL);border-radius:50%;border:1.5px solid #131E30;}
+</style>
+</head>
+<body>
+
+<!-- 現在: 14px -->
+<div class="row">
+  <div class="lbl"><b>現在　14px</b>（比較用）</div>
+  <div class="toolbar">
+    <div class="user">
+      <div class="user-ic">👤</div>
+      <span style="font-family:'Kaisei Opti',serif;font-size:14px;color:var(--gL);">よこたさん</span>
+    </div>
+    <div class="dot-wrap"><button class="btn-gold">学習記録</button><span class="dot"></span></div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案A: 16px -->
+<div class="row">
+  <div class="lbl"><b>案A　16px</b></div>
+  <div class="toolbar">
+    <div class="user">
+      <div class="user-ic">👤</div>
+      <span style="font-family:'Kaisei Opti',serif;font-size:16px;color:var(--gL);">よこたさん</span>
+    </div>
+    <div class="dot-wrap"><button class="btn-gold">学習記録</button><span class="dot"></span></div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案B: 18px -->
+<div class="row">
+  <div class="lbl"><b>案B　18px</b></div>
+  <div class="toolbar">
+    <div class="user">
+      <div class="user-ic" style="width:30px;height:30px;font-size:14px;">👤</div>
+      <span style="font-family:'Kaisei Opti',serif;font-size:18px;color:var(--gL);">よこたさん</span>
+    </div>
+    <div class="dot-wrap"><button class="btn-gold">学習記録</button><span class="dot"></span></div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案C: 20px -->
+<div class="row">
+  <div class="lbl"><b>案C　20px</b></div>
+  <div class="toolbar">
+    <div class="user">
+      <div class="user-ic" style="width:32px;height:32px;font-size:15px;">👤</div>
+      <span style="font-family:'Kaisei Opti',serif;font-size:20px;color:var(--gL);">よこたさん</span>
+    </div>
+    <div class="dot-wrap"><button class="btn-gold">学習記録</button><span class="dot"></span></div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+<!-- 案D: 22px -->
+<div class="row">
+  <div class="lbl"><b>案D　22px</b></div>
+  <div class="toolbar">
+    <div class="user">
+      <div class="user-ic" style="width:34px;height:34px;font-size:16px;">👤</div>
+      <span style="font-family:'Kaisei Opti',serif;font-size:22px;color:var(--gL);">よこたさん</span>
+    </div>
+    <div class="dot-wrap"><button class="btn-gold">学習記録</button><span class="dot"></span></div>
+    <button class="btn-sm">🌙</button>
+    <button class="btn-sm">ログアウト</button>
+  </div>
+</div>
+
+</body>
+</html>
