@@ -1659,11 +1659,12 @@ function renderStampCard(stamps, grade, tbLabel) {
   const nextTitle = set[nextIdx];
 
   // ロードマップ
-  var roadmap = '<div style="display:flex;align-items:center;gap:2px;margin-bottom:14px;">';
+  var roadmap = '<div style="display:flex;align-items:flex-start;gap:2px;margin-bottom:14px;">';
   set.forEach(function(t, i) {
     if(i > 0) {
       var lineColor = i <= curIdx ? 'linear-gradient(90deg,var(--gold),var(--gL))' : 'var(--nv5)';
-      roadmap += '<div style="flex:1;height:2px;background:'+lineColor+';min-width:6px;"></div>';
+      var lineTop = (i-1) === curIdx ? 17 : 14;
+      roadmap += '<div style="flex:1;height:2px;background:'+lineColor+';min-width:6px;margin-top:'+lineTop+'px;"></div>';
     }
     var isNow = i === curIdx;
     var isDone = i < curIdx;
