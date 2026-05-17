@@ -25,6 +25,10 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:var(--nv9);color
 .hd-user-ic{width:26px;height:26px;border-radius:50%;background:var(--nv6);display:flex;align-items:center;justify-content:center;font-size:12px;}
 @media(max-width:600px){.hd-right{justify-content:center;gap:6px;}}[data-autologin="1"] #sec-login{display:none!important;}
 .badge{font-size:12px;padding:3px 10px;border-radius:8px;background:var(--gold);color:#fff;}
+.btn-review-card{width:100%;padding:12px 14px;background:var(--nv7);border:1px solid rgba(240,149,149,.35);border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;margin-top:8px;}
+.btn-review-icon{width:36px;height:36px;border-radius:8px;background:rgba(240,149,149,.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.btn-review-cnt{margin-left:auto;font-size:20px;font-weight:700;color:#F09595;flex-shrink:0;font-family:'BIZ UDPGothic',sans-serif;}
+.btn-review-cnt span{font-size:11px;font-weight:400;color:var(--tmu);}
 .block{background:var(--nv7);border:1px solid var(--nv5);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
 .block-title{font-size:16px;font-weight:700;color:var(--gL);letter-spacing:.08em;margin-bottom:.875rem;border-left:3px solid var(--gold);padding-left:8px;font-family:'Kaisei Opti',serif;}
 .field{margin-bottom:.875rem;}
@@ -279,7 +283,14 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <button class="btn-action btn-train" id="btn-start" onclick="startTraining()" disabled>
       ▶ トレーニング開始
     </button>
-    <button onclick="showReviewSection()" style="width:100%;padding:10px;background:transparent;border:1.5px solid #F09595;border-radius:8px;color:#F09595;font-size:13px;cursor:pointer;margin-top:8px;" id="btn-review">📋 要復習リスト</button>
+    <button onclick="showReviewSection()" class="btn-review-card" id="btn-review">
+      <div class="btn-review-icon">📋</div>
+      <div>
+        <div style="font-size:13px;color:#F09595;font-weight:600;line-height:1.3;">要復習リスト</div>
+        <div style="font-size:11px;color:var(--tmu);margin-top:2px;">まだ克服できていない問題</div>
+      </div>
+      <div class="btn-review-cnt" id="review-count">-<span>問</span></div>
+    </button>
   </div>
 
   <div class="block">
@@ -2190,6 +2201,10 @@ async function loadUserStats() {
     if(scStamp && window._stampData) {
       scStamp.innerHTML = renderStampCard(window._stampData.stamps, currentUser.grade||'', TEXTBOOKS[curSheet] ? TEXTBOOKS[curSheet].label : '');
     }
+    // 要復習件数更新
+    const reviewItems = await loadReviewItems();
+    const rcEl = document.getElementById('review-count');
+    if(rcEl) rcEl.innerHTML = reviewItems.length + '<span>問</span>';
   } catch(e) { console.log('stats error', e); }
 }
 
