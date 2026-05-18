@@ -3601,21 +3601,19 @@ function jukuPrint(mode){
   var showAns=(mode==='qa');
   var lvName=jukuLv==='kiso'?'基礎レベル':'応用レベル';
   var perPage=20;
+  // \dfrac → \tfrac for compact print (display fraction → text fraction)
+  function pt(s){return s.replace(/\\dfrac/g,'\\tfrac');}
   var pages='';
   for(var pg=0;pg<Math.ceil(_jukuProblems.length/perPage);pg++){
     var slice=_jukuProblems.slice(pg*perPage,(pg+1)*perPage);
     var cards='';
     slice.forEach(function(p,i){
       var num=pg*perPage+i+1;
-      cards+='<div class="card">';
-      cards+='<div><div class="num">（'+num+'）</div>';
-      cards+='<div class="q">'+p.q+'</div></div>';
-      if(showAns){
-        cards+='<div class="ans">答え：'+p.a+'</div>';
-      } else {
-        cards+='<div class="blank"></div>';
-      }
-      cards+='</div>';
+      cards+='<div class="card">'
+        +'<div><div class="num">（'+num+'）</div>'
+        +'<div class="q">'+pt(p.q)+'</div></div>'
+        +(showAns?'<div class="ans">答え：'+pt(p.a)+'</div>':'<div class="blank"></div>')
+        +'</div>';
     });
     pages+='<div class="page"><div class="pg-title">中学受験 計算ドリル ― '+lvName+'</div>'
       +'<div class="grid">'+cards+'</div></div>';
@@ -3628,16 +3626,16 @@ function jukuPrint(mode){
     +'<style>'
     +'*{box-sizing:border-box;margin:0;padding:0;}'
     +'body{font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;background:#fff;color:#111;}'
-    +'@page{size:A4 portrait;margin:12mm;}'
-    +'.page{width:186mm;padding:0;page-break-after:always;break-after:page;}'
+    +'@page{size:A4 portrait;margin:8mm;}'
+    +'.page{width:194mm;page-break-after:always;break-after:page;}'
     +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
-    +'.pg-title{font-size:10pt;font-weight:700;color:#333;border-bottom:0.5pt solid #aaa;padding-bottom:3mm;margin-bottom:4mm;letter-spacing:.05em;}'
-    +'.grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm 6mm;}'
-    +'.card{border:0.5pt solid #ccc;border-radius:3pt;padding:5pt 7pt;min-height:30mm;display:flex;flex-direction:column;justify-content:space-between;}'
-    +'.num{font-size:8pt;color:#aaa;margin-bottom:2pt;}'
-    +'.q{font-size:12pt;line-height:2;}'
-    +'.ans{font-size:9pt;color:#444;border-top:0.5pt dashed #ccc;padding-top:3pt;margin-top:3pt;}'
-    +'.blank{height:10mm;border-bottom:0.5pt solid #aaa;margin-top:3pt;}'
+    +'.pg-title{font-size:8pt;font-weight:700;color:#444;border-bottom:0.5pt solid #bbb;padding-bottom:1.5mm;margin-bottom:2mm;}'
+    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,1fr);gap:1.5mm 4mm;height:262mm;}'
+    +'.card{border:0.5pt solid #ccc;border-radius:2pt;padding:2pt 5pt;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;}'
+    +'.num{font-size:7pt;color:#bbb;line-height:1.3;}'
+    +'.q{font-size:10pt;line-height:1.5;}'
+    +'.ans{font-size:8pt;color:#444;border-top:0.5pt dashed #ccc;padding-top:1.5pt;margin-top:1.5pt;}'
+    +'.blank{flex:1;border-bottom:0.5pt solid #bbb;margin-top:2pt;min-height:6mm;}'
     +'@media print{body{margin:0;}}'
     +'</style></head><body>'+pages
     +'<script>MathJax.startup.promise.then(function(){'
