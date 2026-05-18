@@ -414,7 +414,6 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <button class="end-btn" onclick="goSetup()">← 戻る</button>
   </div>
   <div class="block">
-    <div class="block-title">ことばの力</div>
     <div class="field">
       <span class="field-label">テキスト</span>
       <select id="sel-sheet" onchange="pickSheet().then(function(){var k=TEXTBOOKS[document.getElementById('sel-sheet').value];if(k){var isK=k.subject==='kanji';var isW=k.label.includes('わくわく');document.querySelector('[data-v=normal]').innerHTML='<span class=ck>✓</span>'+(isK?'書き練習（読み→漢字）':isW?'よみれんしゅう':'言葉→意味');document.querySelector('[data-v=reverse]').innerHTML='<span class=ck>✓</span>'+(isK?'読み練習（漢字→読み）':isW?'かきれんしゅう':'意味→言葉');}})">
