@@ -173,12 +173,25 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   body.print-hyaku #sec-hyaku > .block { display: none !important; }
   body.print-hyaku #hyaku-preview { display: none !important; }
   body.print-hyaku #hyaku-print-area { display: block !important; }
-  body.print-hyaku .hyaku-grid { border-color: #999 !important; }
-  body.print-hyaku .hyaku-cell { background: white !important; color: #111 !important; border-color: #999 !important; }
+  body.print-hyaku .hyaku-section { margin-bottom: 7mm !important; page-break-inside: avoid !important; }
+  body.print-hyaku .hyaku-date { color: #555 !important; font-size: 9pt !important; margin-bottom: 2mm !important; }
+  body.print-hyaku .hyaku-grid {
+    grid-template-columns: repeat(11, 16mm) !important;
+    width: fit-content !important;
+    border-color: #888 !important;
+  }
+  body.print-hyaku .hyaku-cell {
+    width: 16mm !important;
+    height: 11.5mm !important;
+    font-size: 13pt !important;
+    background: white !important;
+    color: #111 !important;
+    border-color: #888 !important;
+  }
   body.print-hyaku .hyaku-cell.corner,
-  body.print-hyaku .hyaku-cell.head { background: #f0f0f0 !important; color: #111 !important; }
-  body.print-hyaku .hyaku-cell.ans.filled { color: #185FA5 !important; }
-  body.print-hyaku .hyaku-date { color: #555 !important; }
+  body.print-hyaku .hyaku-cell.head { background: #f0f0f0 !important; color: #111 !important; font-weight: 700 !important; }
+  body.print-hyaku .hyaku-cell.ans { color: transparent !important; }
+  body.print-hyaku .hyaku-cell.ans.filled { color: #185FA5 !important; font-weight: 700 !important; }
 }
 
 /* ── 百ます計算（画面） ── */
