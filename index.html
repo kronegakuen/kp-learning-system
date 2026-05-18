@@ -391,8 +391,30 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <button class="math-banner-btn">開始する</button>
   </div>
 
-    <div class="block">
-    <div class="block-title">共通設定</div>
+  <!-- 暗記チェックバナー -->
+  <div id="ankicheck-banner" class="math-banner" onclick="showSec('sec-ankicheck')">
+    <div class="math-banner-left">
+      <div class="math-banner-title">📚 暗記チェック</div>
+      <div class="math-banner-sub">テキスト問題の反復学習・PDF出力</div>
+      <div class="math-banner-chips">
+        <span class="chip-n">じぶんでモード</span>
+        <span class="chip-e">おまかせモード</span>
+        <span class="chip-h">📄 PDF</span>
+      </div>
+    </div>
+    <button class="math-banner-btn">開始する</button>
+  </div>
+
+</div>
+
+<!-- 暗記チェック設定 -->
+<div class="sec" id="sec-ankicheck">
+  <div class="hd">
+    <h1 style="font-size:17px;">📚 暗記チェック</h1>
+    <button class="end-btn" onclick="goSetup()">← 戻る</button>
+  </div>
+  <div class="block">
+    <div class="block-title">暗記チェック</div>
     <div class="field">
       <span class="field-label">テキスト</span>
       <select id="sel-sheet" onchange="pickSheet().then(function(){var k=TEXTBOOKS[document.getElementById('sel-sheet').value];if(k){var isK=k.subject==='kanji';var isW=k.label.includes('わくわく');document.querySelector('[data-v=normal]').innerHTML='<span class=ck>✓</span>'+(isK?'書き練習（読み→漢字）':isW?'よみれんしゅう':'言葉→意味');document.querySelector('[data-v=reverse]').innerHTML='<span class=ck>✓</span>'+(isK?'読み練習（漢字→読み）':isW?'かきれんしゅう':'意味→言葉');}})">
@@ -413,10 +435,6 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
         <span id="rng-hint" style="font-size:12px;color:#aaa"></span>
       </div>
     </div>
-  </div>
-
-  <div class="block">
-    <div class="block-title">トレーニング設定</div>
     <div class="field">
       <span class="field-label">出題方向</span>
       <div class="chip-group" id="g-dir">
@@ -477,10 +495,6 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
       </div>
       <div class="btn-review-cnt" id="review-count">-<span>問</span></div>
     </button>
-  </div>
-
-  <div class="block">
-    <div class="block-title">PDF設定</div>
     <div class="field">
       <span class="field-label">出題数</span>
       <div class="chip-group" id="g-pdf-count">
@@ -625,7 +639,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
       <div id="badge-list" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
     </div>
     <div class="sub" id="end-msg"></div>
-    <button class="btn-action btn-back" onclick="goSetup()">← 設定に戻る</button>
+    <button class="btn-action btn-back" onclick="showSec('sec-ankicheck')">← 設定に戻る</button>
   </div>
 </div>
 
@@ -947,7 +961,7 @@ function toggleGenre(el, g){
 function showSec(id){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
-  if(id==='sec-math'||id==='sec-hyaku'||id==='sec-juku'){sessionStorage.setItem('kp_sec',id);}
+  if(id==='sec-math'||id==='sec-hyaku'||id==='sec-juku'||id==='sec-ankicheck'){sessionStorage.setItem('kp_sec',id);}
   else{sessionStorage.removeItem('kp_sec');}
 }
 function goSetup(){
