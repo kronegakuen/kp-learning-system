@@ -399,6 +399,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     </div>
     <button class="math-banner-btn">開始する</button>
   </div>
+  <div id="home-hyaku-stamp-card" style="margin-bottom:1rem;"></div>
 
   <!-- 中学受験 計算ドリルバナー -->
   <div id="juku-banner" class="math-banner" onclick="showJuku()" style="display:none;">
@@ -426,6 +427,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     </div>
     <button class="math-banner-btn">開始する</button>
   </div>
+  <div id="home-math-stamp-card" style="margin-bottom:1rem;"></div>
 
 </div>
 
@@ -2245,6 +2247,8 @@ function renderHyakuStampCard(){
 function updateHyakuStamp(){
   var el=document.getElementById('hyaku-stamp-card');
   if(el)el.innerHTML=renderHyakuStampCard();
+  var hel=document.getElementById('home-hyaku-stamp-card');
+  if(hel)hel.innerHTML=renderHyakuStampCard();
 }
 // ============================================================
 // 計算ドリル 学年別スタンプカード
@@ -2289,6 +2293,8 @@ function updateMathStamp(){
   localStorage.setItem('kp_math_stamps',JSON.stringify(data));
   var el=document.getElementById('math-stamp-card');
   if(el) el.innerHTML=renderMathStampCard();
+  var hel=document.getElementById('home-math-stamp-card');
+  if(hel) hel.innerHTML=renderMathStampCard();
 }
 async function loadStampData(tbKey) {
   if(!currentUser || !tbKey) return {stamps:0, totalCorrect:0};
@@ -2855,6 +2861,12 @@ async function loadUserStats() {
     if(scStamp && window._stampData) {
       scStamp.innerHTML = renderStampCard(window._stampData.stamps, currentUser.grade||'', TEXTBOOKS[curSheet] ? TEXTBOOKS[curSheet].label : '');
     }
+    // ホーム画面のスタンプカード更新
+    var hmathEl=document.getElementById('home-math-stamp-card');
+    if(hmathEl)hmathEl.innerHTML=renderMathStampCard();
+    await loadHyakuData();
+    var hhyakuEl=document.getElementById('home-hyaku-stamp-card');
+    if(hhyakuEl)hhyakuEl.innerHTML=renderHyakuStampCard();
     // 要復習件数更新
     const reviewItems = await loadReviewItems();
     const rcEl = document.getElementById('review-count');
@@ -3032,6 +3044,12 @@ function loginAsGuest(){
   document.getElementById('ankicheck-banner').style.display='';
   _startGuestTimer();
   window.loadManageSheet();
+  var hmathEl=document.getElementById('home-math-stamp-card');
+  if(hmathEl)hmathEl.innerHTML=renderMathStampCard();
+  loadHyakuData().then(function(){
+    var hhyakuEl=document.getElementById('home-hyaku-stamp-card');
+    if(hhyakuEl)hhyakuEl.innerHTML=renderHyakuStampCard();
+  });
 }
 
 function openAnkicheck(){
@@ -3099,8 +3117,8 @@ function _loadMathJax() {
   return _mathJaxReady;
 }
 
-function showMath() { showSec('sec-math'); var el=document.getElementById('math-stamp-card'); if(el) el.innerHTML=renderMathStampCard(); }
-async function showHyaku() { showSec('sec-hyaku'); await loadHyakuData(); var el=document.getElementById('hyaku-stamp-card'); if(el) el.innerHTML=renderHyakuStampCard(); }
+function showMath() { showSec('sec-math'); var el=document.getElementById('math-stamp-card'); if(el) el.innerHTML=renderMathStampCard(); var hel=document.getElementById('home-math-stamp-card'); if(hel) hel.innerHTML=renderMathStampCard(); }
+async function showHyaku() { showSec('sec-hyaku'); await loadHyakuData(); var el=document.getElementById('hyaku-stamp-card'); if(el) el.innerHTML=renderHyakuStampCard(); var hel=document.getElementById('home-hyaku-stamp-card'); if(hel) hel.innerHTML=renderHyakuStampCard(); }
 
 async function toggleMath(userId, currentVal) {
   var newVal = !currentVal;
