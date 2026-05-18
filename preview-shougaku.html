@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小学生 計算ドリル サンプル</title>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},startup:{typeset:false}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:#f0f2f5;color:#222;padding:20px 16px;}
+.hd{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.hd h1{font-size:17px;font-weight:700;}
+.block{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:14px;margin-bottom:12px;}
+.grade-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.gb{padding:5px 12px;border-radius:7px;border:1.5px solid #ccc;background:transparent;color:#888;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;}
+.gb.active{border-color:#4a7cdc;background:rgba(74,124,220,.12);color:#4a7cdc;}
+.lv-row{display:flex;gap:6px;margin-bottom:12px;}
+.lb{flex:1;padding:6px;border-radius:7px;border:1.5px solid #ccc;background:transparent;color:#999;cursor:pointer;font-size:12px;font-weight:600;}
+.lb.active[data-lv="easy"]{border-color:#7ACC8A;background:rgba(120,200,140,.1);color:#7ACC8A;}
+.lb.active[data-lv="normal"]{border-color:#f0c040;background:rgba(240,192,64,.1);color:#c89a00;}
+.lb.active[data-lv="hard"]{border-color:#e07070;background:rgba(220,100,100,.1);color:#c0392b;}
+.ctrl-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+.ctrl-row>div{flex:1;min-width:140px;}
+.lbl{font-size:11px;color:#888;margin-bottom:4px;}
+select{width:100%;background:#f8f8f8;border:1px solid #ddd;border-radius:7px;color:#333;padding:7px 10px;font-size:13px;outline:none;}
+.cnt-btns{display:flex;gap:6px;}
+.cnt-btn{padding:5px 14px;border-radius:7px;border:1.5px solid #ccc;background:transparent;color:#888;font-size:12px;cursor:pointer;font-weight:600;}
+.cnt-btn.on{border-color:#4a7cdc;background:rgba(74,124,220,.1);color:#4a7cdc;}
+.gen-btn{padding:8px 20px;border-radius:8px;border:1.5px solid #4a7cdc;background:transparent;color:#4a7cdc;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.gen-btn:hover{background:rgba(74,124,220,.08);}
+.problems{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#ddd;border:1px solid #ddd;border-radius:12px;overflow:hidden;margin-top:12px;}
+.pcard{background:#fff;padding:12px 14px 10px;min-height:72px;display:flex;flex-direction:column;justify-content:space-between;}
+.pnum{font-size:11px;color:#aaa;margin-bottom:4px;}
+.pq{font-size:17px;line-height:1.9;}
+.ptag{font-size:10px;color:#fff;border-radius:10px;padding:2px 8px;display:inline-block;margin-top:5px;}
+.ptag.easy{background:#7ACC8A;} .ptag.normal{background:#f0c040;color:#555;} .ptag.hard{background:#e07070;} .ptag.rev{background:#e8963a;}
+.pans{font-size:11px;color:#888;margin-top:4px;border-top:1px dashed #eee;padding-top:4px;}
+.empty{color:#aaa;font-size:13px;text-align:center;padding:24px;grid-column:1/-1;}
+</style>
+</head>
+<body>
+
+<div class="hd"><h1>🎒 小学生 計算ドリル</h1></div>
+
+<div class="block">
+  <div class="grade-tabs" id="grade-tabs">
+    <button class="gb" id="gb-all" onclick="toggleAll()">全学年</button>
+    <button class="gb active" data-g="1" onclick="toggleGrade('1',this)">小1</button>
+    <button class="gb active" data-g="2" onclick="toggleGrade('2',this)">小2</button>
+    <button class="gb active" data-g="3" onclick="toggleGrade('3',this)">小3</button>
+    <button class="gb active" data-g="4" onclick="toggleGrade('4',this)">小4</button>
+    <button class="gb active" data-g="5" onclick="toggleGrade('5',this)">小5</button>
+    <button class="gb active" data-g="6" onclick="toggleGrade('6',this)">小6</button>
+  </div>
+  <div class="lv-row">
+    <button class="lb active" data-lv="easy" onclick="setLv('easy',this)">⭐ やさしい</button>
+    <button class="lb" data-lv="normal" onclick="setLv('normal',this)">⭐⭐ ふつう</button>
+    <button class="lb" data-lv="hard" onclick="setLv('hard',this)">⭐⭐⭐ むずかしい</button>
+  </div>
+  <div class="ctrl-row">
+    <div><div class="lbl">単元</div><select id="unit-sel"></select></div>
+    <div>
+      <div class="lbl">問題数</div>
+      <div class="cnt-btns">
+        <button class="cnt-btn on" onclick="setCnt(20,this)">20問</button>
+        <button class="cnt-btn" onclick="setCnt(40,this)">40問</button>
+        <button class="cnt-btn" onclick="setCnt(60,this)">60問</button>
+      </div>
+    </div>
+    <button class="gen-btn" onclick="generate()">生成する</button>
+  </div>
+</div>
+
+<div id="problem-area"></div>
+
+<script>
+var ALL_GRADES=['1','2','3','4','5','6'];
+var selectedGrades=new Set(ALL_GRADES);
+var lv='easy', cnt=20;
+
+var UNITS={
+  all:[{key:'all_rand',label:'ランダム（全学年）'}],
+  '1':[{key:'g1_rand',label:'ランダム（1年全体）'},{key:'add1',label:'たし算（1桁）'},{key:'sub1',label:'ひき算（1桁）'},{key:'add1c',label:'たし算（繰り上がり）'},{key:'sub1b',label:'ひき算（繰り下がり）'}],
+  '2':[{key:'g2_rand',label:'ランダム（2年全体）'},{key:'add2',label:'2桁のたし算'},{key:'sub2',label:'2桁のひき算'},{key:'kuku',label:'かけ算九九'},{key:'box_add2',label:'□を求める（たし算・ひき算）'}],
+  '3':[{key:'g3_rand',label:'ランダム（3年全体）'},{key:'add3',label:'3桁のたし算'},{key:'sub3',label:'3桁のひき算'},{key:'mul2x1',label:'かけ算（2桁×1桁）'},{key:'div_kuku',label:'わり算（九九の範囲）'}],
+  '4':[{key:'g4_rand',label:'ランダム（4年全体）'},{key:'mul2x2',label:'かけ算（2桁×2桁）'},{key:'mul3x2',label:'かけ算（3桁×2桁）'},{key:'div_rem',label:'余りのあるわり算'},{key:'dec_add',label:'小数のたし算・ひき算'},{key:'box_int',label:'□を求める（整数）'}],
+  '5':[{key:'g5_rand',label:'ランダム（5年全体）'},{key:'dec_mul',label:'小数のかけ算'},{key:'dec_div',label:'小数のわり算'},{key:'frac_add',label:'分数のたし算'},{key:'frac_sub',label:'分数のひき算'},{key:'box_frac5',label:'□を求める（分数）'}],
+  '6':[{key:'g6_rand',label:'ランダム（6年全体）'},{key:'frac_mul',label:'分数のかけ算'},{key:'frac_div',label:'分数のわり算'},{key:'dec_frac',label:'小数・分数 混合'},{key:'box_frac6',label:'□を求める（分数の逆算）'}]
+};
+
+var RAND_POOLS={
+  '1':['add1','sub1','add1c','sub1b'],
+  '2':['add2','sub2','kuku','box_add2'],
+  '3':['add3','sub3','mul2x1','div_kuku'],
+  '4':['mul2x2','div_rem','dec_add','box_int'],
+  '5':['dec_mul','dec_div','frac_add','frac_sub','box_frac5'],
+  '6':['frac_mul','frac_div','dec_frac','box_frac6']
+};
+
+// ─── UI ───────────────────────────────────────────
+function toggleGrade(g, btn){
+  if(selectedGrades.has(g)){
+    if(selectedGrades.size>1) selectedGrades.delete(g);
+  } else {
+    selectedGrades.add(g);
+  }
+  updateGradeUI();
+  rebuildUnits();
+}
+function toggleAll(){
+  if(selectedGrades.size===ALL_GRADES.length){
+    // already all → keep all (can't go to 0)
+  } else {
+    ALL_GRADES.forEach(function(g){selectedGrades.add(g);});
+  }
+  updateGradeUI();
+  rebuildUnits();
+}
+function updateGradeUI(){
+  var allSelected=selectedGrades.size===ALL_GRADES.length;
+  document.getElementById('gb-all').classList.toggle('active', allSelected);
+  document.querySelectorAll('[data-g]').forEach(function(b){
+    b.classList.toggle('active', selectedGrades.has(b.dataset.g));
+  });
+}
+function setLv(l,btn){lv=l;document.querySelectorAll('.lb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setCnt(n,btn){cnt=n;document.querySelectorAll('.cnt-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+function rebuildUnits(){
+  var sel=document.getElementById('unit-sel');
+  sel.innerHTML='';
+  var grades=[...selectedGrades].sort();
+  var items;
+  if(grades.length===ALL_GRADES.length){
+    items=[{key:'all_rand',label:'ランダム（全学年）'}];
+  } else if(grades.length===1){
+    items=UNITS[grades[0]]||UNITS.all;
+  } else {
+    items=[{key:'multi_rand',label:'ランダム（選択学年）'}];
+  }
+  items.forEach(function(u){var o=document.createElement('option');o.value=u.key;o.textContent=u.label;sel.appendChild(o);});
+}
+
+// ─── 乱数 ─────────────────────────────────────────
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(arr){return arr[rnd(0,arr.length-1)];}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a||1;}
+function frac(n,d){if(d<0){n=-n;d=-d;}var g=gcd(Math.abs(n),d);return{n:n/g,d:d/g};}
+function fracTex(f){if(f.d===1)return''+f.n;return'\\dfrac{'+f.n+'}{'+f.d+'}';}
+function propFrac(maxD){maxD=maxD||9;var d=rnd(2,maxD);var n=rnd(1,d-1);return frac(n,d);}
+function M(s){return '\\('+s+'\\)';}
+
+// ─── 難易度パラメータ ──────────────────────────────
+var EASY={d1:[1,5],d2:[10,50],d3:[100,500],mul1:[2,5],fracD:6};
+var NORM={d1:[1,9],d2:[10,99],d3:[100,999],mul1:[2,9],fracD:9};
+var HARD={d1:[1,9],d2:[10,99],d3:[100,999],mul1:[2,9],fracD:12};
+function P(){return lv==='easy'?EASY:lv==='normal'?NORM:HARD;}
+
+// ─── 問題生成 ──────────────────────────────────────
+var GEN={
+  add1:function(){var p=P(),a=rnd(p.d1[0],p.d1[1]),b=rnd(1,9-a);return{q:a+' + '+b+' = □',a:'□ = '+(a+b),tag:'たし算'};},
+  sub1:function(){var p=P(),a=rnd(2,p.d1[1]),b=rnd(1,a-1);return{q:a+' − '+b+' = □',a:'□ = '+(a-b),tag:'ひき算'};},
+  add1c:function(){var a=rnd(2,9),b=rnd(Math.max(2,10-a),9);return{q:a+' + '+b+' = □',a:'□ = '+(a+b),tag:'繰り上がり'};},
+  sub1b:function(){var a=rnd(11,18),b=rnd(2,a-9);return{q:a+' − '+b+' = □',a:'□ = '+(a-b),tag:'繰り下がり'};},
+  add2:function(){var p=P(),a=rnd(p.d2[0],p.d2[1]),b=rnd(p.d2[0],p.d2[1]);return{q:a+' + '+b+' = □',a:'□ = '+(a+b),tag:'2桁たし算'};},
+  sub2:function(){var p=P(),a=rnd(p.d2[0],p.d2[1]),b=rnd(p.d2[0],a);return{q:a+' − '+b+' = □',a:'□ = '+(a-b),tag:'2桁ひき算'};},
+  kuku:function(){var p=P(),a=rnd(p.mul1[0],p.mul1[1]),b=rnd(p.mul1[0],p.mul1[1]);return{q:a+' × '+b+' = □',a:'□ = '+(a*b),tag:'かけ算九九'};},
+  box_add2:function(){var p=P(),a=rnd(p.d2[0],p.d2[1]),b=rnd(p.d2[0],p.d2[1]);return Math.random()<0.5?{q:'□ + '+b+' = '+(a+b),a:'□ = '+a,tag:'□を求める',rev:true}:{q:(a+b)+' − □ = '+a,a:'□ = '+b,tag:'□を求める',rev:true};},
+  add3:function(){var p=P(),a=rnd(p.d3[0],p.d3[1]),b=rnd(p.d3[0],p.d3[1]);return{q:a+' + '+b+' = □',a:'□ = '+(a+b),tag:'3桁たし算'};},
+  sub3:function(){var p=P(),a=rnd(p.d3[0],p.d3[1]),b=rnd(1,a);return{q:a+' − '+b+' = □',a:'□ = '+(a-b),tag:'3桁ひき算'};},
+  mul2x1:function(){var p=P(),a=rnd(p.d2[0],p.d2[1]),b=rnd(p.mul1[0],p.mul1[1]);return{q:a+' × '+b+' = □',a:'□ = '+(a*b),tag:'2桁×1桁'};},
+  div_kuku:function(){var p=P(),b=rnd(p.mul1[0],p.mul1[1]),c=rnd(p.mul1[0],p.mul1[1]);return{q:(b*c)+' ÷ '+b+' = □',a:'□ = '+c,tag:'わり算'};},
+  mul2x2:function(){var a=rnd(11,99),b=rnd(11,lv==='easy'?50:99);return{q:a+' × '+b+' = □',a:'□ = '+(a*b),tag:'2桁×2桁'};},
+  mul3x2:function(){var a=rnd(101,lv==='easy'?500:999),b=rnd(11,lv==='easy'?50:99);return{q:a+' × '+b+' = □',a:'□ = '+(a*b),tag:'3桁×2桁'};},
+  div_rem:function(){var p=P(),b=rnd(p.mul1[0],p.mul1[1]),q2=rnd(2,lv==='easy'?10:20),r=rnd(0,b-1),a=b*q2+r;return{q:a+' ÷ '+b+' = □',a:'□ = '+(r>0?q2+' あまり '+r:''+q2),tag:'余りのある÷'};},
+  dec_add:function(){
+    var a=(rnd(1,lv==='easy'?50:99)/10).toFixed(1),b=(rnd(1,lv==='easy'?50:99)/10).toFixed(1);
+    var op=Math.random()<0.5?'+':'-';
+    if(op==='-'){var big=Math.max(parseFloat(a),parseFloat(b)),small=Math.min(parseFloat(a),parseFloat(b));a=big.toFixed(1);b=small.toFixed(1);}
+    var res=(op==='+'?parseFloat(a)+parseFloat(b):parseFloat(a)-parseFloat(b));
+    return{q:a+(op==='+'?' + ':' − ')+b+' = □',a:'□ = '+res.toFixed(1),tag:'小数'+(op==='+'?'たし':'ひき')+'算'};
+  },
+  box_int:function(){
+    var p=P(),a=rnd(p.d2[0],p.d2[1]),b=rnd(p.d2[0],p.d2[1]);
+    var t=pick(['add','sub','mul']);
+    if(t==='add')return{q:'□ + '+b+' = '+(a+b),a:'□ = '+a,tag:'□を求める',rev:true};
+    if(t==='sub')return{q:a+' − □ = '+Math.abs(a-b),a:'□ = '+Math.min(a,b),tag:'□を求める',rev:true};
+    var b2=rnd(p.mul1[0],p.mul1[1]),a2=rnd(p.mul1[0],p.mul1[1]);
+    return{q:'□ × '+b2+' = '+(a2*b2),a:'□ = '+a2,tag:'□を求める',rev:true};
+  },
+  dec_mul:function(){var a=(rnd(11,lv==='easy'?30:99)/10).toFixed(1),b=(rnd(11,lv==='easy'?30:99)/10).toFixed(1);return{q:M(a+' \\times '+b),a:'□ = '+(Math.round(parseFloat(a)*parseFloat(b)*100)/100),tag:'小数のかけ算'};},
+  dec_div:function(){var b=(rnd(2,lv==='easy'?5:9)/10).toFixed(1),q2=rnd(2,lv==='easy'?5:10),a=Math.round(parseFloat(b)*q2*10)/10;return{q:M(a.toFixed(1)+' \\div '+b),a:'□ = '+q2,tag:'小数のわり算'};},
+  frac_add:function(){var f1=propFrac(P().fracD),f2=propFrac(P().fracD),r=frac(f1.n*f2.d+f2.n*f1.d,f1.d*f2.d);if(r.n<=0)throw 0;return{q:M(fracTex(f1)+'+'+fracTex(f2)),a:M(fracTex(r)),tag:'分数のたし算'};},
+  frac_sub:function(){var f1=propFrac(P().fracD),f2=propFrac(P().fracD),r=frac(f1.n*f2.d-f2.n*f1.d,f1.d*f2.d);if(r.n<=0)throw 0;return{q:M(fracTex(f1)+'-'+fracTex(f2)),a:M(fracTex(r)),tag:'分数のひき算'};},
+  box_frac5:function(){var f1=propFrac(6),b=rnd(2,6),res=frac(f1.n*b,f1.d);return{q:M('□ \\times '+b+' = '+fracTex(res)),a:M('□ = '+fracTex(f1)),tag:'□を求める',rev:true};},
+  frac_mul:function(){var f1=propFrac(P().fracD),f2=propFrac(P().fracD),r=frac(f1.n*f2.n,f1.d*f2.d);if(r.n<=0)throw 0;return{q:M(fracTex(f1)+'\\times '+fracTex(f2)),a:M(fracTex(r)),tag:'分数のかけ算'};},
+  frac_div:function(){var f1=propFrac(P().fracD),f2=propFrac(P().fracD),r=frac(f1.n*f2.d,f1.d*f2.n);if(r.n<=0||r.d<=0)throw 0;return{q:M(fracTex(f1)+'\\div '+fracTex(f2)),a:M(fracTex(r)),tag:'分数のわり算'};},
+  dec_frac:function(){
+    var dm={'0.5':frac(1,2),'0.25':frac(1,4),'0.75':frac(3,4),'1.5':frac(3,2),'0.4':frac(2,5)};
+    var dk=pick(Object.keys(dm)),df=dm[dk],f2=propFrac(6),op=pick(['mul','div']);
+    var r=op==='mul'?frac(df.n*f2.n,df.d*f2.d):frac(df.n*f2.d,df.d*f2.n);
+    if(r.n<=0||r.d<=0)throw 0;
+    return{q:M(dk+(op==='mul'?' \\times ':' \\div ')+fracTex(f2)),a:M(fracTex(r)),tag:'小数・分数混合'};
+  },
+  box_frac6:function(){
+    var f1=propFrac(P().fracD),f2=propFrac(P().fracD),op=pick(['mul','div']);
+    if(op==='mul'){var r=frac(f1.n*f2.n,f1.d*f2.d);if(r.n<=0)throw 0;return{q:M('□ \\times '+fracTex(f2)+' = '+fracTex(r)),a:M('□ = '+fracTex(f1)),tag:'□を求める',rev:true};}
+    else{var r2=frac(f1.n*f2.d,f1.d*f2.n);if(r2.n<=0||r2.d<=0)throw 0;return{q:M('□ \\div '+fracTex(f2)+' = '+fracTex(r2)),a:M('□ = '+fracTex(f1)),tag:'□を求める',rev:true};}
+  },
+  g1_rand:function(){return GEN[pick(RAND_POOLS['1'])]();},
+  g2_rand:function(){return GEN[pick(RAND_POOLS['2'])]();},
+  g3_rand:function(){return GEN[pick(RAND_POOLS['3'])]();},
+  g4_rand:function(){return GEN[pick(RAND_POOLS['4'])]();},
+  g5_rand:function(){return GEN[pick(RAND_POOLS['5'])]();},
+  g6_rand:function(){return GEN[pick(RAND_POOLS['6'])]();},
+  all_rand:function(){return GEN[pick(ALL_GRADES.map(function(g){return 'g'+g+'_rand';}))]();},
+  multi_rand:function(){
+    var pool=[];
+    selectedGrades.forEach(function(g){pool=pool.concat(RAND_POOLS[g]||[]);});
+    return GEN[pick(pool)]();
+  }
+};
+
+// ─── 生成・描画 ────────────────────────────────────
+function generate(){
+  var key=document.getElementById('unit-sel').value;
+  var fn=GEN[key]; if(!fn)return;
+  var problems=[],tries=0;
+  while(problems.length<cnt&&tries<cnt*20){tries++;try{problems.push(fn());}catch(e){}}
+  renderProblems(problems);
+}
+
+function renderProblems(list){
+  if(!list.length){document.getElementById('problem-area').innerHTML='<div class="problems"><div class="empty">問題を生成できませんでした</div></div>';return;}
+  var lvCls={easy:'easy',normal:'normal',hard:'hard'};
+  var html='<div class="problems">';
+  list.forEach(function(p,i){
+    html+='<div class="pcard"><div><div class="pnum">（'+(i+1)+'）</div><div class="pq">'+p.q+'</div></div>';
+    html+='<div><span class="ptag '+(p.rev?'rev':lvCls[lv])+'">'+p.tag+'</span><div class="pans">答え：'+p.a+'</div></div></div>';
+  });
+  html+='</div>';
+  document.getElementById('problem-area').innerHTML=html;
+  if(window.MathJax&&MathJax.typesetPromise) MathJax.typesetPromise([document.getElementById('problem-area')]);
+}
+
+// ─── 初期化 ────────────────────────────────────────
+updateGradeUI();
+rebuildUnits();
+generate();
+</script>
+</body>
+</html>
