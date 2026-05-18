@@ -392,10 +392,10 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <button class="math-banner-btn">開始する</button>
   </div>
 
-  <!-- ことばの力バナー -->
+  <!-- ことばの力・おぼえる力バナー -->
   <div id="ankicheck-banner" class="math-banner" onclick="openAnkicheck()" style="display:none;">
     <div class="math-banner-left">
-      <div class="math-banner-title">📚 ことばの力</div>
+      <div class="math-banner-title">📚 ことばの力・おぼえる力</div>
       <div class="math-banner-sub">テキスト問題の反復学習・PDF出力</div>
       <div class="math-banner-chips">
         <span class="chip-n">じぶんでモード</span>
@@ -408,10 +408,10 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 
 </div>
 
-<!-- ことばの力設定 -->
+<!-- ことばの力・おぼえる力設定 -->
 <div class="sec" id="sec-ankicheck">
   <div class="hd">
-    <h1 style="font-size:17px;">📚 ことばの力</h1>
+    <h1 style="font-size:17px;">📚 ことばの力・おぼえる力</h1>
     <button class="end-btn" onclick="goSetup()">← 戻る</button>
   </div>
   <div class="block">
@@ -3008,7 +3008,7 @@ function loginAsGuest(){
 
 function openAnkicheck(){
   if(currentUser&&currentUser.role==='guest'){
-    alert('「ことばの力」は塾生専用です。\nご入塾後にご利用いただけます。');
+    alert('「ことばの力・おぼえる力」は塾生専用です。\nご入塾後にご利用いただけます。');
     return;
   }
   showSec('sec-ankicheck');
