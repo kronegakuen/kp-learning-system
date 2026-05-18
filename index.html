@@ -174,19 +174,21 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   body.print-hyaku #hyaku-preview { display: none !important; }
   body.print-hyaku #hyaku-print-area { display: block !important; }
   body.print-hyaku .hyaku-section { margin-bottom: 5mm !important; page-break-inside: avoid !important; }
+  body.print-hyaku .hyaku-section:last-child { margin-bottom: 0 !important; }
   body.print-hyaku .hyaku-date { color: #555 !important; font-size: 9pt !important; margin-bottom: 1mm !important; line-height: 1.2 !important; }
   body.print-hyaku .hyaku-grid {
     grid-template-columns: repeat(11, 16.9mm) !important;
     width: fit-content !important;
-    border-color: #888 !important;
+    border: none !important;
   }
   body.print-hyaku .hyaku-cell {
+    box-sizing: border-box !important;
     width: 16.9mm !important;
     height: 11.8mm !important;
     font-size: 13pt !important;
     background: white !important;
     color: #111 !important;
-    border-color: #888 !important;
+    border: 0.5px solid #888 !important;
   }
   body.print-hyaku .hyaku-cell.corner,
   body.print-hyaku .hyaku-cell.head { background: #f0f0f0 !important; color: #111 !important; font-weight: 700 !important; }
