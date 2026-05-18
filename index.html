@@ -2966,7 +2966,10 @@ document.addEventListener('DOMContentLoaded', async function() {
       document.getElementById('sec-main').style.display = '';
       document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
       if(currentUser.role === 'teacher') document.getElementById('btn-admin').style.display = '';
-      if(currentUser.math_enabled || currentUser.role === 'teacher') { document.getElementById('math-banner').style.display = ''; document.getElementById('hyaku-banner').style.display = ''; document.getElementById('juku-banner').style.display = ''; }
+      document.getElementById('math-banner').style.display = '';
+      document.getElementById('hyaku-banner').style.display = '';
+      document.getElementById('juku-banner').style.display = '';
+      document.getElementById('ankicheck-banner').style.display = '';
       loadUserStats();
       window.loadManageSheet();
       updateNotifBadge();
@@ -3057,7 +3060,9 @@ async function login() {
   document.getElementById('sec-main').style.display = '';
   document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
   if(currentUser.role === 'teacher') document.getElementById('btn-admin').style.display = '';
-  if(currentUser.math_enabled || currentUser.role === 'teacher') { document.getElementById('math-banner').style.display = ''; document.getElementById('hyaku-banner').style.display = ''; document.getElementById('juku-banner').style.display = ''; }
+  document.getElementById('math-banner').style.display = '';
+  document.getElementById('hyaku-banner').style.display = '';
+  document.getElementById('juku-banner').style.display = '';
   document.getElementById('ankicheck-banner').style.display = '';
   loadUserStats();
   window.loadManageSheet();
