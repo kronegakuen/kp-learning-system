@@ -244,6 +244,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <input id="login-pass" type="password" placeholder="パスワード" style="width:100%;padding:10px;margin-bottom:16px;border-radius:8px;border:1px solid var(--nv5);background:var(--nv6);color:var(--tb);font-size:14px;" onkeydown="if(event.key==='Enter')login()">
     <button onclick="login()" style="width:100%;padding:11px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">ログイン</button>
     <div id="login-err" style="color:#F09595;font-size:13px;margin-top:10px;min-height:18px;"></div>
+    <button onclick="loginAsGuest()" style="width:100%;padding:10px;margin-top:6px;background:transparent;color:var(--tmu);border:1px solid var(--nv5);border-radius:8px;font-size:13px;cursor:pointer;">ゲストとして使う</button>
     <div style="margin-top:14px;display:flex;justify-content:center;gap:8px;">
       <button class="login-theme-btn" onclick="setLoginTheme('dark')">🌙 ダーク</button>
       <button class="login-theme-btn" onclick="setLoginTheme('light')">☀ ライト</button>
@@ -392,7 +393,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
 
   <!-- ことばの力バナー -->
-  <div id="ankicheck-banner" class="math-banner" onclick="showSec('sec-ankicheck')">
+  <div id="ankicheck-banner" class="math-banner" onclick="showSec('sec-ankicheck')" style="display:none;">
     <div class="math-banner-left">
       <div class="math-banner-title">📚 ことばの力</div>
       <div class="math-banner-sub">テキスト問題の反復学習・PDF出力</div>
@@ -2050,10 +2051,10 @@ function getHyakuRank(sec){
 var _hyakuActiveTab=1;
 var _hyakuCache={lv1:0,lv2:0,lv3:0,lv4:0,lv5:0,lv6:0,best_sec:99999};
 async function loadHyakuData(){
-  if(!currentUser){
-    var lv=JSON.parse(localStorage.getItem('kp_hyaku_lv_stamps')||'{}');
-    _hyakuCache={lv1:lv[1]||0,lv2:lv[2]||0,lv3:lv[3]||0,lv4:lv[4]||0,lv5:lv[5]||0,lv6:lv[6]||0,
-      best_sec:parseInt(localStorage.getItem('kp_hyaku_best')||'99999')};
+  if(!currentUser||currentUser.role==='guest'){
+    var lv=JSON.parse(sessionStorage.getItem('kp_guest_hyaku')||'{}');
+    _hyakuCache={lv1:lv.lv1||0,lv2:lv.lv2||0,lv3:lv.lv3||0,lv4:lv.lv4||0,lv5:lv.lv5||0,lv6:lv.lv6||0,
+      best_sec:lv.best_sec||99999};
     return;
   }
   try{
@@ -2063,6 +2064,10 @@ async function loadHyakuData(){
 }
 async function saveHyakuData(){
   if(!currentUser)return;
+  if(currentUser.role==='guest'){
+    sessionStorage.setItem('kp_guest_hyaku',JSON.stringify(_hyakuCache));
+    return;
+  }
   try{
     await sbFetch('hyaku_stamps',{method:'POST',
       headers:{'Prefer':'resolution=merge-duplicates'},
@@ -2334,7 +2339,7 @@ function renderStampCard(stamps, grade, tbLabel) {
 // 要復習システム
 // ============================================================
 async function saveReviewItems(wrongItems, slowItems) {
-  if(!currentUser || !curSheet || window._practiceMode) return;
+  if(!currentUser || currentUser.role==='guest' || !curSheet || window._practiceMode) return;
   const tb = TEXTBOOKS[curSheet];
   if(!tb) return;
   
@@ -2781,7 +2786,7 @@ function showBadges(total, streak) {
 // ============================================================
 async function loadUserStats() {
   if(!currentUser) return;
-  if(currentUser.role === 'teacher') return;
+  if(currentUser.role === 'teacher' || currentUser.role === 'guest') return;
   try {
     const logs = await sbFetch('training_logs?user_id=eq.'+currentUser.id+'&select=count,created_at');
     const total = logs ? logs.reduce((s,l) => s+(l.count||0), 0) : 0;
@@ -2864,7 +2869,7 @@ async function logTrainingResult(count, correct, total) {
 }
 
 async function logTraining() {
-  if(!currentUser || window._practiceMode) return;
+  if(!currentUser || currentUser.role==='guest' || window._practiceMode) return;
   const tb = TEXTBOOKS[curSheet];
   if(!tb) return;
   try {
@@ -2886,7 +2891,7 @@ async function logTraining() {
 }
 
 async function logPDF(count) {
-  if(!currentUser) return;
+  if(!currentUser || currentUser.role==='guest') return;
   const tb = TEXTBOOKS[curSheet];
   if(!tb) return;
   try {
@@ -2962,6 +2967,44 @@ async function sbFetch(path, opts) {
   const text = await res.text();
   return text ? JSON.parse(text) : null;
 }
+// ============================================================
+// ゲストモード
+// ============================================================
+var _guestTimer=null, _guestWarnTimer=null;
+var _GUEST_TIMEOUT=15*60*1000, _GUEST_WARN=14*60*1000;
+
+function _clearGuestTimer(){
+  if(_guestTimer){clearTimeout(_guestTimer);_guestTimer=null;}
+  if(_guestWarnTimer){clearTimeout(_guestWarnTimer);_guestWarnTimer=null;}
+}
+function _startGuestTimer(){
+  _clearGuestTimer();
+  _guestWarnTimer=setTimeout(function(){
+    if(currentUser&&currentUser.role==='guest') alert('あと1分で自動ログアウトします');
+  },_GUEST_WARN);
+  _guestTimer=setTimeout(function(){
+    if(currentUser&&currentUser.role==='guest'){alert('一定時間操作がなかったためログアウトしました');logout();}
+  },_GUEST_TIMEOUT);
+}
+function _resetGuestTimer(){
+  if(currentUser&&currentUser.role==='guest') _startGuestTimer();
+}
+document.addEventListener('click',_resetGuestTimer);
+document.addEventListener('keydown',_resetGuestTimer);
+document.addEventListener('touchstart',_resetGuestTimer);
+
+function loginAsGuest(){
+  currentUser={role:'guest',name:'ゲスト',id:null};
+  document.getElementById('sec-login').style.display='none';
+  document.getElementById('sec-main').style.display='';
+  document.getElementById('user-name').textContent='ゲスト';
+  document.getElementById('math-banner').style.display='';
+  document.getElementById('hyaku-banner').style.display='';
+  document.getElementById('juku-banner').style.display='';
+  _startGuestTimer();
+  window.loadManageSheet();
+}
+
 async function login() {
   const username = document.getElementById('login-user').value.trim();
   const password = document.getElementById('login-pass').value.trim();
@@ -2981,14 +3024,17 @@ async function login() {
   document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
   if(currentUser.role === 'teacher') document.getElementById('btn-admin').style.display = '';
   if(currentUser.math_enabled || currentUser.role === 'teacher') { document.getElementById('math-banner').style.display = ''; document.getElementById('hyaku-banner').style.display = ''; document.getElementById('juku-banner').style.display = ''; }
+  document.getElementById('ankicheck-banner').style.display = '';
   loadUserStats();
   window.loadManageSheet();
   updateNotifBadge();
 }
 function logout() {
+  _clearGuestTimer();
   currentUser = null;
   localStorage.removeItem('kp_uid');
   sessionStorage.removeItem('kp_sec');
+  sessionStorage.removeItem('kp_guest_hyaku');
   document.getElementById('sec-login').style.display = 'flex';
   document.getElementById('sec-main').style.display = 'none';
   document.getElementById('sec-admin').style.display = 'none';
@@ -2996,6 +3042,8 @@ function logout() {
   document.getElementById('math-banner').style.display = 'none';
   document.getElementById('hyaku-banner').style.display = 'none';
   document.getElementById('juku-banner').style.display = 'none';
+  document.getElementById('ankicheck-banner').style.display = 'none';
+  goSetup();
 }
 // ============================================================
 // 計算ドリル
