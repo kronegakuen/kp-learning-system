@@ -393,7 +393,7 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   </div>
 
   <!-- ことばの力バナー -->
-  <div id="ankicheck-banner" class="math-banner" onclick="showSec('sec-ankicheck')" style="display:none;">
+  <div id="ankicheck-banner" class="math-banner" onclick="openAnkicheck()" style="display:none;">
     <div class="math-banner-left">
       <div class="math-banner-title">📚 ことばの力</div>
       <div class="math-banner-sub">テキスト問題の反復学習・PDF出力</div>
@@ -3001,8 +3001,17 @@ function loginAsGuest(){
   document.getElementById('math-banner').style.display='';
   document.getElementById('hyaku-banner').style.display='';
   document.getElementById('juku-banner').style.display='';
+  document.getElementById('ankicheck-banner').style.display='';
   _startGuestTimer();
   window.loadManageSheet();
+}
+
+function openAnkicheck(){
+  if(currentUser&&currentUser.role==='guest'){
+    alert('「ことばの力」は塾生専用です。\nご入塾後にご利用いただけます。');
+    return;
+  }
+  showSec('sec-ankicheck');
 }
 
 async function login() {
