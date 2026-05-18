@@ -660,13 +660,13 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
         <option value="sub">ひき算</option>
         <option value="mul">かけ算</option>
       </select>
-      <button onclick="genHyaku()" style="padding:7px 18px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);font-size:13px;cursor:pointer;">生成する</button>
+      <button onclick="genHyaku()" style="padding:7px 18px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);font-size:13px;cursor:pointer;">新しい問題</button>
       <span id="hyaku-print-btn" style="display:none;display:flex;gap:6px;">
         <button onclick="printHyaku('q')" style="padding:7px 14px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);font-size:12px;cursor:pointer;">📄 PDF問題</button>
         <button onclick="printHyaku('qa')" style="padding:7px 14px;border-radius:8px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);font-size:12px;cursor:pointer;">📋 PDF解答</button>
       </span>
     </div>
-    <div id="hyaku-popup-note" style="display:none;font-size:11px;color:var(--tmu);margin-top:8px;">※ポップアップブロッカーが有効な場合は許可してください。</div>
+    <div id="hyaku-popup-note" style="display:none;font-size:13px;color:var(--tmu);margin-top:8px;">ポップアップブロッカーが有効な場合は許可してください。</div>
   </div>
   <div id="hyaku-preview" style="display:none;flex-direction:column;gap:16px;overflow-x:auto;"></div>
   <div id="hyaku-print-area" style="display:none;"></div>
