@@ -2761,10 +2761,22 @@ function printHyaku(mode){
   var showAns=mode==='qa';
   var html='';
   _hyakuData.grids.forEach(function(g){html+=_buildHyakuHTML(g.rows,g.cols,_hyakuData.op,showAns);});
-  document.getElementById('hyaku-print-area').innerHTML=html;
-  document.body.classList.add('print-hyaku');
-  window.print();
-  document.body.classList.remove('print-hyaku');
+  var win=window.open('','_blank','width=800,height=600');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+    +'@page{size:A4 portrait;margin:12mm;}'
+    +'*{box-sizing:border-box;margin:0;padding:0;}'
+    +'body{background:white;color:#111;font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;}'
+    +'.hyaku-section{margin-bottom:5mm;page-break-inside:avoid;}'
+    +'.hyaku-section:last-child{margin-bottom:0;}'
+    +'.hyaku-date{text-align:right;font-size:9pt;color:#555;margin-bottom:1mm;line-height:1.2;}'
+    +'.hyaku-grid{display:grid;grid-template-columns:repeat(11,16.9mm);gap:0;width:fit-content;}'
+    +'.hyaku-cell{width:16.9mm;height:11.6mm;display:flex;align-items:center;justify-content:center;font-size:13pt;border:0.5px solid #888;}'
+    +'.hyaku-cell.corner,.hyaku-cell.head{background:#f0f0f0;font-weight:700;}'
+    +'.hyaku-cell.ans{color:transparent;}'
+    +'.hyaku-cell.ans.filled{color:#185FA5;font-weight:700;}'
+    +'</style></head><body>'+html+'</body></html>');
+  win.document.close();
+  win.onload=function(){win.print();};
 }
 
 /* ── ユーティリティ ── */
