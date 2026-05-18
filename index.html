@@ -2961,11 +2961,11 @@ var MATH_G = {
     return{q:_M('('+_pn(a)+'+'+_pn(b)+')\\times '+_pn(c)+_st(d,'')),a:_M(''+((a+b)*c+d)),type:'四則混合',grade:'1'};
   },
   dainyuu:function(lv){
-    if(lv==='easy'){var x=_nz(-3,3),a=_nz(-3,3),b=_rnd(-4,4);return{label:'x = '+x+' のとき',q:_M(_lin(a,b,'x')),a:_M(''+(a*x+b)),type:'文字式・代入',grade:'1'};}
-    if(lv==='normal'){var x=_nz(-5,5),a=_nz(-4,4),b=_rnd(-5,5);if(_pick([0,1]))return{label:'x = '+x+' のとき',q:_M(_lin(a,b,'x')),a:_M(''+(a*x+b)),type:'文字式・代入',grade:'1'};var ex=(a===1?'':a===-1?'-':a)+'x^2'+(b>=0?'+'+b:''+b);return{label:'x = '+x+' のとき',q:_M(ex),a:_M(''+(a*x*x+b)),type:'文字式・代入',grade:'1'};}
+    if(lv==='easy'){var x=_nz(-3,3),a=_nz(-3,3),b=_rnd(-4,4);return{label:_M('x = '+x)+' のとき',q:_M(_lin(a,b,'x')),a:_M(''+(a*x+b)),type:'文字式・代入',grade:'1'};}
+    if(lv==='normal'){var x=_nz(-5,5),a=_nz(-4,4),b=_rnd(-5,5);if(_pick([0,1]))return{label:_M('x = '+x)+' のとき',q:_M(_lin(a,b,'x')),a:_M(''+(a*x+b)),type:'文字式・代入',grade:'1'};var ex=(a===1?'':a===-1?'-':a)+'x^2'+(b>=0?'+'+b:''+b);return{label:_M('x = '+x)+' のとき',q:_M(ex),a:_M(''+(a*x*x+b)),type:'文字式・代入',grade:'1'};}
     var tp=_pick(['linear2','sq2']);
-    if(tp==='linear2'){var x=_nz(-5,5),y=_nz(-5,5),a=_nz(-3,3),b=_nz(-3,3),c=_rnd(-5,5);var expr=_lin(a,0,'x')+(b>0?'+'+b+'y':b+'y')+_st(c,'');return{label:'x = '+x+'，y = '+y+' のとき',q:_M(expr),a:_M(''+(a*x+b*y+c)),type:'文字式・代入',grade:'1'};}
-    var x=_nz(-4,4),y=_nz(-4,4),s=_pick([1,-1]);return{label:'x = '+x+'，y = '+y+' のとき',q:_M('x^2'+(s>0?'+':'-')+'y^2'),a:_M(''+(x*x+s*y*y)),type:'文字式・代入',grade:'1'};
+    if(tp==='linear2'){var x=_nz(-5,5),y=_nz(-5,5),a=_nz(-3,3),b=_nz(-3,3),c=_rnd(-5,5);var expr=_lin(a,0,'x')+(b>0?'+'+b+'y':b+'y')+_st(c,'');return{label:_M('x = '+x+',\\; y = '+y)+' のとき',q:_M(expr),a:_M(''+(a*x+b*y+c)),type:'文字式・代入',grade:'1'};}
+    var x=_nz(-4,4),y=_nz(-4,4),s=_pick([1,-1]);return{label:_M('x = '+x+',\\; y = '+y)+' のとき',q:_M('x^2'+(s>0?'+':'-')+'y^2'),a:_M(''+(x*x+s*y*y)),type:'文字式・代入',grade:'1'};
   },
   lin_add:function(lv){
     var r=lv==='easy'?3:lv==='normal'?5:4,hard=lv==='hard';
