@@ -737,13 +737,16 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div style="margin-bottom:10px;">
       <div style="font-size:11px;color:var(--tmu);margin-bottom:6px;">問題数</div>
       <div class="chip-group" id="g-juku-cnt" style="display:flex;gap:6px;">
-        <button class="chip on" data-v="10" onclick="jukuSetCnt(10,this)"><span class="ck">✓</span>10問</button>
-        <button class="chip" data-v="20" onclick="jukuSetCnt(20,this)"><span class="ck">✓</span>20問</button>
+        <button class="chip on" data-v="20" onclick="jukuSetCnt(20,this)"><span class="ck">✓</span>20問</button>
+        <button class="chip" data-v="40" onclick="jukuSetCnt(40,this)"><span class="ck">✓</span>40問</button>
+        <button class="chip" data-v="60" onclick="jukuSetCnt(60,this)"><span class="ck">✓</span>60問</button>
       </div>
     </div>
     <button class="btn-action btn-train" onclick="jukuGenerate()" style="margin-top:0;">▶ 問題を生成</button>
-    <div id="juku-top-bar" style="display:none;align-items:center;gap:8px;margin-top:10px;">
+    <div id="juku-top-bar" style="display:none;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;">
       <button id="juku-btn-all" onclick="jukuTogAll()" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">答えを全て表示</button>
+      <button onclick="jukuPrint('q')" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">📋 PDF（問題のみ）</button>
+      <button onclick="jukuPrint('qa')" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;">📋 PDF（解答付き）</button>
     </div>
   </div>
   <div id="juku-problems"></div>
@@ -3522,7 +3525,7 @@ var JUKU_G={
   }
 };
 
-var jukuLv='kiso',jukuCnt=10,jukuAllShown=false;
+var jukuLv='kiso',jukuCnt=20,jukuAllShown=false,_jukuProblems=[];
 
 function jukuSetLv(lv,btn){
   jukuLv=lv;
@@ -3541,6 +3544,7 @@ function jukuSetCnt(n,btn){
 }
 async function jukuGenerate(){
   jukuAllShown=false;
+  _jukuProblems=[];
   var gen=jukuLv==='kiso'?JUKU_G.juku_kiso:JUKU_G.juku_oyo;
   var lvBorder=jukuLv==='kiso'?'#7ACC8A':'#F09595';
   var lvTag=jukuLv==='kiso'?'<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(120,200,140,.12);color:#7ACC8A;">基礎</span>':'<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(240,149,149,.12);color:#F09595;">応用</span>';
@@ -3553,6 +3557,7 @@ async function jukuGenerate(){
     while(!p&&t<40){try{p=gen();}catch(e){p=null;}t++;}
     if(!p)continue;
     num++;
+    _jukuProblems.push(p);
     html+='<div class="block" style="padding:12px 14px;border-left:3px solid '+lvBorder+';">';
     html+='<div style="display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;">';
     html+='<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--nv6);color:var(--tmu);">'+p.type+'</span>';
@@ -3564,9 +3569,9 @@ async function jukuGenerate(){
     html+='</div></div>';
   }
   var area=document.getElementById('juku-problems');
-  area.innerHTML=html;
-  await ensureMathJax();
-  MathJax.typesetPromise([area]);
+  area.innerHTML=html||'<div style="color:var(--tmu);text-align:center;padding:40px;font-size:13px;">生成できませんでした</div>';
+  await _loadMathJax();
+  if(window.MathJax&&MathJax.typesetPromise) await MathJax.typesetPromise([area]);
 }
 function jukuTogAns(btn){
   var div=btn.parentElement;
@@ -3574,16 +3579,72 @@ function jukuTogAns(btn){
   div.querySelector('.juku-ans-val').style.display=shown?'none':'';
   btn.textContent=shown?'答えを見る':'答えを隠す';
   div.dataset.shown=shown?'0':'1';
+  if(!shown&&window.MathJax&&MathJax.typesetPromise) MathJax.typesetPromise([div]);
 }
 function jukuTogAll(){
   jukuAllShown=!jukuAllShown;
-  document.querySelectorAll('#juku-problems .juku-ans').forEach(function(div){
+  var divs=document.querySelectorAll('#juku-problems .juku-ans');
+  divs.forEach(function(div){
     div.querySelector('.juku-ans-val').style.display=jukuAllShown?'':'none';
     var btn=div.querySelector('button');
     if(btn)btn.textContent=jukuAllShown?'答えを隠す':'答えを見る';
     div.dataset.shown=jukuAllShown?'1':'0';
   });
   document.getElementById('juku-btn-all').textContent=jukuAllShown?'答えを全て隠す':'答えを全て表示';
+  if(jukuAllShown&&window.MathJax&&MathJax.typesetPromise){
+    var area=document.getElementById('juku-problems');
+    MathJax.typesetPromise([area]);
+  }
+}
+function jukuPrint(mode){
+  if(!_jukuProblems.length){alert('先に問題を生成してください');return;}
+  var showAns=(mode==='qa');
+  var lvName=jukuLv==='kiso'?'基礎レベル':'応用レベル';
+  var perPage=20;
+  var pages='';
+  for(var pg=0;pg<Math.ceil(_jukuProblems.length/perPage);pg++){
+    var slice=_jukuProblems.slice(pg*perPage,(pg+1)*perPage);
+    var cards='';
+    slice.forEach(function(p,i){
+      var num=pg*perPage+i+1;
+      cards+='<div class="card">';
+      cards+='<div><div class="num">（'+num+'）</div>';
+      cards+='<div class="q">'+p.q+'</div></div>';
+      if(showAns){
+        cards+='<div class="ans">答え：'+p.a+'</div>';
+      } else {
+        cards+='<div class="blank"></div>';
+      }
+      cards+='</div>';
+    });
+    pages+='<div class="page"><div class="pg-title">中学受験 計算ドリル ― '+lvName+'</div>'
+      +'<div class="grid">'+cards+'</div></div>';
+  }
+  var win=window.open('','_blank','width=900,height=700');
+  if(!win){alert('ポップアップをブロックされています。許可してください。');return;}
+  win.document.write('<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
+    +'<script>window.MathJax={startup:{typeset:false}};<\/script>'
+    +'<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"><\/script>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0;}'
+    +'body{font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;background:#fff;color:#111;}'
+    +'@page{size:A4 portrait;margin:12mm;}'
+    +'.page{width:186mm;padding:0;page-break-after:always;break-after:page;}'
+    +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
+    +'.pg-title{font-size:10pt;font-weight:700;color:#333;border-bottom:0.5pt solid #aaa;padding-bottom:3mm;margin-bottom:4mm;letter-spacing:.05em;}'
+    +'.grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm 6mm;}'
+    +'.card{border:0.5pt solid #ccc;border-radius:3pt;padding:5pt 7pt;min-height:30mm;display:flex;flex-direction:column;justify-content:space-between;}'
+    +'.num{font-size:8pt;color:#aaa;margin-bottom:2pt;}'
+    +'.q{font-size:12pt;line-height:2;}'
+    +'.ans{font-size:9pt;color:#444;border-top:0.5pt dashed #ccc;padding-top:3pt;margin-top:3pt;}'
+    +'.blank{height:10mm;border-bottom:0.5pt solid #aaa;margin-top:3pt;}'
+    +'@media print{body{margin:0;}}'
+    +'</style></head><body>'+pages
+    +'<script>MathJax.startup.promise.then(function(){'
+    +'MathJax.typesetPromise([document.body]).then(function(){window.focus();window.print();});'
+    +'});<\/script>'
+    +'</body></html>');
+  win.document.close();
 }
 function showJuku(){showSec('sec-juku');}
 
