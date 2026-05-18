@@ -370,8 +370,8 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
       <div class="math-banner-title">📝 中学受験 計算ドリル</div>
       <div class="math-banner-sub">□を求める逆算あり・方程式なし・負の数なし</div>
       <div class="math-banner-chips">
-        <span class="chip-e">基礎レベル</span>
-        <span class="chip-h">応用レベル</span>
+        <span class="chip-e">中学受験準備</span>
+        <span class="chip-h">中学受験基礎</span>
       </div>
     </div>
     <button class="math-banner-btn">開始する</button>
@@ -729,8 +729,8 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <div style="margin-bottom:10px;">
       <div style="font-size:11px;color:var(--tmu);margin-bottom:6px;">レベル</div>
       <div style="display:flex;gap:6px;">
-        <button class="juku-lb" data-jlv="kiso" onclick="jukuSetLv('kiso',this)" style="flex:1;padding:6px;border-radius:7px;border:1.5px solid #7ACC8A;background:rgba(120,200,140,.1);color:#7ACC8A;cursor:pointer;font-size:12px;font-weight:600;">📘 基礎レベル</button>
-        <button class="juku-lb" data-jlv="oyo" onclick="jukuSetLv('oyo',this)" style="flex:1;padding:6px;border-radius:7px;border:1.5px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;font-size:12px;font-weight:400;">🔴 応用レベル</button>
+        <button class="juku-lb" data-jlv="kiso" onclick="jukuSetLv('kiso',this)" style="flex:1;padding:6px;border-radius:7px;border:1.5px solid #7ACC8A;background:rgba(120,200,140,.1);color:#7ACC8A;cursor:pointer;font-size:12px;font-weight:600;">📘 中学受験準備</button>
+        <button class="juku-lb" data-jlv="oyo" onclick="jukuSetLv('oyo',this)" style="flex:1;padding:6px;border-radius:7px;border:1.5px solid var(--nv5);background:transparent;color:var(--tmu);cursor:pointer;font-size:12px;font-weight:400;">🔴 中学受験基礎</button>
       </div>
     </div>
     <div style="margin-bottom:10px;">
@@ -3598,7 +3598,7 @@ function jukuTogAll(){
 function jukuPrint(mode){
   if(!_jukuProblems.length){alert('先に問題を生成してください');return;}
   var showAns=(mode==='qa');
-  var lvName=jukuLv==='kiso'?'基礎レベル':'応用レベル';
+  var lvName=jukuLv==='kiso'?'中学受験準備':'中学受験基礎';
   var modeLabel=showAns?'（解答付き）':'（問題のみ）';
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
