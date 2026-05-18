@@ -391,10 +391,10 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
     <button class="math-banner-btn">開始する</button>
   </div>
 
-  <!-- 暗記チェックバナー -->
+  <!-- ことばの力バナー -->
   <div id="ankicheck-banner" class="math-banner" onclick="showSec('sec-ankicheck')">
     <div class="math-banner-left">
-      <div class="math-banner-title">📚 暗記チェック</div>
+      <div class="math-banner-title">📚 ことばの力</div>
       <div class="math-banner-sub">テキスト問題の反復学習・PDF出力</div>
       <div class="math-banner-chips">
         <span class="chip-n">じぶんでモード</span>
@@ -407,14 +407,14 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
 
 </div>
 
-<!-- 暗記チェック設定 -->
+<!-- ことばの力設定 -->
 <div class="sec" id="sec-ankicheck">
   <div class="hd">
-    <h1 style="font-size:17px;">📚 暗記チェック</h1>
+    <h1 style="font-size:17px;">📚 ことばの力</h1>
     <button class="end-btn" onclick="goSetup()">← 戻る</button>
   </div>
   <div class="block">
-    <div class="block-title">暗記チェック</div>
+    <div class="block-title">ことばの力</div>
     <div class="field">
       <span class="field-label">テキスト</span>
       <select id="sel-sheet" onchange="pickSheet().then(function(){var k=TEXTBOOKS[document.getElementById('sel-sheet').value];if(k){var isK=k.subject==='kanji';var isW=k.label.includes('わくわく');document.querySelector('[data-v=normal]').innerHTML='<span class=ck>✓</span>'+(isK?'書き練習（読み→漢字）':isW?'よみれんしゅう':'言葉→意味');document.querySelector('[data-v=reverse]').innerHTML='<span class=ck>✓</span>'+(isK?'読み練習（漢字→読み）':isW?'かきれんしゅう':'意味→言葉');}})">
