@@ -165,6 +165,20 @@ input[type=number]{padding:7px 10px;font-size:14px;border:1px solid var(--nv5);b
   body.print-ans .math-ans > div:first-child { font-size: 7.5pt !important; color: #888 !important; margin-bottom: 0.5mm !important; }
   body.print-ans .math-ans > div:last-child { font-size: 10pt !important; color: #333 !important; font-weight: 600 !important; line-height: 1.4 !important; }
   body.print-ans .math-ans-blank { display: none !important; }
+
+  /* 百ます計算 印刷 */
+  body.print-hyaku #sec-math { display: none !important; }
+  body.print-hyaku #sec-hyaku { display: block !important; }
+  body.print-hyaku #sec-hyaku > .hd,
+  body.print-hyaku #sec-hyaku > .block { display: none !important; }
+  body.print-hyaku #hyaku-preview { display: none !important; }
+  body.print-hyaku #hyaku-print-area { display: block !important; }
+  body.print-hyaku .hyaku-grid { border-color: #999 !important; }
+  body.print-hyaku .hyaku-cell { background: white !important; color: #111 !important; border-color: #999 !important; }
+  body.print-hyaku .hyaku-cell.corner,
+  body.print-hyaku .hyaku-cell.head { background: #f0f0f0 !important; color: #111 !important; }
+  body.print-hyaku .hyaku-cell.ans.filled { color: #185FA5 !important; }
+  body.print-hyaku .hyaku-date { color: #555 !important; }
 }
 
 /* ── 百ます計算（画面） ── */
