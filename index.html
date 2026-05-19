@@ -199,7 +199,7 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-ans .math-ans-blank { display: none !important; }
 
   /* 百ます計算 印刷 */
-  body.print-hyaku #sec-hyaku { display: block !important; }
+  body.print-hyaku #sec-hyaku { display: block !important; height: auto !important; overflow: visible !important; }
   body.print-hyaku #sec-hyaku > .hd,
   body.print-hyaku #sec-hyaku > .block { display: none !important; }
   body.print-hyaku #hyaku-stamp-card { display: none !important; }
@@ -3580,7 +3580,7 @@ function _calcAns(r,c,op){
 function _buildHyakuHTML(rows,cols,op,showAns){
   var sym={add:'+',sub:'−',mul:'×'}[op];
   var html='<div class="hyaku-section">';
-  html+='<div class="hyaku-date">月＿＿日（＿＿分＿＿秒）</div>';
+  html+='<div class="hyaku-date">月＿＿日（<span style="display:inline-block;width:2cm;"></span>分<span style="display:inline-block;width:2cm;"></span>秒）</div>';
   html+='<div class="hyaku-grid">';
   html+='<div class="hyaku-cell corner">'+sym+'</div>';
   cols.forEach(function(c){html+='<div class="hyaku-cell head">'+c+'</div>';});
