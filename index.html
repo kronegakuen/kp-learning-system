@@ -3647,14 +3647,26 @@ function printHyaku(mode){
   _setPrintWatermark();
   var printArea=document.getElementById('hyaku-print-area');
   printArea.innerHTML=header+html;
-  // display:noneの要素はiOS printでCSS !importantが効かない場合があるため明示的にblockに
-  printArea.style.display='block';
+  // iOS対応: #sec-hyaku の子要素を print-area 以外すべてJSで直接隠す
+  var secHyaku=document.getElementById('sec-hyaku');
+  var _hiddenEls=[];
+  Array.from(secHyaku.children).forEach(function(el){
+    if(el.id!=='hyaku-print-area'){
+      _hiddenEls.push({el:el,disp:el.style.display});
+      el.style.setProperty('display','none','important');
+    }
+  });
+  printArea.style.setProperty('display','block','important');
   document.body.classList.add('print-hyaku');
-  void document.body.offsetHeight; // スタイル再計算を強制してからprint
+  void document.body.offsetHeight;
   window.print();
   window.addEventListener('afterprint',function _hpCleanup(){
     document.body.classList.remove('print-hyaku');
-    printArea.style.display='none';
+    _hiddenEls.forEach(function(item){
+      if(item.disp){item.el.style.setProperty('display',item.disp);}
+      else{item.el.style.removeProperty('display');}
+    });
+    printArea.style.removeProperty('display');
     printArea.innerHTML='';
     window.removeEventListener('afterprint',_hpCleanup);
   });
