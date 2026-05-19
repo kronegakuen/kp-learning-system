@@ -3574,7 +3574,9 @@ function shoPrint(mode){
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _logo=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
-  var _wmCSS=_logo?'@media print{body::before{content:\'\';display:block;position:fixed;top:calc(50% - 70mm);left:calc(50% - 70mm);width:140mm;height:140mm;background:url("'+_logo+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
+  var _isMob=/iPhone/.test(navigator.userAgent)||(/Android/.test(navigator.userAgent)&&!/iPad/.test(navigator.userAgent));
+  var _gridH=_isMob?'253mm':'263mm';
+  var _wmCSS=_logo?'@media print{.page{position:relative;}.page::before{content:\'\';display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;background:url("'+_logo+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
   function pt(s){return s.replace(/\\dfrac/g,'\\tfrac');}
   var perPage=20;
   var pages='';
@@ -3613,7 +3615,7 @@ function shoPrint(mode){
     +'.ph-title{font-size:13pt;font-weight:700;color:#111;line-height:1.2;}'
     +'.ph-sub{font-size:9pt;color:#555;margin-top:1mm;}'
     +'.ph-right{font-size:9pt;color:#555;text-align:right;line-height:1.6;}'
-    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,1fr);gap:1mm 4mm;height:263mm;}'
+    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,1fr);gap:1mm 4mm;height:'+_gridH+';}'
     +'.card{border:0.4pt solid #bbb;border-left:2pt solid #888;padding:2pt 5pt;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
     +'.num{font-size:7pt;color:#bbb;line-height:1.3;}'
     +'.q{font-size:10pt;line-height:1.5;}'
@@ -4160,8 +4162,7 @@ function jukuPrint(mode){
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _jLogoSrc=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
-  // 透かしはposition:fixedのDOM要素ではなくCSSのbody::beforeで実装（iOSでもページ中央に固定）
-  var _wmCSS=_jLogoSrc?'@media print{body::before{content:\'\';display:block;position:fixed;top:calc(50% - 70mm);left:calc(50% - 70mm);width:140mm;height:140mm;background:url("'+_jLogoSrc+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
+  var _wmCSS=_jLogoSrc?'@media print{.page{position:relative;}.page::before{content:\'\';display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;background:url("'+_jLogoSrc+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
   var perPage=20;
   function pt(s){return s.replace(/\\dfrac/g,'\\tfrac');}
   var pages='';
