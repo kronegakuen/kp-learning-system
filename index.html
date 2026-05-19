@@ -285,16 +285,15 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-juku .jku-ans { font-size:8pt;color:#444;border-top:0.5pt dashed #ccc;padding-top:1.5pt;margin-top:1.5pt; }
   body.print-juku .jku-blank { flex:1;border-bottom:0.5pt solid #bbb;margin-top:2pt;min-height:5mm; }
 
-  /* 透かし: position:fixed をページボックス基準にするため ::before 疑似要素を使用 */
+  /* 透かし: transformはiOS Safariで効かないためcalcで中央計算 */
   body.print-math::before,
   body.print-sho::before,
   body.print-hyaku::before {
     content: '';
     display: block;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: calc(50% - 70mm);
+    left: calc(50% - 70mm);
     width: 140mm;
     height: 140mm;
     background: var(--wm-src) no-repeat center / contain;
@@ -3575,8 +3574,7 @@ function shoPrint(mode){
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _logo=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
-  // jukuPrintと同じ透かしCSS方式
-  var _wmCSS=_logo?'@media print{body::before{content:\'\';display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;background:url("'+_logo+'")no-repeat center/contain;opacity:0.06;pointer-events:none;z-index:0;}}':'';
+  var _wmCSS=_logo?'@media print{body::before{content:\'\';display:block;position:fixed;top:calc(50% - 70mm);left:calc(50% - 70mm);width:140mm;height:140mm;background:url("'+_logo+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
   function pt(s){return s.replace(/\\dfrac/g,'\\tfrac');}
   var perPage=20;
   var pages='';
@@ -4163,7 +4161,7 @@ function jukuPrint(mode){
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _jLogoSrc=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
   // 透かしはposition:fixedのDOM要素ではなくCSSのbody::beforeで実装（iOSでもページ中央に固定）
-  var _wmCSS=_jLogoSrc?'@media print{body::before{content:\'\';display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;background:url("'+_jLogoSrc+'")no-repeat center/contain;opacity:0.06;pointer-events:none;z-index:0;}}':'';
+  var _wmCSS=_jLogoSrc?'@media print{body::before{content:\'\';display:block;position:fixed;top:calc(50% - 70mm);left:calc(50% - 70mm);width:140mm;height:140mm;background:url("'+_jLogoSrc+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
   var perPage=20;
   function pt(s){return s.replace(/\\dfrac/g,'\\tfrac');}
   var pages='';
