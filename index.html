@@ -4357,24 +4357,24 @@ var SHO_GEN={
     var b2=_rnd(p.mul1[0],p.mul1[1]),a2=_rnd(p.mul1[0],p.mul1[1]);
     return{q:'□ × '+b2+' = '+(a2*b2),a:'□ = '+a2,type:'□を求める',rev:true};
   },
-  s_decm:function(){var a=(_rnd(11,shoLv==='easy'?30:99)/10).toFixed(1),b=(_rnd(11,shoLv==='easy'?30:99)/10).toFixed(1);return{q:'\('+a+' \times '+b+'\)',a:'□ = '+(Math.round(parseFloat(a)*parseFloat(b)*100)/100),type:'小数のかけ算'};},
-  s_decd:function(){var b=(_rnd(2,shoLv==='easy'?5:9)/10).toFixed(1),q=_rnd(2,shoLv==='easy'?5:10),a=Math.round(parseFloat(b)*q*10)/10;return{q:'\('+a.toFixed(1)+' \div '+b+'\)',a:'□ = '+q,type:'小数のわり算'};},
-  s_fadd:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.d+f2.n*f1.d,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\('+_jTex(f1)+'+'+_jTex(f2)+'\)',a:'\('+_jTex(r)+'\)',type:'分数のたし算'};},
-  s_fsub:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.d-f2.n*f1.d,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\('+_jTex(f1)+'-'+_jTex(f2)+'\)',a:'\('+_jTex(r)+'\)',type:'分数のひき算'};},
-  s_box5:function(){var f1=_jProp2(6),b=_rnd(2,6),res=_jF(f1.n*b,f1.d);return{q:'\(□ \times '+b+' = '+_jTex(res)+'\)',a:'\(□ = '+_jTex(f1)+'\)',type:'□を求める',rev:true};},
-  s_fmul:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.n,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\('+_jTex(f1)+'\times '+_jTex(f2)+'\)',a:'\('+_jTex(r)+'\)',type:'分数のかけ算'};},
-  s_fdiv:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.d,f1.d*f2.n);if(r.n<=0||r.d<=0)throw 0;return{q:'\('+_jTex(f1)+'\div '+_jTex(f2)+'\)',a:'\('+_jTex(r)+'\)',type:'分数のわり算'};},
+  s_decm:function(){var a=(_rnd(11,shoLv==='easy'?30:99)/10).toFixed(1),b=(_rnd(11,shoLv==='easy'?30:99)/10).toFixed(1);return{q:'\\('+a+' \\times '+b+'\\)',a:'□ = '+(Math.round(parseFloat(a)*parseFloat(b)*100)/100),type:'小数のかけ算'};},
+  s_decd:function(){var b=(_rnd(2,shoLv==='easy'?5:9)/10).toFixed(1),q=_rnd(2,shoLv==='easy'?5:10),a=Math.round(parseFloat(b)*q*10)/10;return{q:'\\('+a.toFixed(1)+' \\div '+b+'\\)',a:'□ = '+q,type:'小数のわり算'};},
+  s_fadd:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.d+f2.n*f1.d,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\\('+_jTex(f1)+'+'+_jTex(f2)+'\\)',a:'\\('+_jTex(r)+'\\)',type:'分数のたし算'};},
+  s_fsub:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.d-f2.n*f1.d,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\\('+_jTex(f1)+'-'+_jTex(f2)+'\\)',a:'\\('+_jTex(r)+'\\)',type:'分数のひき算'};},
+  s_box5:function(){var f1=_jProp2(6),b=_rnd(2,6),res=_jF(f1.n*b,f1.d);return{q:'\\(\\square \\times '+b+' = '+_jTex(res)+'\\)',a:'\\(\\square = '+_jTex(f1)+'\\)',type:'□を求める',rev:true};},
+  s_fmul:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.n,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\\('+_jTex(f1)+'\\times '+_jTex(f2)+'\\)',a:'\\('+_jTex(r)+'\\)',type:'分数のかけ算'};},
+  s_fdiv:function(){var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),r=_jF(f1.n*f2.d,f1.d*f2.n);if(r.n<=0||r.d<=0)throw 0;return{q:'\\('+_jTex(f1)+'\\div '+_jTex(f2)+'\\)',a:'\\('+_jTex(r)+'\\)',type:'分数のわり算'};},
   s_df:function(){
     var dm={'0.5':_jF(1,2),'0.25':_jF(1,4),'0.75':_jF(3,4),'1.5':_jF(3,2),'0.4':_jF(2,5)};
     var dk=_pick(Object.keys(dm)),df=dm[dk],f2=_jProp2(6),op=_pick(['mul','div']);
     var r=op==='mul'?_jF(df.n*f2.n,df.d*f2.d):_jF(df.n*f2.d,df.d*f2.n);
     if(r.n<=0||r.d<=0)throw 0;
-    return{q:'\('+dk+(op==='mul'?' \times ':' \div ')+_jTex(f2)+'\)',a:'\('+_jTex(r)+'\)',type:'小数・分数混合'};
+    return{q:'\\('+dk+(op==='mul'?' \\times ':' \\div ')+_jTex(f2)+'\\)',a:'\\('+_jTex(r)+'\\)',type:'小数・分数混合'};
   },
   s_box6:function(){
     var p=_shoP(),f1=_jProp2(p.fracD),f2=_jProp2(p.fracD),op=_pick(['mul','div']);
-    if(op==='mul'){var r=_jF(f1.n*f2.n,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\(□ \times '+_jTex(f2)+' = '+_jTex(r)+'\)',a:'\(□ = '+_jTex(f1)+'\)',type:'□を求める',rev:true};}
-    else{var r2=_jF(f1.n*f2.d,f1.d*f2.n);if(r2.n<=0||r2.d<=0)throw 0;return{q:'\(□ \div '+_jTex(f2)+' = '+_jTex(r2)+'\)',a:'\(□ = '+_jTex(f1)+'\)',type:'□を求める',rev:true};}
+    if(op==='mul'){var r=_jF(f1.n*f2.n,f1.d*f2.d);if(r.n<=0)throw 0;return{q:'\\(\\square \\times '+_jTex(f2)+' = '+_jTex(r)+'\\)',a:'\\(\\square = '+_jTex(f1)+'\\)',type:'□を求める',rev:true};}
+    else{var r2=_jF(f1.n*f2.d,f1.d*f2.n);if(r2.n<=0||r2.d<=0)throw 0;return{q:'\\(\\square \\div '+_jTex(f2)+' = '+_jTex(r2)+'\\)',a:'\\(\\square = '+_jTex(f1)+'\\)',type:'□を求める',rev:true};}
   },
   sg1_rand:function(){return SHO_GEN[_pick(SHO_RAND_POOLS['1'])]();},
   sg2_rand:function(){return SHO_GEN[_pick(SHO_RAND_POOLS['2'])]();},
