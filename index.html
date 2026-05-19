@@ -285,11 +285,26 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-juku .jku-ans { font-size:8pt;color:#444;border-top:0.5pt dashed #ccc;padding-top:1.5pt;margin-top:1.5pt; }
   body.print-juku .jku-blank { flex:1;border-bottom:0.5pt solid #bbb;margin-top:2pt;min-height:5mm; }
 
-  #print-watermark { display: block !important; }
+  /* 透かし: position:fixed をページボックス基準にするため ::before 疑似要素を使用 */
+  body.print-math::before,
+  body.print-sho::before,
+  body.print-hyaku::before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140mm;
+    height: 140mm;
+    background: var(--wm-src) no-repeat center / contain;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 
-#print-watermark{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;opacity:0.06;pointer-events:none;z-index:0;}
-#print-watermark img{width:100%;height:100%;object-fit:contain;}
+
 /* ── 百ます計算（画面） ── */
 .hyaku-section{margin-bottom:20px;}
 .hyaku-date{text-align:right;font-size:17px;color:var(--tmu);margin-bottom:4px;letter-spacing:.05em;}
@@ -3602,10 +3617,9 @@ var _hyakuTimerStart=null;
 var _hyakuPendingSec=null;
 
 function _setPrintWatermark(){
-  var img=document.getElementById('print-watermark-img');
-  if(img&&!img.getAttribute('src')){
+  if(!document.documentElement.style.getPropertyValue('--wm-src')){
     var logo=document.querySelector('#sec-login img');
-    if(logo)img.setAttribute('src',logo.getAttribute('src'));
+    if(logo)document.documentElement.style.setProperty('--wm-src','url("'+logo.getAttribute('src')+'")');
   }
 }
 function genHyaku(){
@@ -3649,6 +3663,9 @@ function printHyaku(mode){
   printArea.innerHTML=header+html;
   // iOS対応: #sec-hyaku の子要素を print-area 以外すべてJSで直接隠す
   var secHyaku=document.getElementById('sec-hyaku');
+  var _origSecDisp=secHyaku.style.display;
+  // iPad/iOS対応: CSS依存を避けてJSで直接 #sec-hyaku を表示
+  secHyaku.style.setProperty('display','block','important');
   var _hiddenEls=[];
   Array.from(secHyaku.children).forEach(function(el){
     if(el.id!=='hyaku-print-area'){
@@ -3662,6 +3679,8 @@ function printHyaku(mode){
   window.print();
   window.addEventListener('afterprint',function _hpCleanup(){
     document.body.classList.remove('print-hyaku');
+    if(_origSecDisp){secHyaku.style.setProperty('display',_origSecDisp);}
+    else{secHyaku.style.removeProperty('display');}
     _hiddenEls.forEach(function(item){
       if(item.disp){item.el.style.setProperty('display',item.disp);}
       else{item.el.style.removeProperty('display');}
@@ -4493,6 +4512,6 @@ function _shoAddStamp(g,emoji){
 
 
 </script>
-<div id="print-watermark"><img id="print-watermark-img" src="" alt="" /></div>
+
 </body>
 </html>
