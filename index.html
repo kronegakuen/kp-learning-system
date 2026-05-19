@@ -205,7 +205,7 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-hyaku #hyaku-stamp-card { display: none !important; }
   body.print-hyaku #hyaku-preview { display: none !important; }
   body.print-hyaku #hyaku-print-area { display: block !important; }
-  body.print-hyaku .hyaku-section { margin-bottom: 5mm !important; page-break-inside: avoid !important; }
+  body.print-hyaku .hyaku-section { margin-bottom: 3mm !important; page-break-inside: avoid !important; }
   body.print-hyaku .hyaku-section:last-child { margin-bottom: 0 !important; }
   body.print-hyaku .hyaku-date { color: #555 !important; font-size: 9pt !important; margin-bottom: 1mm !important; line-height: 1.2 !important; }
   body.print-hyaku .hyaku-grid {
@@ -216,8 +216,8 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-hyaku .hyaku-cell {
     box-sizing: border-box !important;
     width: 16.9mm !important;
-    height: 11.8mm !important;
-    font-size: 13pt !important;
+    height: 11mm !important;
+    font-size: 12pt !important;
     background: white !important;
     color: #111 !important;
     border: 0.5px solid #888 !important;
@@ -3638,7 +3638,7 @@ function printHyaku(mode){
   var showAns=mode==='qa';
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
-  var header='<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:5mm;border-bottom:2px solid #333;padding-bottom:3mm;">'
+  var header='<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3mm;border-bottom:2px solid #333;padding-bottom:2mm;">'
     +'<div><div style="font-size:14pt;font-weight:700;color:#111;">百マスけいさん</div>'
     +'<div style="font-size:10pt;color:#555;margin-top:2px;">クローネ学園</div></div>'
     +'<div style="font-size:10pt;color:#555;text-align:right;">'+dateStr+'</div></div>';
