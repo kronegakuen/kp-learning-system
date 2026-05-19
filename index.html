@@ -126,13 +126,13 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   /* wrap の余白・幅制限を解除して印刷領域をフルに使う */
   .wrap { padding: 0 !important; max-width: none !important; margin: 0 !important; }
   .wrap > div { display: none !important; }
-  /* sec-math は自然フロー（高さ自動・改ページ対応） */
-  #sec-math { display: block !important; height: auto !important; overflow: visible !important; }
-  #sec-math > .hd,
-  #sec-math > .block { display: none !important; }
-  #math-top-bar { display: none !important; }
-  #math-stamp-card { display: none !important; }
-  #math-print-header { display: flex !important; margin-bottom: 3mm !important; padding-bottom: 2mm !important; }
+  /* sec-math は body.print-math 付与時のみ印刷 */
+  body.print-math #sec-math { display: block !important; height: auto !important; overflow: visible !important; }
+  body.print-math #sec-math > .hd,
+  body.print-math #sec-math > .block { display: none !important; }
+  body.print-math #math-top-bar { display: none !important; }
+  body.print-math #math-stamp-card { display: none !important; }
+  body.print-math #math-print-header { display: flex !important; margin-bottom: 3mm !important; padding-bottom: 2mm !important; }
 
   /* 2列・固定行高グリッド（20問/ページ・超過時は自動改ページ） */
   #math-problems {
@@ -199,7 +199,6 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-ans .math-ans-blank { display: none !important; }
 
   /* 百ます計算 印刷 */
-  body.print-hyaku #sec-math { display: none !important; }
   body.print-hyaku #sec-hyaku { display: block !important; }
   body.print-hyaku #sec-hyaku > .hd,
   body.print-hyaku #sec-hyaku > .block { display: none !important; }
@@ -229,7 +228,6 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-hyaku .hyaku-cell.ans.filled { color: #185FA5 !important; font-weight: 700 !important; }
 
   /* 小学生ドリル 印刷 */
-  body.print-sho #sec-math { display: none !important; }
   body.print-sho #sec-sho { display: block !important; height: auto !important; overflow: visible !important; }
   body.print-sho #sec-sho > .hd,
   body.print-sho #sec-sho > .block { display: none !important; }
@@ -269,7 +267,6 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-sho-ans .sho-ans > div:last-child { font-size: 10pt !important; color: #333 !important; font-weight: 600 !important; line-height: 1.4 !important; }
 
   /* 中学受験 印刷 */
-  body.print-juku #sec-math { display: none !important; }
   body.print-juku #sec-juku { display: block !important; height: auto !important; overflow: visible !important; }
   body.print-juku #sec-juku > .hd,
   body.print-juku #sec-juku > .block { display: none !important; }
@@ -3530,12 +3527,14 @@ function mathPrint(mode){
     adjustedEls.push({els:textEls,origFS:origFS});
   });
 
+  document.body.classList.add('print-math');
   if(mode==='qa')document.body.classList.add('print-ans');
   void document.body.offsetHeight; // iOSで印刷前にスタイル再計算を強制
   window.print();
   // iOSは非同期レンダリングのため afterprint まで class・フォント復元を遅らせる
   var _aEls=adjustedEls;
   window.addEventListener('afterprint',function _mpCleanup(){
+    document.body.classList.remove('print-math');
     document.body.classList.remove('print-ans');
     _aEls.forEach(function(item){
       item.els.forEach(function(el,i){
