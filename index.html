@@ -3576,15 +3576,23 @@ function shoPrint(mode){
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _logo=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
 
+  // MathJax CHTML CSSをメインページから転写（新ウィンドウでCDN不要）
+  var mjxCSS='';
+  document.querySelectorAll('style').forEach(function(s){
+    if(s.textContent.indexOf('mjx-')!==-1)mjxCSS+=s.textContent;
+  });
+
   var perPage=20;
   var pages='';
   for(var pg=0;pg<Math.ceil(_shoProblems.length/perPage);pg++){
     var slice=_shoProblems.slice(pg*perPage,(pg+1)*perPage);
     var cards='';
     slice.forEach(function(p){
+      var qContent=p.qHtml||(p.q);
+      var aContent=p.aHtml||('答え：'+p.a);
       cards+='<div class="card">'
-        +'<div class="q">（'+p.num+'）　'+p.q+'</div>'
-        +(showAns?'<div class="ans">答え：'+p.a+'</div>':'')
+        +'<div class="q">'+qContent+'</div>'
+        +(showAns?'<div class="ans">'+aContent+'</div>':'')
         +'</div>';
     });
     var wmImg=_logo?'<img src="'+_logo+'" style="position:absolute;top:50%;left:50%;width:140mm;height:140mm;margin-top:-70mm;margin-left:-70mm;object-fit:contain;opacity:0.08;pointer-events:none;" alt="">':'';
@@ -3602,16 +3610,13 @@ function shoPrint(mode){
   if(!win){alert('ポップアップをブロックされています。ブラウザの設定でこのサイトのポップアップを許可してください。');return;}
   win.document.write('<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
     +'<meta name="viewport" content="width=device-width,initial-scale=1">'
-    +'<script>window.MathJax={startup:{typeset:false}};<\/script>'
-    +'<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"><\/script>'
     +'<style>'
     +'*{box-sizing:border-box;margin:0;padding:0;}'
     +'body{font-family:"Hiragino Sans","Meiryo",sans-serif;background:#fff;color:#111;}'
     +'@page{size:A4 portrait;margin:8mm;}'
     +'.npbar{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:5mm;}'
     +'.pbtn{padding:6px 20px;font-size:10pt;cursor:pointer;border:none;border-radius:5px;background:#185FA5;color:#fff;}'
-    +'.loading{text-align:center;padding:40px;font-size:15px;color:#555;}'
-    +'.page{width:194mm;position:relative;page-break-after:always;break-after:page;display:none;}'
+    +'.page{width:194mm;position:relative;page-break-after:always;break-after:page;}'
     +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
     +'.pg-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #333;padding-bottom:2mm;margin-bottom:3mm;}'
     +'.ph-title{font-size:13pt;font-weight:700;color:#111;line-height:1.2;}'
@@ -3619,19 +3624,14 @@ function shoPrint(mode){
     +'.ph-right{font-size:9pt;color:#555;}'
     +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:23mm;gap:1mm 4mm;}'
     +'.card{border:0.4pt solid #bbb;border-left:2pt solid #888;padding:2mm 3mm;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
-    +'.q{font-size:9.5pt;color:#111;line-height:1.5;}'
-    +'.ans{font-size:8.5pt;color:#333;font-weight:600;border-top:0.4pt dashed #ccc;padding-top:1.5mm;margin-top:1.5mm;}'
-    +'@media print{.npbar{display:none!important;}.loading{display:none!important;}.page{display:block!important;}body{margin:0;}}'
+    +'.q{font-size:9.5pt;color:#111 !important;line-height:1.5;}'
+    +'.q mjx-container,.q mjx-math,.q mjx-mrow{font-size:9.5pt !important;}'
+    +'.ans{font-size:8.5pt;color:#333 !important;font-weight:600;border-top:0.4pt dashed #ccc;padding-top:1.5mm;margin-top:1.5mm;}'
+    +'@media print{.npbar{display:none!important;}body{margin:0;}}'
+    +mjxCSS
     +'</style></head><body>'
     +'<div class="npbar"><button class="pbtn" onclick="window.print()">🖨️ 印刷する / PDFで保存</button></div>'
-    +'<div class="loading" id="loading">数式を読み込み中... しばらくお待ちください</div>'
     +pages
-    +'<script>MathJax.startup.promise.then(function(){'
-    +'MathJax.typesetPromise([document.body]).then(function(){'
-    +'document.getElementById("loading").style.display="none";'
-    +'document.querySelectorAll(".page").forEach(function(el){el.style.display="block";});'
-    +'document.querySelector(".npbar").style.display="block";'
-    +'});});<\/script>'
     +'</body></html>');
   win.document.close();
 }
@@ -4467,6 +4467,15 @@ async function shoGenerate(){
   el.innerHTML=html||'<div style="color:var(--tmu);text-align:center;padding:40px;font-size:17px;">生成できませんでした</div>';
   await _loadMathJax();
   if(window.MathJax&&MathJax.typesetPromise) await MathJax.typesetPromise([el]);
+  // MathJax描画済みのDOMからレンダリング済みHTMLを保存（印刷時にCDN不要にする）
+  var _blks=el.querySelectorAll('.block');
+  _shoProblems.forEach(function(prob,i){
+    var blk=_blks[i];if(!blk)return;
+    var qDiv=blk.children[1];
+    if(qDiv){var c=qDiv.cloneNode(true);c.removeAttribute('style');prob.qHtml=c.innerHTML;}
+    var aDiv=blk.children[3]&&blk.children[3].children[0];
+    if(aDiv){var c2=aDiv.cloneNode(true);c2.removeAttribute('style');prob.aHtml=c2.innerHTML;}
+  });
   var _sdb=document.getElementById('sho-done-btn');if(_sdb)_sdb.style.display='';
 }
 function shoTogAns(btn){
