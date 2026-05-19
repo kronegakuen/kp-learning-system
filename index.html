@@ -3565,23 +3565,75 @@ function mathPrint(mode){
 }
 
 function shoPrint(mode){
-  _setPrintWatermark();
+  if(!_shoProblems.length){alert('先に問題を生成してください');return;}
+  var showAns=(mode==='qa');
   var sel=document.getElementById('sho-sel-unit');
   var unitLabel=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:'';
   var lvLabel={easy:'やさしい',normal:'ふつう',hard:'むずかしい'};
-  var modeLabel=mode==='qa'?'（解答付き）':'（問題のみ）';
-  document.getElementById('sho-print-title').textContent='小学生 計算ドリル　'+unitLabel+'　'+lvLabel[shoLv]+'　'+modeLabel;
+  var modeLabel=showAns?'（解答付き）':'（問題のみ）';
+  var title='小学生 計算ドリル　'+unitLabel+'　'+lvLabel[shoLv]+'　'+modeLabel;
   var d=new Date();
-  document.getElementById('sho-print-date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
-  document.body.classList.add('print-sho');
-  if(mode==='qa')document.body.classList.add('print-sho-ans');
-  void document.body.offsetHeight; // iOSで印刷前にスタイル再計算を強制
-  window.print();
-  window.addEventListener('afterprint',function _spCleanup(){
-    document.body.classList.remove('print-sho');
-    document.body.classList.remove('print-sho-ans');
-    window.removeEventListener('afterprint',_spCleanup);
-  });
+  var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+  var _logo=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
+
+  var perPage=20;
+  var pages='';
+  for(var pg=0;pg<Math.ceil(_shoProblems.length/perPage);pg++){
+    var slice=_shoProblems.slice(pg*perPage,(pg+1)*perPage);
+    var cards='';
+    slice.forEach(function(p){
+      cards+='<div class="card">'
+        +'<div class="q">（'+p.num+'）　'+p.q+'</div>'
+        +(showAns?'<div class="ans">答え：'+p.a+'</div>':'')
+        +'</div>';
+    });
+    var wmImg=_logo?'<img src="'+_logo+'" style="position:absolute;top:50%;left:50%;width:140mm;height:140mm;margin-top:-70mm;margin-left:-70mm;object-fit:contain;opacity:0.08;pointer-events:none;" alt="">':'';
+    pages+='<div class="page">'
+      +'<div class="pg-header">'
+      +'<div><div class="ph-title">'+title+'</div><div class="ph-sub">クローネ学園</div></div>'
+      +'<div class="ph-right">'+dateStr+'</div>'
+      +'</div>'
+      +'<div class="grid">'+cards+'</div>'
+      +wmImg
+      +'</div>';
+  }
+
+  var win=window.open('','_blank');
+  if(!win){alert('ポップアップをブロックされています。ブラウザの設定でこのサイトのポップアップを許可してください。');return;}
+  win.document.write('<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
+    +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+    +'<script>window.MathJax={startup:{typeset:false}};<\/script>'
+    +'<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"><\/script>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0;}'
+    +'body{font-family:"Hiragino Sans","Meiryo",sans-serif;background:#fff;color:#111;}'
+    +'@page{size:A4 portrait;margin:8mm;}'
+    +'.npbar{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:5mm;}'
+    +'.pbtn{padding:6px 20px;font-size:10pt;cursor:pointer;border:none;border-radius:5px;background:#185FA5;color:#fff;}'
+    +'.loading{text-align:center;padding:40px;font-size:15px;color:#555;}'
+    +'.page{width:194mm;position:relative;page-break-after:always;break-after:page;display:none;}'
+    +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
+    +'.pg-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #333;padding-bottom:2mm;margin-bottom:3mm;}'
+    +'.ph-title{font-size:13pt;font-weight:700;color:#111;line-height:1.2;}'
+    +'.ph-sub{font-size:9pt;color:#555;margin-top:1mm;}'
+    +'.ph-right{font-size:9pt;color:#555;}'
+    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:21mm;gap:1mm 4mm;}'
+    +'.card{border:0.4pt solid #bbb;border-left:2pt solid #888;padding:2mm 3mm;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+    +'.q{font-size:9.5pt;color:#111;line-height:1.5;}'
+    +'.ans{font-size:8.5pt;color:#333;font-weight:600;border-top:0.4pt dashed #ccc;padding-top:1.5mm;margin-top:1.5mm;}'
+    +'@media print{.npbar{display:none!important;}.loading{display:none!important;}.page{display:block!important;}body{margin:0;}}'
+    +'</style></head><body>'
+    +'<div class="npbar"><button class="pbtn" onclick="window.print()">🖨️ 印刷する / PDFで保存</button></div>'
+    +'<div class="loading" id="loading">数式を読み込み中... しばらくお待ちください</div>'
+    +pages
+    +'<script>MathJax.startup.promise.then(function(){'
+    +'MathJax.typesetPromise([document.body]).then(function(){'
+    +'document.getElementById("loading").style.display="none";'
+    +'document.querySelectorAll(".page").forEach(function(el){el.style.display="block";});'
+    +'document.querySelector(".npbar").style.display="block";'
+    +'});});<\/script>'
+    +'</body></html>');
+  win.document.close();
 }
 
 
@@ -4250,6 +4302,7 @@ function _jukuAddStamp(lv,emoji){
 // 小学生 計算ドリル
 // ============================================================
 var shoGrades=new Set(), shoLv='easy', shoCnt=20, shoAllShown=false;
+var _shoProblems=[];
 var SHO_ALL=['1','2','3','4','5','6'];
 var SHO_EASY={d1:[1,5],d2:[10,50],d3:[100,500],mul1:[2,5],fracD:6};
 var SHO_NORM={d1:[1,9],d2:[10,99],d3:[100,999],mul1:[2,9],fracD:9};
@@ -4393,11 +4446,13 @@ async function shoGenerate(){
   var lvBorderColor={easy:'#7ACC8A',normal:'var(--nv5)',hard:'#F09595'};
   var lvStyle={easy:'background:rgba(120,200,140,.15);color:#7ACC8A',normal:'background:rgba(130,160,191,.15);color:var(--tmu)',hard:'background:rgba(240,149,149,.15);color:#F09595'};
   var html='',num=0;
+  _shoProblems=[];
   for(var i=0;i<shoCnt;i++){
     var p=null,t=0;
     while(!p&&t<20){try{p=gen();}catch(e){p=null;}t++;}
     if(!p)continue;
     num++;
+    _shoProblems.push({num:num,q:p.q,a:p.a,type:p.type});
     html+='<div class="block" style="padding:12px 14px;border-left:3px solid '+lvBorderColor[shoLv]+';">';
     html+='<div style="display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;">';
     html+='<span style="font-size:18px;padding:2px 8px;border-radius:10px;background:var(--nv6);color:var(--tmu);">'+p.type+'</span>';
