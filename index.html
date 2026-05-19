@@ -3509,8 +3509,7 @@ function mathPrint(mode){
   var sel=document.getElementById('math-sel-unit');
   var unitLabel=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:'';
   var lvLabel={easy:'やさしい',normal:'ふつう',hard:'むずかしい'};
-  var modeLabel=mode==='qa'?'（解答付き）':'（問題のみ）';
-  document.getElementById('math-print-title').textContent='計算ドリル　'+unitLabel+'　'+lvLabel[mathLv]+'　'+modeLabel;
+  document.getElementById('math-print-title').textContent='計算ドリル　'+unitLabel+'　'+lvLabel[mathLv];
   var d=new Date();
   document.getElementById('math-print-date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
 
@@ -3569,8 +3568,7 @@ function shoPrint(mode){
   var sel=document.getElementById('sho-sel-unit');
   var unitLabel=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:'';
   var lvLabel={easy:'やさしい',normal:'ふつう',hard:'むずかしい'};
-  var modeLabel=showAns?'（解答付き）':'（問題のみ）';
-  var title='小学生 計算ドリル　'+unitLabel+'　'+lvLabel[shoLv]+'　'+modeLabel;
+  var title='小学生 計算ドリル　'+unitLabel+'　'+lvLabel[shoLv];
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _logo=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
@@ -4160,7 +4158,6 @@ function jukuPrint(mode){
   if(!_jukuProblems.length){alert('先に問題を生成してください');return;}
   var showAns=(mode==='qa');
   var lvName=jukuLv==='kiso'?'中学受験準備':'中学受験基礎';
-  var modeLabel=showAns?'（解答付き）':'（問題のみ）';
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _jLogoSrc=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
@@ -4182,7 +4179,7 @@ function jukuPrint(mode){
         +'</div>';
     });
     var hdr='<div class="pg-header">'
-      +'<div><div class="ph-title">中学受験 計算ドリル　'+lvName+modeLabel+'</div>'
+      +'<div><div class="ph-title">中学受験 計算ドリル　'+lvName+'</div>'
       +'<div class="ph-sub">クローネ学園</div></div>'
       +'<div class="ph-right"><div>'+dateStr+'</div></div>'
       +'</div>';
