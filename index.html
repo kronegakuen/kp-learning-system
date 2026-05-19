@@ -3575,8 +3575,9 @@ function shoPrint(mode){
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _logo=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
   var _isMob=/iPhone/.test(navigator.userAgent)||(/Android/.test(navigator.userAgent)&&!/iPad/.test(navigator.userAgent));
-  var _gridH=_isMob?'253mm':'263mm';
-  var _wmCSS=_logo?'@media print{.page{position:relative;}.page::before{content:\'\';display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;background:url("'+_logo+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
+  var _isTab=/iPad/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var _gridH=(_isMob||_isTab)?'253mm':'263mm';
+  var _wmDiv=_logo?'<div class="wm"><img src="'+_logo+'"></div>':'';
   function pt(s){return s.replace(/\\dfrac/g,'\\tfrac');}
   var perPage=20;
   var pages='';
@@ -3594,7 +3595,7 @@ function shoPrint(mode){
       +'<div><div class="ph-title">'+title+'</div><div class="ph-sub">クローネ学園</div></div>'
       +'<div class="ph-right"><div>'+dateStr+'</div></div>'
       +'</div>';
-    pages+='<div class="page">'+hdr+'<div class="grid">'+cards+'</div></div>';
+    pages+='<div class="page">'+_wmDiv+hdr+'<div class="grid">'+cards+'</div></div>';
   }
   var win=window.open('','_blank');
   if(!win){alert('ポップアップをブロックされています。ブラウザの設定で許可してください。');return;}
@@ -3609,7 +3610,7 @@ function shoPrint(mode){
     +'.no-print button{padding:6px 20px;font-size:11pt;cursor:pointer;border-radius:6px;border:1px solid #aaa;}'
     +'.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}'
     +'.loading{text-align:center;padding:40px;font-size:15px;color:#555;}'
-    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;}'
+    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;position:relative;}'
     +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
     +'.pg-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #333;padding-bottom:2mm;margin-bottom:3mm;}'
     +'.ph-title{font-size:13pt;font-weight:700;color:#111;line-height:1.2;}'
@@ -3621,8 +3622,9 @@ function shoPrint(mode){
     +'.q{font-size:10pt;line-height:1.5;}'
     +'.ans{font-size:8pt;color:#444;border-top:0.4pt dashed #ccc;padding-top:1.5pt;margin-top:1.5pt;}'
     +'.blank{flex:1;border-bottom:0.4pt solid #bbb;margin-top:2pt;min-height:5mm;}'
+    +'.wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;opacity:0.06;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+    +'.wm img{width:100%;height:100%;object-fit:contain;display:block;}'
     +'@media print{.no-print{display:none!important;}.loading{display:none!important;}.page{display:block!important;}body{margin:0;}}'
-    +_wmCSS
     +'</style></head><body>'
     +'<div class="no-print" id="npbar"><button class="pbtn" onclick="window.print()">🖨️ 印刷する / PDFで保存</button><button onclick="window.close()">閉じる</button></div>'
     +'<div class="loading" id="loading">数式を読み込み中... しばらくお待ちください</div>'
@@ -4162,7 +4164,7 @@ function jukuPrint(mode){
   var d=new Date();
   var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   var _jLogoSrc=(document.querySelector('#sec-login img')||{getAttribute:function(){return '';}}).getAttribute('src')||'';
-  var _wmCSS=_jLogoSrc?'@media print{.page{position:relative;}.page::before{content:\'\';display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;background:url("'+_jLogoSrc+'")no-repeat center/contain;-webkit-print-color-adjust:exact;print-color-adjust:exact;opacity:0.06;pointer-events:none;z-index:0;}}':'';
+  var _wmDiv=_jLogoSrc?'<div class="wm"><img src="'+_jLogoSrc+'"></div>':'';
   var perPage=20;
   function pt(s){return s.replace(/\\dfrac/g,'\\tfrac');}
   var pages='';
@@ -4182,7 +4184,7 @@ function jukuPrint(mode){
       +'<div class="ph-sub">クローネ学園</div></div>'
       +'<div class="ph-right"><div>'+dateStr+'</div></div>'
       +'</div>';
-    pages+='<div class="page">'+hdr+'<div class="grid">'+cards+'</div></div>';
+    pages+='<div class="page">'+_wmDiv+hdr+'<div class="grid">'+cards+'</div></div>';
   }
   var win=window.open('','_blank');
   if(!win){alert('ポップアップをブロックされています。ブラウザの設定で許可してください。');return;}
@@ -4197,7 +4199,7 @@ function jukuPrint(mode){
     +'.no-print button{padding:6px 20px;font-size:11pt;cursor:pointer;border-radius:6px;border:1px solid #aaa;}'
     +'.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}'
     +'.loading{text-align:center;padding:40px;font-size:15px;color:#555;}'
-    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;}'
+    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;position:relative;}'
     +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
     +'.pg-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #333;padding-bottom:2mm;margin-bottom:3mm;}'
     +'.ph-title{font-size:13pt;font-weight:700;color:#111;line-height:1.2;}'
@@ -4209,8 +4211,9 @@ function jukuPrint(mode){
     +'.q{font-size:10pt;line-height:1.5;}'
     +'.ans{font-size:8pt;color:#444;border-top:0.5pt dashed #ccc;padding-top:1.5pt;margin-top:1.5pt;}'
     +'.blank{flex:1;border-bottom:0.5pt solid #bbb;margin-top:2pt;min-height:5mm;}'
+    +'.wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140mm;height:140mm;opacity:0.06;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+    +'.wm img{width:100%;height:100%;object-fit:contain;display:block;}'
     +'@media print{.no-print{display:none!important;}.loading{display:none!important;}.page{display:block!important;}body{margin:0;}}'
-    +_wmCSS
     +'</style></head><body>'
     +'<div class="no-print" id="npbar"><button class="pbtn" onclick="window.print()">🖨️ 印刷する / PDFで保存</button><button onclick="window.close()">閉じる</button></div>'
     +'<div class="loading" id="loading">数式を読み込み中... しばらくお待ちください</div>'
