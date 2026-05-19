@@ -3595,7 +3595,7 @@ function shoPrint(mode){
       +'<div><div class="ph-title">'+title+'</div><div class="ph-sub">クローネ学園</div></div>'
       +'<div class="ph-right"><div>'+dateStr+'</div></div>'
       +'</div>';
-    pages+='<div class="page">'+_wmDiv+hdr+'<div class="grid">'+cards+'</div></div>';
+    pages+='<div class="page">'+hdr+'<div class="grid">'+_wmDiv+cards+'</div></div>';
   }
   var win=window.open('','_blank');
   if(!win){alert('ポップアップをブロックされています。ブラウザの設定で許可してください。');return;}
@@ -3610,13 +3610,13 @@ function shoPrint(mode){
     +'.no-print button{padding:6px 20px;font-size:11pt;cursor:pointer;border-radius:6px;border:1px solid #aaa;}'
     +'.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}'
     +'.loading{text-align:center;padding:40px;font-size:15px;color:#555;}'
-    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;position:relative;}'
+    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;}'
     +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
     +'.pg-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #333;padding-bottom:2mm;margin-bottom:3mm;}'
     +'.ph-title{font-size:13pt;font-weight:700;color:#111;line-height:1.2;}'
     +'.ph-sub{font-size:9pt;color:#555;margin-top:1mm;}'
     +'.ph-right{font-size:9pt;color:#555;text-align:right;line-height:1.6;}'
-    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,1fr);gap:1mm 4mm;height:'+_gridH+';}'
+    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,1fr);gap:1mm 4mm;height:'+_gridH+';position:relative;}'
     +'.card{border:0.4pt solid #bbb;border-left:2pt solid #888;padding:2pt 5pt;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
     +'.num{font-size:7pt;color:#bbb;line-height:1.3;}'
     +'.q{font-size:10pt;line-height:1.5;}'
@@ -4184,7 +4184,7 @@ function jukuPrint(mode){
       +'<div class="ph-sub">クローネ学園</div></div>'
       +'<div class="ph-right"><div>'+dateStr+'</div></div>'
       +'</div>';
-    pages+='<div class="page">'+_wmDiv+hdr+'<div class="grid">'+cards+'</div></div>';
+    pages+='<div class="page">'+hdr+'<div class="grid">'+_wmDiv+cards+'</div></div>';
   }
   var win=window.open('','_blank');
   if(!win){alert('ポップアップをブロックされています。ブラウザの設定で許可してください。');return;}
@@ -4199,13 +4199,13 @@ function jukuPrint(mode){
     +'.no-print button{padding:6px 20px;font-size:11pt;cursor:pointer;border-radius:6px;border:1px solid #aaa;}'
     +'.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}'
     +'.loading{text-align:center;padding:40px;font-size:15px;color:#555;}'
-    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;position:relative;}'
+    +'.page{width:194mm;page-break-after:always;break-after:page;display:none;}'
     +'.page:last-child{page-break-after:avoid;break-after:avoid;}'
     +'.pg-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #333;padding-bottom:2mm;margin-bottom:3mm;}'
     +'.ph-title{font-size:13pt;font-weight:700;color:#111;line-height:1.2;}'
     +'.ph-sub{font-size:9pt;color:#555;margin-top:1mm;}'
     +'.ph-right{font-size:9pt;color:#555;text-align:right;line-height:1.6;}'
-    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,1fr);gap:1.5mm 4mm;height:230mm;}'
+    +'.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(10,1fr);gap:1.5mm 4mm;height:230mm;position:relative;}'
     +'.card{border:0.5pt solid #ccc;border-radius:2pt;padding:2pt 5pt;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;}'
     +'.num{font-size:7pt;color:#bbb;line-height:1.3;}'
     +'.q{font-size:10pt;line-height:1.5;}'
