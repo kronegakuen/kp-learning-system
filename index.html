@@ -3664,9 +3664,18 @@ function printHyaku(mode){
   var ansSt='width:'+cW+';height:'+cH+';font-size:'+cF+';background:#fff;color:#185FA5;font-weight:700;border:1pt solid #888;text-align:center;vertical-align:middle;padding:0;'+_pc;
   var nCols=_hyakuData.grids[0].cols.length+1;
 
-  // 2グリッドを1つの<table>にまとめ page-break-inside:avoid を table に付ける
-  // iOS Safariはdivよりtableのpage-break-inside:avoidを確実に尊重する
-  var tbl='<table style="border-collapse:collapse;page-break-inside:avoid;break-inside:avoid;">';
+  // ヘッダーも含めすべてを1つのtableに統合
+  // → table全体にpage-break-inside:avoidが効き、ヘッダーと問題が確実に同一ページに収まる
+  var tbl='<table style="border-collapse:collapse;page-break-inside:avoid;break-inside:avoid;width:'+(nCols*16)+'mm;">';
+  // ヘッダー行
+  tbl+='<tr><td colspan="'+nCols+'" style="border:none;border-bottom:2pt solid #333;padding-bottom:2mm;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-end;">'
+    +'<div><div style="font-size:14pt;font-weight:700;">百マスけいさん</div>'
+    +'<div style="font-size:10pt;color:#555;margin-top:2px;">クローネ学園</div></div>'
+    +'<div style="font-size:10pt;color:#555;">'+dateStr+'</div>'
+    +'</div></td></tr>';
+  tbl+='<tr><td colspan="'+nCols+'" style="height:3mm;border:none;"></td></tr>';
+  // グリッド
   _hyakuData.grids.forEach(function(g,gi){
     if(gi>0){
       tbl+='<tr><td colspan="'+nCols+'" style="height:4mm;border:none;"></td></tr>';
@@ -3702,10 +3711,6 @@ function printHyaku(mode){
     +'</style></head><body>'
     +'<div class="npbar"><button class="pbtn" onclick="window.print()">🖨️ 印刷する / PDFで保存</button></div>'
     +'<div style="position:relative;">'
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3mm;border-bottom:2px solid #333;padding-bottom:2mm;">'
-    +'<div><div style="font-size:14pt;font-weight:700;">百マスけいさん</div>'
-    +'<div style="font-size:10pt;color:#555;margin-top:2px;">クローネ学園</div></div>'
-    +'<div style="font-size:10pt;color:#555;">'+dateStr+'</div></div>'
     +tbl
     +wmImg
     +'</div>'
