@@ -3683,9 +3683,9 @@ function printHyaku(mode){
     pages+='<div style="margin-bottom:4mm;">'+dateRow+tbl+'</div>';
   });
 
-  // 透かし: position:fixedのimgで実装（iOS Safariで擬似要素+transformが不安定なため）
-  // margin-top/leftで中央配置（transformを使わない）
-  var wmEl=_logo?'<img src="'+_logo+'" style="position:fixed;top:50%;left:50%;width:140mm;height:140mm;margin-top:-70mm;margin-left:-70mm;object-fit:contain;opacity:0.06;pointer-events:none;z-index:0;" alt="">':'';
+  // 透かし: position:absoluteのimgをコンテンツwrapperの末尾に配置（DOM順で上に来て表の上に重なる）
+  // position:fixedはiPadでページ分割を引き起こすため使わない
+  var wmImg=_logo?'<img src="'+_logo+'" style="position:absolute;top:50%;left:50%;width:140mm;height:140mm;margin-top:-70mm;margin-left:-70mm;object-fit:contain;opacity:0.08;pointer-events:none;" alt="">':'';
 
   var win=window.open('','_blank');
   if(!win){alert('ポップアップをブロックされています。ブラウザの設定でこのサイトのポップアップを許可してください。');return;}
@@ -3699,14 +3699,14 @@ function printHyaku(mode){
     +'@page{size:A4 portrait;margin:8mm;}'
     +'@media print{.npbar{display:none!important;}body{margin:0;padding:0;}}'
     +'</style></head><body>'
-    +wmEl
     +'<div class="npbar"><button class="pbtn" onclick="window.print()">🖨️ 印刷する / PDFで保存</button></div>'
-    +'<div style="position:relative;z-index:1;page-break-inside:avoid;break-inside:avoid;">'
+    +'<div style="position:relative;page-break-inside:avoid;break-inside:avoid;">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3mm;border-bottom:2px solid #333;padding-bottom:2mm;">'
     +'<div><div style="font-size:14pt;font-weight:700;">百マスけいさん</div>'
     +'<div style="font-size:10pt;color:#555;margin-top:2px;">クローネ学園</div></div>'
     +'<div style="font-size:10pt;color:#555;">'+dateStr+'</div></div>'
     +pages
+    +wmImg
     +'</div>'
     +'</body></html>');
   win.document.close();
