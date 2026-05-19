@@ -122,7 +122,7 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
 /* ── 印刷スタイル ── */
 @media print {
   @page { size: A4 portrait; margin: 8mm; }
-  body { background: white !important; color: #111 !important; }
+  body { background: white !important; color: #111 !important; min-height: 0 !important; }
   /* wrap の余白・幅制限を解除して印刷領域をフルに使う */
   .wrap { padding: 0 !important; max-width: none !important; margin: 0 !important; }
   .wrap > div { display: none !important; }
@@ -3580,7 +3580,7 @@ function _calcAns(r,c,op){
 function _buildHyakuHTML(rows,cols,op,showAns){
   var sym={add:'+',sub:'−',mul:'×'}[op];
   var html='<div class="hyaku-section">';
-  html+='<div class="hyaku-date">月＿＿日（<span style="display:inline-block;width:2cm;"></span>分<span style="display:inline-block;width:2cm;"></span>秒）</div>';
+  html+='<div class="hyaku-date">（<span style="display:inline-block;width:2cm;"></span>分<span style="display:inline-block;width:2cm;"></span>秒）</div>';
   html+='<div class="hyaku-grid">';
   html+='<div class="hyaku-cell corner">'+sym+'</div>';
   cols.forEach(function(c){html+='<div class="hyaku-cell head">'+c+'</div>';});
