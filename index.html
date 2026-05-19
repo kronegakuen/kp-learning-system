@@ -124,7 +124,7 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   @page { size: A4 portrait; margin: 8mm; }
   body { background: white !important; color: #111 !important; min-height: 0 !important; }
   /* wrap の余白・幅制限を解除して印刷領域をフルに使う */
-  .wrap { padding: 0 !important; max-width: none !important; margin: 0 !important; }
+  .wrap { padding: 0 !important; max-width: none !important; margin: 0 !important; height: auto !important; min-height: 0 !important; }
   .wrap > div { display: none !important; }
   /* sec-math は body.print-math 付与時のみ印刷 */
   body.print-math #sec-math { display: block !important; height: auto !important; overflow: visible !important; }
@@ -216,8 +216,8 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   body.print-hyaku .hyaku-cell {
     box-sizing: border-box !important;
     width: 16.9mm !important;
-    height: 11mm !important;
-    font-size: 12pt !important;
+    height: 10mm !important;
+    font-size: 11pt !important;
     background: white !important;
     color: #111 !important;
     border: 0.5px solid #888 !important;
