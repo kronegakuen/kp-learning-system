@@ -1590,9 +1590,9 @@ ${pages}
     const PER_PAGE = 20;
     const BLOCK_W = 13.05;
     // A4横210mm - margin 10mm*2 = 190mm → ブロック高さ
-    // iPhone: 横向きvp≒103mm→iOS大幅スケール→有効高さ小, iPad: ~181mm, PC: ~190mm
-    const BLOCK_H = _isMob ? 166 : _isTab ? 176 : 188;
-    const TOP_H   = _isMob ?  49 : _isTab ?  52 :  55;
+    // iPhone: iOS大幅スケール→有効高さ小, iPad: ~168mm実測, PC: ~190mm
+    const BLOCK_H = _isMob ? 162 : _isTab ? 168 : 188;
+    const TOP_H   = _isMob ?  48 : _isTab ?  50 :  55;
     const NO_H  = 6;
 
     // isAnswer=false → 問題ページ
@@ -1609,8 +1609,8 @@ ${pages}
       else if(latexMode==='3'){ showTop=rand; showBot=!rand; }
       else if(item.dir==='reverse'){ showTop=false; showBot=true; }
       else { showTop=true; showBot=false; }
-      const topContent = showTop ? `<span class="vword">${item.q}</span>` : '';
-      const botContent = showBot ? `<span class="vmean">${item.a}</span>` : '';
+      const topContent = showTop ? `<span class="vword">${item.q}</span>` : '&nbsp;';
+      const botContent = showBot ? `<span class="vmean">${item.a}</span>` : '&nbsp;';
       return `<div class="mblock">
   <div class="mno">${n}</div>
   <div class="mtop">${topContent}</div>
@@ -1652,7 +1652,7 @@ ${pages}
     const pages = makePages(qs);
 
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=1123,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${sheetLabel}テスト</title>
 <style>
 @page{size:A4 landscape;margin:10mm;}
@@ -1664,6 +1664,8 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
 .pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}
 .mpage{
   width:100%;
+  height:${BLOCK_H}mm;
+  overflow:hidden;
   display:flex;
   padding-top:0;
   position:relative;
@@ -1705,6 +1707,8 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
 .mblock{
   width:${BLOCK_W}mm;
   height:${BLOCK_H}mm;
+  max-height:${BLOCK_H}mm;
+  overflow:hidden;
   flex-shrink:0;
   border-left:0.5pt solid #85C1E9;
   border-top:0.5pt solid #85C1E9;
