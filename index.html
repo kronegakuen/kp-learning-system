@@ -1452,6 +1452,9 @@ function makePDF(){
   const to   = document.getElementById('rng-to').value;
   const subtitle = sheetLabel+'　No.'+from+'〜'+to+'　'+dirLabel+'　'+qs.length+'問';
 
+  const _logo=(document.querySelector('#sec-login img')||{getAttribute:()=>''}).getAttribute('src')||'';
+  const _wmDiv=_logo?`<div class="wm"><img src="${_logo}" alt=""></div>`:'';
+
   let html = '';
 
   if(isEigo){
@@ -1505,12 +1508,12 @@ function makePDF(){
     // 問題ページ
     for(let p=0; p<qs.length; p+=E_PER_PAGE){
       const chunk = qs.slice(p, p+E_PER_PAGE);
-      pages += `<div class="eblock${p>0?' page-break':''}">${makeEigoPage(chunk, p, false, '問題')}</div>`;
+      pages += `<div class="eblock${p>0?' page-break':''}">${_wmDiv}${makeEigoPage(chunk, p, false, '問題')}</div>`;
     }
     // 解答ページ
     for(let p=0; p<qs.length; p+=E_PER_PAGE){
       const chunk = qs.slice(p, p+E_PER_PAGE);
-      pages += `<div class="eblock page-break">${makeEigoPage(chunk, p, true, '解答')}</div>`;
+      pages += `<div class="eblock page-break">${_wmDiv}${makeEigoPage(chunk, p, true, '解答')}</div>`;
     }
 
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${sheetLabel}テスト</title>
@@ -1534,6 +1537,9 @@ h1{font-size:11pt;font-weight:bold;text-align:center;margin:5mm 0 0.5mm;border-b
 .acell{flex:1;display:flex;align-items:center;padding:0 1mm;}
 .ans-line{flex:1;border-bottom:0.5pt solid #999;height:3.5mm;}
 .atxt{font-size:9pt;color:#1a4f8a;font-weight:bold;}.wbold{font-size:10pt;font-weight:bold;}.ans-line-w{display:block;width:90%;border-bottom:0.5pt solid #999;height:3.5mm;}
+.eblock{position:relative;}
+.wm{position:absolute;top:68.5mm;left:25mm;width:140mm;height:140mm;opacity:0.06;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.wm img{width:100%;height:100%;object-fit:contain;display:block;}
 </style>
 </head><body>
 <div class="no-print">
@@ -1627,14 +1633,14 @@ ${pages}
       for(let p=0; p < items.length; p += PER_PAGE){
         const chunk = items.slice(p, p + PER_PAGE);
         pages += `<div class="mpage${p > 0 ? ' page-break' : ''}">
-  ${makeRow(chunk, p, false, '　問題')}
+  ${_wmDiv}${makeRow(chunk, p, false, '　問題')}
 </div>`;
       }
       // 解答ページ
       for(let p=0; p < items.length; p += PER_PAGE){
         const chunk = items.slice(p, p + PER_PAGE);
         pages += `<div class="mpage page-break">
-  ${makeRow(chunk, p, true, '　解答')}
+  ${_wmDiv}${makeRow(chunk, p, true, '　解答')}
 </div>`;
       }
       return pages;
@@ -1656,7 +1662,10 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   width:100%;
   display:flex;
   padding-top:0;
+  position:relative;
 }
+.wm{position:absolute;top:25mm;left:68.5mm;width:140mm;height:140mm;opacity:0.06;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.wm img{width:100%;height:100%;object-fit:contain;display:block;}
 .mrow{
   display:flex;
   flex-direction:row-reverse;
