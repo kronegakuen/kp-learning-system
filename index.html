@@ -1590,8 +1590,9 @@ ${pages}
     const PER_PAGE = 20;
     const BLOCK_W = 13.05;
     // A4横210mm - margin 10mm*2 = 190mm → ブロック高さ
-    const BLOCK_H = (_isMob||_isTab) ? 176 : 188;
-    const TOP_H = (_isMob||_isTab) ? 52 : 55;
+    // iPhone: 横向きvp≒103mm→iOS大幅スケール→有効高さ小, iPad: ~181mm, PC: ~190mm
+    const BLOCK_H = _isMob ? 166 : _isTab ? 176 : 188;
+    const TOP_H   = _isMob ?  49 : _isTab ?  52 :  55;
     const NO_H  = 6;
 
     // isAnswer=false → 問題ページ
@@ -1651,6 +1652,7 @@ ${pages}
     const pages = makePages(qs);
 
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=1123,initial-scale=1">
 <title>${sheetLabel}テスト</title>
 <style>
 @page{size:A4 landscape;margin:10mm;}
