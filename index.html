@@ -1590,9 +1590,9 @@ ${pages}
     const PER_PAGE = 20;
     const BLOCK_W = 13.05;
     // A4横210mm - margin 10mm*2 = 190mm → ブロック高さ
-    // iPhone: iOS大幅スケール→有効高さ小, iPad: ~168mm実測, PC: ~190mm
-    const BLOCK_H = _isMob ? 162 : _isTab ? 168 : 188;
-    const TOP_H   = _isMob ?  48 : _isTab ?  50 :  55;
+    // viewport=1123で1:1スケール確保済みのためiOS共通176mm
+    const BLOCK_H = (_isMob||_isTab) ? 176 : 188;
+    const TOP_H   = (_isMob||_isTab) ?  52 :  55;
     const NO_H  = 6;
 
     // isAnswer=false → 問題ページ
@@ -1652,7 +1652,7 @@ ${pages}
     const pages = makePages(qs);
 
     html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=1123,initial-scale=1">
 <title>${sheetLabel}テスト</title>
 <style>
 @page{size:A4 landscape;margin:10mm;}
@@ -1669,8 +1669,11 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   display:flex;
   padding-top:0;
   position:relative;
+  page-break-after:always;
+  break-after:page;
 }
-.wm{position:absolute;top:${Math.round((BLOCK_H-140)/2)}mm;left:68.5mm;width:140mm;height:140mm;opacity:0.06;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.mpage:last-child{page-break-after:avoid;break-after:avoid;}
+.wm{position:absolute;top:calc(50% - 70mm);left:calc(50% - 70mm);width:140mm;height:140mm;opacity:0.06;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .wm img{width:100%;height:100%;object-fit:contain;display:block;}
 .mrow{
   display:flex;
