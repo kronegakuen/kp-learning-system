@@ -1106,7 +1106,8 @@ window.loadManageSheet = async function loadManageSheet(){
     for(let i=1;i<rows.length;i++){
       const [label, sheetName, subject, ansWidth, hidden] = rows[i];
       if(!label||!sheetName) continue;
-      if(hidden && hidden.trim().toLowerCase()==='true') continue;
+      const isTeacher = currentUser && currentUser.role === 'teacher';
+      if(!isTeacher && hidden && hidden.trim().toLowerCase()==='true') continue;
       const key = 'tb_'+i;
       // アクセス権チェック（教師は全テキスト、生徒はaccessKeysに含まれるものだけ）
       if(currentUser && currentUser.role !== 'teacher' && currentUser.accessKeys && !currentUser.accessKeys.includes(key)) continue;
