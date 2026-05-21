@@ -1036,14 +1036,28 @@ let paused = false, rafId = null, phaseStart = 0, phase = 'q';
 // ============================================================
 // CSV取得・パース
 // ============================================================
+function _isKanji(ch) {
+  const c = ch.charCodeAt(0);
+  return (c >= 0x4E00 && c <= 0x9FFF) || (c >= 0x3400 && c <= 0x4DBF);
+}
 function _parseRubyNotation(text) {
-  // 漢字[ふりがな] 形式を解析。[]直前の漢字列のみをルビ対象とする
-  let html = '';
-  const re = /([一-鿿㐀-䶿]+)\[([^\]]+)\]|([^[\]]+|[[\]])/g;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    if (m[2]) html += '<ruby>' + m[1] + '<rt>' + m[2] + '</rt></ruby>';
-    else if (m[3]) html += m[3];
+  let html = '', i = 0;
+  while (i < text.length) {
+    if (_isKanji(text[i])) {
+      let j = i;
+      while (j < text.length && _isKanji(text[j])) j++;
+      const kanji = text.slice(i, j);
+      if (text[j] === '[') {
+        const end = text.indexOf(']', j + 1);
+        if (end !== -1) {
+          html += '<ruby>' + kanji + '<rt>' + text.slice(j + 1, end) + '</rt></ruby>';
+          i = end + 1; continue;
+        }
+      }
+      html += kanji; i = j;
+    } else {
+      html += text[i++];
+    }
   }
   return html || text;
 }
