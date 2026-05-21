@@ -1061,10 +1061,9 @@ function _parseRubyNotation(text) {
   }
   return html || text;
 }
-function rubyHtml(word, ruby) {
-  if (!ruby) return word.includes('[') ? _parseRubyNotation(word) : word;
-  if (!ruby.includes('[')) return '<ruby>' + word + '<rt>' + ruby + '</rt></ruby>';
-  return _parseRubyNotation(ruby);
+function rubyHtml(word) {
+  if (!word) return '';
+  return word.includes('[') ? _parseRubyNotation(word) : word;
 }
 
 function csvUrl(sheetName){
@@ -1171,7 +1170,7 @@ async function pickSheet(){
       } else {
         // A:番号 B:学年 C:テキスト D:種別 E:言葉 F:意味
         const genre = (r[3]||'').trim();
-        items.push({ no, word: (r[4]||'').trim(), meaning: (r[5]||'').trim(), ruby: (r[6]||'').trim(), genre });
+        items.push({ no, word: (r[4]||'').trim(), meaning: (r[5]||'').trim(), genre });
         if(genre) genreSet.add(genre);
       }
     }
@@ -1270,8 +1269,8 @@ function buildQueue(countGroup){
   if(tb.genres && curGenres.length>0)
     base = base.filter(d=>curGenres.includes(d.genre));
   let items=[];
-  if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, pronunciation:d.pronunciation||'', ruby:d.ruby||'', type:d.genre}));
-  if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, pronunciation:d.pronunciation||'', ruby:'', type:d.genre+'（逆）'}));
+  if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, pronunciation:d.pronunciation||'', type:d.genre}));
+  if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, pronunciation:d.pronunciation||'', type:d.genre+'（逆）'}));
   shuffle(items);
   const n = getVal(countGroup)||'10';
   return n==='all' ? items : items.slice(0, parseInt(n));
@@ -1292,11 +1291,11 @@ function buildQueueForPDF(countGroup){
     if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
     if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
   } else if(tb.subject === 'kanji'){
-    base.forEach(d=>items.push({word:d.word, meaning:d.meaning, ruby:d.ruby||'', type:d.genre}));
+    base.forEach(d=>items.push({word:d.word, meaning:d.meaning, type:d.genre}));
   } else {
     // 国語：語句=上段・意味=下段固定。dirを保持して問題ページの空欄を制御
-    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, ruby:d.ruby||'', type:d.genre, dir:'normal'}));
-    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, ruby:d.ruby||'', type:d.genre, dir:'reverse'}));
+    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'normal'}));
+    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'reverse'}));
   }
   shuffle(items);
   const n = getVal(countGroup)||'30';
@@ -1339,8 +1338,8 @@ async function renderActive(){
   document.getElementById('a-prog').style.width=(idx/tot*100)+'%';
   document.getElementById('a-ctr').textContent=(idx+1)+' / '+tot;
   document.getElementById('a-type').textContent=item.type;
-  document.getElementById('a-q').innerHTML=rubyHtml(item.q, item.ruby);
-  document.getElementById('a-ans').innerHTML=rubyHtml(item.a,'');
+  document.getElementById('a-q').innerHTML=rubyHtml(item.q);
+  document.getElementById('a-ans').innerHTML=rubyHtml(item.a);
   questionStartTime = performance.now();
   document.getElementById('a-ans').classList.remove('show');
   const pronEl=document.getElementById('a-pron');if(pronEl){
@@ -1409,8 +1408,8 @@ async function renderPassiveCard(){
   }
   const item=queue[idx];
   document.getElementById('p-type').textContent=item.type;
-  document.getElementById('p-q').innerHTML=rubyHtml(item.q, item.ruby);
-  document.getElementById('p-ans').innerHTML=rubyHtml(item.a,'');
+  document.getElementById('p-q').innerHTML=rubyHtml(item.q);
+  document.getElementById('p-ans').innerHTML=rubyHtml(item.a);
   document.getElementById('p-ans').classList.remove('show');
   document.getElementById('p-judge-row').style.display='none';
   const pPron=document.getElementById('p-pron');if(pPron){pPron.innerHTML=item.pronunciation?item.pronunciation.replace(/\|([^|]+)\|/g,'<span style="color:transparent;font-size:0;">|</span><span style="color:var(--gL);font-weight:700;">$1</span><span style="color:transparent;font-size:0;">|</span>'):'';pPron.style.opacity='0';pPron.style.visibility='hidden';}
@@ -1597,7 +1596,7 @@ ${pages}
       else if(mode==='yomi'){sk=true;sy=false;}
       else if(mode==='kaki'){sk=false;sy=true;}
       else{sk=rand;sy=!rand;}
-      const kc=sk?'<span class="kvword">'+rubyHtml(item.word, item.ruby)+'</span>':'';
+      const kc=sk?'<span class="kvword">'+rubyHtml(item.word)+'</span>':'';
       const yc=sy?'<span class="kvmean">'+item.meaning+'</span>':'';
       return '<div class="kmblock"><div class="kmno">'+n+'</div><div class="kmtop">'+yc+'</div><div class="kmsep"></div><div class="kmbot">'+kc+'</div></div>';
     }
@@ -1639,7 +1638,7 @@ ${pages}
       else if(latexMode==='3'){ showTop=rand; showBot=!rand; }
       else if(item.dir==='reverse'){ showTop=false; showBot=true; }
       else { showTop=true; showBot=false; }
-      const topContent = showTop ? `<span class="vword">${rubyHtml(item.q, item.ruby)}</span>` : '&nbsp;';
+      const topContent = showTop ? `<span class="vword">${rubyHtml(item.q)}</span>` : '&nbsp;';
       const botContent = showBot ? `<span class="vmean">${rubyHtml(item.a, '')}</span>` : '&nbsp;';
       return `<div class="mblock">
   <div class="mno">${n}</div>
