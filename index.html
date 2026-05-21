@@ -1098,6 +1098,7 @@ window.loadManageSheet = async function loadManageSheet(){
     if(!res.ok) throw new Error('管理シートの読み込みに失敗しました');
     const text = await res.text();
     const rows = parseCSV(text);
+    document.getElementById('load-error').style.display='none';
     // 1行目はヘッダー（テキスト名, シート名, 科目, 答え欄）
     const sel = document.getElementById('sel-sheet');
     sel.innerHTML = '<option value="">── テキストを選ぶ ──</option>';
