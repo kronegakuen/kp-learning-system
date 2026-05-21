@@ -80,7 +80,7 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
 .ctr{font-size:15px;color:var(--tmu);text-align:center;margin-bottom:1rem;}
 .card{background:#fff;border:1px solid #e5e5e0;border-radius:16px;padding:3rem 2rem;text-align:center;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:1rem;}
 .card-type{font-size:16px;color:#aaa;margin-bottom:.75rem;}
-.card-q{font-size:36px;font-weight:500;line-height:1.4;color:#1a1a1a;font-family:'Zen Old Mincho',serif;}
+.card-q{font-size:36px;font-weight:500;line-height:1.4;color:#1a1a1a;font-family:'Zen Old Mincho',serif;}.card-q rt{font-size:0.5em;line-height:1;}
 .card-a{font-size:26px;color:#185FA5;font-weight:500;margin-top:1rem;padding-top:1rem;border-top:1px solid #e5e5e0;width:100%;opacity:0;visibility:hidden;transition:opacity .3s;}
 .card-a.show{opacity:1;visibility:visible;}
 .btn-row{display:flex;gap:10px;margin-bottom:.75rem;}
@@ -425,7 +425,6 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
       <div class="math-banner-chips">
         <span class="chip-n">じぶんでモード</span>
         <span class="chip-e">おまかせモード</span>
-        <span class="chip-h">📄 PDF</span>
       </div>
     </div>
     <button class="math-banner-btn">開始する</button>
@@ -472,7 +471,7 @@ input[type=number]{padding:7px 10px;font-size:16px;border:1px solid var(--nv5);b
   <div id="sho-banner" class="math-banner" onclick="showSho()" style="display:none;">
     <div class="math-banner-left">
       <div class="math-banner-title">🎒 小学生 計算ドリル</div>
-      <div class="math-banner-sub">小1〜小6・学年別に自動生成</div>
+      <div class="math-banner-sub">「算数の『得意』は、この1枚から始まる。」中学・高校になっても君を助けてくれる「最強の宝物」になります。</div>
       <div class="math-banner-chips">
         <span class="chip-e">⭐ やさしい</span>
         <span class="chip-n">⭐⭐ ふつう</span>
@@ -1141,7 +1140,7 @@ async function pickSheet(){
       } else {
         // A:番号 B:学年 C:テキスト D:種別 E:言葉 F:意味
         const genre = (r[3]||'').trim();
-        items.push({ no, word: (r[4]||'').trim(), meaning: (r[5]||'').trim(), genre });
+        items.push({ no, word: (r[4]||'').trim(), meaning: (r[5]||'').trim(), ruby: (r[6]||'').trim(), genre });
         if(genre) genreSet.add(genre);
       }
     }
@@ -1240,8 +1239,8 @@ function buildQueue(countGroup){
   if(tb.genres && curGenres.length>0)
     base = base.filter(d=>curGenres.includes(d.genre));
   let items=[];
-  if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, pronunciation:d.pronunciation||'', type:d.genre}));
-  if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, pronunciation:d.pronunciation||'', type:d.genre+'（逆）'}));
+  if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, pronunciation:d.pronunciation||'', ruby:d.ruby||'', type:d.genre}));
+  if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, pronunciation:d.pronunciation||'', ruby:'', type:d.genre+'（逆）'}));
   shuffle(items);
   const n = getVal(countGroup)||'10';
   return n==='all' ? items : items.slice(0, parseInt(n));
@@ -1262,11 +1261,11 @@ function buildQueueForPDF(countGroup){
     if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre}));
     if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.meaning, a:d.word, type:d.genre+'（逆）'}));
   } else if(tb.subject === 'kanji'){
-    base.forEach(d=>items.push({word:d.word, meaning:d.meaning, type:d.genre}));
+    base.forEach(d=>items.push({word:d.word, meaning:d.meaning, ruby:d.ruby||'', type:d.genre}));
   } else {
     // 国語：語句=上段・意味=下段固定。dirを保持して問題ページの空欄を制御
-    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'normal'}));
-    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, type:d.genre, dir:'reverse'}));
+    if(dir==='normal'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, ruby:d.ruby||'', type:d.genre, dir:'normal'}));
+    if(dir==='reverse'||dir==='both') base.forEach(d=>items.push({q:d.word, a:d.meaning, ruby:d.ruby||'', type:d.genre, dir:'reverse'}));
   }
   shuffle(items);
   const n = getVal(countGroup)||'30';
@@ -1309,7 +1308,7 @@ async function renderActive(){
   document.getElementById('a-prog').style.width=(idx/tot*100)+'%';
   document.getElementById('a-ctr').textContent=(idx+1)+' / '+tot;
   document.getElementById('a-type').textContent=item.type;
-  document.getElementById('a-q').textContent=item.q;
+  document.getElementById('a-q').innerHTML=item.ruby?'<ruby>'+item.q+'<rt>'+item.ruby+'</rt></ruby>':item.q;
   document.getElementById('a-ans').textContent=item.a;
   questionStartTime = performance.now();
   document.getElementById('a-ans').classList.remove('show');
@@ -1379,7 +1378,7 @@ async function renderPassiveCard(){
   }
   const item=queue[idx];
   document.getElementById('p-type').textContent=item.type;
-  document.getElementById('p-q').textContent=item.q;
+  document.getElementById('p-q').innerHTML=item.ruby?'<ruby>'+item.q+'<rt>'+item.ruby+'</rt></ruby>':item.q;
   document.getElementById('p-ans').textContent=item.a;
   document.getElementById('p-ans').classList.remove('show');
   document.getElementById('p-judge-row').style.display='none';
@@ -1567,7 +1566,7 @@ ${pages}
       else if(mode==='yomi'){sk=true;sy=false;}
       else if(mode==='kaki'){sk=false;sy=true;}
       else{sk=rand;sy=!rand;}
-      const kc=sk?'<span class="kvword">'+item.word+'</span>':'';
+      const kc=sk?'<span class="kvword">'+(item.ruby?'<ruby>'+item.word+'<rt>'+item.ruby+'</rt></ruby>':item.word)+'</span>':'';
       const yc=sy?'<span class="kvmean">'+item.meaning+'</span>':'';
       return '<div class="kmblock"><div class="kmno">'+n+'</div><div class="kmtop">'+yc+'</div><div class="kmsep"></div><div class="kmbot">'+kc+'</div></div>';
     }
@@ -1583,7 +1582,7 @@ ${pages}
     }
     const kQP=makeKanjiPages(qs,kanjiMode,false);
     const kAP=makeKanjiPages(qs,'answer',true);
-    const kst='@page{size:A4 landscape;margin:10mm 7mm;}@media print{.no-print{display:none!important;}body{margin:0;}.kpage-break{page-break-before:always;}}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;color:#000;}.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}.no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;border:1px solid #aaa;border-radius:5px;}.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}.kmain{display:flex;flex-direction:row;height:186mm;width:100%;}.ktitle{width:14mm;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm 1mm;border:0.5pt solid #85C1E9;border-left:none;}.ktitle-main{font-size:12pt;font-weight:bold;writing-mode:vertical-rl;line-height:1.4;}.ktitle-sub{font-size:6pt;color:#555;writing-mode:vertical-rl;margin-top:2mm;}.ksection{flex:1;display:flex;flex-direction:column;border:0.5pt solid #85C1E9;}.kmrow{display:flex;flex-direction:row-reverse;flex:1;overflow:hidden;}.ksep-h{border-top:1.5pt solid #378ADD;width:100%;flex-shrink:0;}.kmblock{flex:1;border-left:0.5pt solid #85C1E9;display:flex;flex-direction:column;overflow:hidden;}.kmblock:last-child{border-left:none;}.kmno{background:#2E86C1;color:#fff;font-size:7pt;height:6mm;min-height:6mm;display:flex;align-items:center;justify-content:center;writing-mode:horizontal-tb;flex-shrink:0;}.kmtop{height:40mm;min-height:40mm;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;flex-shrink:0;overflow:hidden;}.kmsep{border-top:1pt dashed #E74C3C;flex-shrink:0;}.kmbot{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;overflow:hidden;}.kvword{font-size:20pt;font-weight:bold;line-height:1.6;writing-mode:vertical-rl;}.kvmean{font-size:13pt;line-height:1.6;writing-mode:vertical-rl;}';
+    const kst='@page{size:A4 landscape;margin:10mm 7mm;}@media print{.no-print{display:none!important;}body{margin:0;}.kpage-break{page-break-before:always;}}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:\'Hiragino Sans\',\'Meiryo\',sans-serif;color:#000;}.no-print{text-align:center;padding:6px;background:#eef3f8;border-bottom:1px solid #ccd;margin-bottom:3mm;}.no-print button{padding:5px 16px;font-size:9pt;cursor:pointer;border:1px solid #aaa;border-radius:5px;}.pbtn{background:#185FA5;color:#fff;border-color:#185FA5!important;}.kmain{display:flex;flex-direction:row;height:186mm;width:100%;}.ktitle{width:14mm;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm 1mm;border:0.5pt solid #85C1E9;border-left:none;}.ktitle-main{font-size:12pt;font-weight:bold;writing-mode:vertical-rl;line-height:1.4;}.ktitle-sub{font-size:6pt;color:#555;writing-mode:vertical-rl;margin-top:2mm;}.ksection{flex:1;display:flex;flex-direction:column;border:0.5pt solid #85C1E9;}.kmrow{display:flex;flex-direction:row-reverse;flex:1;overflow:hidden;}.ksep-h{border-top:1.5pt solid #378ADD;width:100%;flex-shrink:0;}.kmblock{flex:1;border-left:0.5pt solid #85C1E9;display:flex;flex-direction:column;overflow:hidden;}.kmblock:last-child{border-left:none;}.kmno{background:#2E86C1;color:#fff;font-size:7pt;height:6mm;min-height:6mm;display:flex;align-items:center;justify-content:center;writing-mode:horizontal-tb;flex-shrink:0;}.kmtop{height:40mm;min-height:40mm;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;flex-shrink:0;overflow:hidden;}.kmsep{border-top:1pt dashed #E74C3C;flex-shrink:0;}.kmbot{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2mm 1mm 0;overflow:hidden;}.kvword{font-size:20pt;font-weight:bold;line-height:1.6;writing-mode:vertical-rl;}.kvmean{font-size:13pt;line-height:1.6;writing-mode:vertical-rl;}ruby{ruby-align:center;}rt{font-size:0.45em;line-height:1;}';
     html='<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>'+sheetLabelK+'</title><style>'+kst+'</style></head><body><div class="no-print"><button class="pbtn" onclick="window.print()">印刷する / PDFで保存</button><button onclick="window.close()">閉じる</button></div>'+kQP+kAP+'</body></html>';
 
   } else {
@@ -1609,7 +1608,7 @@ ${pages}
       else if(latexMode==='3'){ showTop=rand; showBot=!rand; }
       else if(item.dir==='reverse'){ showTop=false; showBot=true; }
       else { showTop=true; showBot=false; }
-      const topContent = showTop ? `<span class="vword">${item.q}</span>` : '&nbsp;';
+      const topContent = showTop ? `<span class="vword">${item.ruby?`<ruby>${item.q}<rt>${item.ruby}</rt></ruby>`:item.q}</span>` : '&nbsp;';
       const botContent = showBot ? `<span class="vmean">${item.a}</span>` : '&nbsp;';
       return `<div class="mblock">
   <div class="mno">${n}</div>
@@ -1767,6 +1766,8 @@ body{font-family:'Hiragino Sans','Meiryo',sans-serif;color:#000;background:#fff;
   letter-spacing:0.03em;
   writing-mode:vertical-rl;
 }
+ruby{ruby-align:center;}
+rt{font-size:0.45em;line-height:1;}
 </style>
 </head><body>
 <div class="no-print">
