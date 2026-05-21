@@ -1036,6 +1036,20 @@ let paused = false, rafId = null, phaseStart = 0, phase = 'q';
 // ============================================================
 // CSV取得・パース
 // ============================================================
+function rubyHtml(word, ruby) {
+  if (!ruby) return word;
+  if (!ruby.includes('[')) return '<ruby>' + word + '<rt>' + ruby + '</rt></ruby>';
+  // 言葉[ことば]の力[ちから] 形式を漢字ごとに変換
+  let html = '';
+  const re = /([^\[\]]*)\[([^\]]+)\]|([^\[\]]+)/g;
+  let m;
+  while ((m = re.exec(ruby)) !== null) {
+    if (m[2]) { if (m[1]) html += '<ruby>' + m[1] + '<rt>' + m[2] + '</rt></ruby>'; }
+    else if (m[3]) html += m[3];
+  }
+  return html || word;
+}
+
 function csvUrl(sheetName){
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
 }
@@ -1308,7 +1322,7 @@ async function renderActive(){
   document.getElementById('a-prog').style.width=(idx/tot*100)+'%';
   document.getElementById('a-ctr').textContent=(idx+1)+' / '+tot;
   document.getElementById('a-type').textContent=item.type;
-  document.getElementById('a-q').innerHTML=item.ruby?'<ruby>'+item.q+'<rt>'+item.ruby+'</rt></ruby>':item.q;
+  document.getElementById('a-q').innerHTML=rubyHtml(item.q, item.ruby);
   document.getElementById('a-ans').textContent=item.a;
   questionStartTime = performance.now();
   document.getElementById('a-ans').classList.remove('show');
@@ -1378,7 +1392,7 @@ async function renderPassiveCard(){
   }
   const item=queue[idx];
   document.getElementById('p-type').textContent=item.type;
-  document.getElementById('p-q').innerHTML=item.ruby?'<ruby>'+item.q+'<rt>'+item.ruby+'</rt></ruby>':item.q;
+  document.getElementById('p-q').innerHTML=rubyHtml(item.q, item.ruby);
   document.getElementById('p-ans').textContent=item.a;
   document.getElementById('p-ans').classList.remove('show');
   document.getElementById('p-judge-row').style.display='none';
@@ -1566,7 +1580,7 @@ ${pages}
       else if(mode==='yomi'){sk=true;sy=false;}
       else if(mode==='kaki'){sk=false;sy=true;}
       else{sk=rand;sy=!rand;}
-      const kc=sk?'<span class="kvword">'+(item.ruby?'<ruby>'+item.word+'<rt>'+item.ruby+'</rt></ruby>':item.word)+'</span>':'';
+      const kc=sk?'<span class="kvword">'+rubyHtml(item.word, item.ruby)+'</span>':'';
       const yc=sy?'<span class="kvmean">'+item.meaning+'</span>':'';
       return '<div class="kmblock"><div class="kmno">'+n+'</div><div class="kmtop">'+yc+'</div><div class="kmsep"></div><div class="kmbot">'+kc+'</div></div>';
     }
@@ -1608,7 +1622,7 @@ ${pages}
       else if(latexMode==='3'){ showTop=rand; showBot=!rand; }
       else if(item.dir==='reverse'){ showTop=false; showBot=true; }
       else { showTop=true; showBot=false; }
-      const topContent = showTop ? `<span class="vword">${item.ruby?`<ruby>${item.q}<rt>${item.ruby}</rt></ruby>`:item.q}</span>` : '&nbsp;';
+      const topContent = showTop ? `<span class="vword">${rubyHtml(item.q, item.ruby)}</span>` : '&nbsp;';
       const botContent = showBot ? `<span class="vmean">${item.a}</span>` : '&nbsp;';
       return `<div class="mblock">
   <div class="mno">${n}</div>
